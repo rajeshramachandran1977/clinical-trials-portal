@@ -1,0 +1,60 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+    <head>
+        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+    </head>
+    <div id="IRBRequirementcontents">
+        <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+        <div class="row">
+            <div class="wid_100">
+                <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+            </div>
+        </div>
+        <div id="flex">
+            <div id="displayIRBRequirement">
+                <div id="irbRequirement" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_IRBRequirement"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforIRBRequirement" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_registrationIRB")
+                        .OptionLabel("Select")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .HtmlAttributes(new { @class = "ml-2" })
+                        .BindTo(new List<SelectListItem>
+                            ()
+                            {
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.YES,
+                            Value = @ConstDefaultValue.YES
+                            },
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.NO,
+                            Value = @ConstDefaultValue.NO
+                            },
+                            })
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row noprint float-right">
+            <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveIRBRegistrationRequirement">Save</button>
+            <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+        </div>
+    </div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var IRBRequirementattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.IRBRequirement)';
+    var isirbregistrationrequirement = '@ConstDefaultValue.ISIRBREGISTRATIONREQUIREMENT';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+</script>
+<script src="~/scripts/EditStudy/IRBRequirement.js"></script>

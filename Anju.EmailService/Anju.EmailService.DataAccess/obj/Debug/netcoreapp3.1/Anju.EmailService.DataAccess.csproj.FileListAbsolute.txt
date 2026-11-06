@@ -1,0 +1,11 @@
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\bin\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.deps.json
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\bin\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.dll
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\bin\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.pdb
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\bin\Debug\netcoreapp3.1\Anju.EmailService.Utilities.dll
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\bin\Debug\netcoreapp3.1\Anju.EmailService.Utilities.pdb
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.csprojAssemblyReference.cache
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.AssemblyInfoInputs.cache
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.AssemblyInfo.cs
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.csproj.CopyComplete
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.dll
+D:\Navigate\Anju.EmailService\Anju.EmailService.DataAccess\obj\Debug\netcoreapp3.1\Anju.EmailService.DataAccess.pdb

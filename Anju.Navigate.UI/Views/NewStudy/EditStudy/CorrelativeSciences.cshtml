@@ -1,0 +1,102 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="correlativesciencescontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayStudyincludecorrelativescience">
+            <div id="studyincludecorrelativescience" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_studyincludecorrelativescience"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_studyincludecorrelativescience" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_correlativeScience")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        ()
+                        {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text =  @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayCorrelativescienceatcompanysite">
+            <div id="correlativescienceatcompanysite">
+                <label class="col-formEditStudy-labels" id="ui_lbl_correlativescienceatcompanysite"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_correlativescienceatcompanysite" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_correlativescienceatcompanysite" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_correlativescienceatcompanysite" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcorrelativescienceatcompanysite"></label></span>
+                    <input type="hidden" id="regexforcorrelativescienceatcompanysite" />
+                    <input type="hidden" id="validationmsgforcorrelativescienceatcompanysite" />
+                </div>
+            </div>
+        </div>
+        <div id="displayCorrelativescienceatstudysite">
+            <div id="correlativescienceatstudysite">
+                <label class="col-formEditStudy-labels" id="ui_lbl_correlativescienceatstudysite"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_correlativescienceatstudysite" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_correlativescienceatstudysite" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_correlativescienceatstudysite" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcorrelativescienceatstudysite"></label></span>
+                    <input type="hidden" id="regexforcorrelativescienceatstudysite" />
+                    <input type="hidden" id="validationmsgforcorrelativescienceatstudysite" />
+                </div>
+            </div>
+        </div>
+        <div id="displayCorrelativesciencesamplingdetails">
+            <div id="correlativesciencesamplingdetails">
+                <label class="col-formEditStudy-labels" id="ui_lbl_correlativesciencesamplingdet"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_correlativesciencesamplingdet" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_correlativesciencesamplingdet" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_correlativesciencesamplingdet" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcorrelativesciencesamplingdet"></label></span>
+                    <input type="hidden" id="regexforcorrelativesciencesamplingdet" />
+                    <input type="hidden" id="validationmsgforcorrelativesciencesamplingdet" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveCorrelativeScience">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var correlativescienceattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.CorrelativeScience)';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var isstudyincludecorrelativescience = '@ConstDefaultValue.ISSTUDYINCLUDECORRELATIVESCIENCE';
+    var correlativesciencestudiesperformedatcompanysite = '@ConstDefaultValue.CORRELATIVESCIENCESTUDIESPERFORMEDATCOMPANYSITE';
+    var correlativesciencestudiesperformedatstudysite = '@ConstDefaultValue.CORRELATIVESCIENCESTUDIESPERFORMEDATSTUDYSITE';
+    var correlativesciencesamplingdetails = '@ConstDefaultValue.CORRELATIVESCIENCESAMPLINGDETAILS';
+    var appName = '@ConfigValues.appName';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+</script>
+<script src="~/scripts/EditStudy/CorrelativeSciences.js"></script>

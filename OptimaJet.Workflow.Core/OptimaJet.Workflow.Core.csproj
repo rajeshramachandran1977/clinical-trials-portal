@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>OptimaJet.Workflow.Core</RootNamespace>
+    <AssemblyName>OptimaJet.Workflow.Core</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>Workflow.snk</AssemblyOriginatorKeyFile>
+    <Version>4.1.0</Version>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>OptimaJet, LLC</Authors>
+    <Company>OptimaJet, LLC</Company>
+    <Product>WorkflowEngine .NET</Product>
+    <PackageId>WorkflowEngine.NETCore-Core</PackageId>
+    <Description>Workflow Engine is an open source workflow engine for .NET and .NET Core that enables you to add custom executable .NET and Java workflows of any complexity to any software, be it your own creation or a third-party solution, with minimal changes to existing code.
+
+Its core features are:
+- HTML5 visual designer. Design, model, edit and visualize your custom workflows.
+- Workflow version control. Keep track of your workflow changes and easily revert them.
+- Parallel workflow support. Split workflows into branches that execute tasks concurrently.
+- XML import/export. Export your workflows for further reuse and sharing.
+- Localization support. Translate user interface to multiple languages of your choice.
+- In-built workflow timers. Set intervals or specify time to run custom actions and workflow tasks.
+
+Workflow Engine build for .NET core includes a set of pre-built providers for the following databases:
+- MS SQL Server
+- PostgreSQL
+</Description>
+    <summary>Workflow Engine is an open source workflow engine for .NET and .NET Core that enables you to add custom executable .NET and Java workflows of any complexity to any software, be it your own creation or a third-party solution, with minimal changes to existing code.</summary>
+    <Copyright>OptimaJet, LLC</Copyright>
+    <PackageLicenseUrl>https://workflowengine.io/agreements/eula/</PackageLicenseUrl>
+    <PackageProjectUrl>https://workflowengine.io</PackageProjectUrl>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PackageIconUrl>https://workflowengine.io/images/favicons/favicon.ico</PackageIconUrl>
+    <PackageTags>workflow engine, state machine, wf, core, optimajet</PackageTags>
+    <PackageReleaseNotes>https://workflowengine.io/documentation/release-notes/</PackageReleaseNotes>
+    <AssemblyVersion>4.1.0.0</AssemblyVersion>
+    <FileVersion>4.1.0.0</FileVersion>
+  </PropertyGroup>
+  <!--<PropertyGroup Condition="'$(TargetFramework)' != 'netcoreapp1.1' And '$(TargetFramework)' != 'netstandard1.6'">-->
+  <!--<DefineConstants>NETCORE2</DefineConstants>-->
+  <!--</PropertyGroup>-->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' != 'netstandard1.6'">TRACE;DEBUG;NETCOREAPP;NETCORE2</DefineConstants>
+    <OutputPath>..\DLL\NETCORE\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\DLL\NETCORE\</OutputPath>
+    <DefineConstants>TRACE;NETCOREAPP;RELEASE</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' != 'netstandard1.6'">TRACE;NETCOREAPP;RELEASE;NETCORE2</DefineConstants>
+    <DocumentationFile>..\DLL\NETCORE\OptimaJet.Workflow.Core.xml</DocumentationFile>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Condition="'$(TargetFramework)' == 'netstandard1.6'" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
+  </ItemGroup>
+  <Target Name="GenerateCompileTime" BeforeTargets="Build">
+    <WriteLinesToFile File="License\TimeHelper.gen.cs" Lines="namespace OptimaJet.Workflow.Core.License&#xD;&#xA;{&#xD;&#xA;  static public class TimeHelper { public const long CompileTime = $([System.DateTime]::UtcNow.Ticks) %3B }&#xD;&#xA;}" Overwrite="true" />
+  </Target>
+</Project>

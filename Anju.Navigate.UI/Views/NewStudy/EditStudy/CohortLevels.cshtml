@@ -1,0 +1,136 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="cohortcontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddCohort" onclick="addCohortLevels()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    @(Html.Kendo().Grid<Anju.Navigate.Data.CohortLevels>
+    ()
+    .Name("ui_dtg_gridCohortLevels")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.CohortId).Hidden(true);
+        columns.Bound(c => c.NoofPatients).Width("15%").Title("No.of Patients").EditorTemplateName("IntegerTextBox");
+        columns.Bound(c => c.Cohortlevel).Width("15%").Title("Cohort level");
+        columns.Bound(c => c.DoseandFrequencyDrugA).Width("25%").Title("Drug A (dose & Frequency)");
+        columns.Bound(c => c.DoseandFrequencyDrugB).Width("25%").Title("Drug B (dose & Frequency) (if applicable)");
+        columns.Command(command => command.Custom("Tag").Text("Edit").Click("showCohortLevels")).Width("10%");
+        columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteCohortRow")).Width("10%");
+    })
+    .Events(events =>events.DataBound("OnDataBoundforCohortLevels"))
+    .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+    .Scrollable()
+    .Groupable(false)
+    .Sortable()
+    .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+    .Pageable(pageable => pageable
+    .Refresh(true)
+    .PageSizes(true)
+    .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .Model(model => model.Id(p => p.CohortId))
+    .Read(read => read.Action("GetCohortLevels", "NewStudy"))
+    .Destroy(update => update.Action("DeleteCohortLevels", "NewStudy"))
+    )
+    )
+    @(Html.Kendo().Window()
+    .Name("Cohortlevels")
+    .Title("Cohort Levels")
+    .Actions(actions => actions.Clear())
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(800)
+    )
+</div>
+<script type="text/x-kendo-template" id="cohorttemplate">
+    <div id="details-container">
+        <form id="ui_frm_cohortlevels">
+            <span id="popupNotification"></span>
+            <div class="card pl-1 pr-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_cohortid" min="1" data-bind="value:ui_num_cohortid" />
+                    <div id="displayCohortnoofpatients">
+                        <div id="cohortnoofpatients">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_cohortnoofpatients"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextforcohortnoofpatients" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_cohortnoofpatients" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_cohortnoofpatients" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcohortnoofpatients"></label></span>
+                                <input type="hidden" id="regexexprforcohortnoofpatients" />
+                                <input type="hidden" id="validationmsgforcohortnoofpatients" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayCohortlevel">
+                        <div id="cohortlevel">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_cohortlevel"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextforcohortlevel" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_cohortlevel" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_cohortlevel" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcohortlevel"></label></span>
+                                <input type="hidden" id="regexexprforcohortlevel" />
+                                <input type="hidden" id="validationmsgforcohortlevel" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayDrugAdoseandfreq">
+                        <div id="drugAdoseandfreq">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_drugAdoseandfreq"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextfordrugAdoseandfreq" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_drugAdoseandfreq" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_drugAdoseandfreq" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordrugAdoseandfreq"></label></span>
+                                <input type="hidden" id="regexexprfordrugAdoseandfreq" />
+                                <input type="hidden" id="validationmsgfordrugAdoseandfreq" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayDrugBdoseandfreq">
+                        <div id="drugBdoseandfreq">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_drugBdoseandfreq"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextfordrugBdoseandfreq" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_drugBdoseandfreq" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_drugBdoseandfreq" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordrugBdoseandfreq"></label></span>
+                                <input type="hidden" id="regexexprfordrugBdoseandfreq" />
+                                <input type="hidden" id="validationmsgfordrugBdoseandfreq" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavecohortlevels">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var charslefttoenter = '@ConstDefaultValue.CHARACTERSLEFTTOENTER';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var cohortlevelsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.CohortLevels)';
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var noofpatients = '@ConstDefaultValue.NOOFPATIENTS';
+    var cohortlevel = '@ConstDefaultValue.COHORTLEVEL';
+    var drugadoseandfreq = '@ConstDefaultValue.DRUGADOSEANDFREQ';
+    var drugbdoseandfreq = '@ConstDefaultValue.DRUGADOSEBNDFREQ';
+</script>
+<script src="~/scripts/EditStudy/CohortLevels.js"></script>

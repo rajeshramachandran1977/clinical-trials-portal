@@ -1,0 +1,161 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="overflowHidden" id="relatedusersdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddRelatedUsers" onclick="addRelatedUsersdetails()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right mr-4 pr-1 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Users>
+            ()
+            .Name("ui_dtg_Users")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.UserId).Hidden(true);
+                columns.Bound(c => c.FirstName).Width("15%").Title("First Name");
+                columns.Bound(c => c.LastName).Width("10%").Title("Last Name");
+                columns.Bound(c => c.PrimaryEmailId).Width("20%").Title("Email");
+                columns.Bound(c => c.MobileNumber).Width("15%").Title("Phone");
+                columns.Bound(c => c.UserType).Width("10%").Title("Role");
+                columns.Bound(c => c.ANJU_AddDate).Width("10%").Title("Begin Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                columns.Bound(c => c.ANJU_ChangeDate).Width("10%").Title("End Date");
+                columns.Command(command => command.Custom("Tag").Text("Edit").Click("showRelatedUsers")).Width("10%");
+                columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteRelatedUsers")).Width("10%");
+            })
+            .Events(events => events.DataBound("OnDataBoundforRelatedUsers"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.UserId))
+            .Read(read => read.Action("GetRelatedUsersAssociatedwithaStudy", "NewStudy"))
+            ////.Destroy(update => update.Action("DeleteReviewsandNotes", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+          .Name("RelatedUsers")
+          .Title("Related Users")
+          .Actions(actions => actions.Clear())
+          .Visible(false)
+          .Modal(true)
+          .Draggable(true)
+          .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="relateduserstemplate">
+    <div id="details-container">
+        <form id="ui_frm_relatedusers">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_relatedusers" min="1" data-bind="value:ui_num_relatedusers" />
+                    <div class="row">
+                        <div id="displayFirstandLastname" class="col-md-6">
+                            <div id="firstandlastname">
+                                <label class="col-formEditStudy-labels mandatory" id="ui_lbl_firstandlastname"></label>
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_firstandlastname")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("FullName")
+                                    .DataValueField("UserId")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetUserDetailsForDropDowns", "Register");
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayRole" class="col-md-6">
+                            <div id="role">
+                                <label class="col-formEditStudy-labels mandatory" id="ui_lbl_role"></label>
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_role")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .OptionLabel("Select")
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")                                   
+                                    .BindTo(new List<SelectListItem>() {
+                                    new SelectListItem() {
+                                        Text = "Trial Leader",
+                                        Value = @ConstDefaultValue.TRIALLEADER
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Program Leader",
+                                        Value = @ConstDefaultValue.PROGRAMLEADER
+                                    },
+                                    new SelectListItem() {
+                                        Text = "MS LRD",
+                                        Value = @ConstDefaultValue.MSLRD
+                                    },
+                                    new SelectListItem() {
+                                        Text = "MD",
+                                        Value = @ConstDefaultValue.MD
+                                    }
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayBegindate" class="col-md-6">
+                            <div id="begindate">
+                                <label class="col-formEditStudy-labels mandatory" id="ui_lbl_begindate"></label>
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                      .Name("ui_dt_begindate")
+                                      .Start(CalendarView.Month)
+                                      .Depth(CalendarView.Month)
+                                      .Format("MMM dd, yyyy")
+                                      .DateInput()
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSaverelatedusers">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+  
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var relatedusersattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.RelatedUsers)';
+    var fullname = '@ConstDefaultValue.FULLNAME';
+    var relatedusersrole = '@ConstDefaultValue.RELATEDUSERSROLE';
+    var relatedusersbegindate = '@ConstDefaultValue.RELATEDUSERSBEGINDATE';
+</script>
+<script src="~/scripts/EditStudy/RelatedUsers.js"></script>

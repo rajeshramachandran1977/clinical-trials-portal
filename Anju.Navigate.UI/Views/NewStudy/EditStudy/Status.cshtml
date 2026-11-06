@@ -1,0 +1,161 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="overflowHidden" id="statusdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_Status" onclick="addStatusdetails()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Status>
+            ()
+            .Name("ui_dtg_Status")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.StatusId).Hidden(true);
+                columns.Bound(c => c.StudyId).Hidden(true);
+                columns.Bound(c => c.Stage).Width("20%").Title("Stage");
+                columns.Bound(c => c.State).Width("15%").Title("State");
+                columns.Bound(c => c.StudyStatus).Width("15%").Title("Status");
+                columns.Bound(c => c.Date).Width("15%").Title("Date").ClientTemplate("#= Date ? kendo.toString(kendo.parseDate(Date), 'MMM dd, yyyy') : '' #");
+                columns.Bound(c => c.Time).Width("15%").Title("Time");
+                columns.Command(command => command.Custom("Tag").Text("Edit").Click("showStatus")).Width("10%");
+                columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteStatus")).Width("10%");
+            })
+            .Events(events => events.DataBound("OnDataBoundforStatus"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.StatusId))
+            .Read(read => read.Action("GetStatus", "NewStudy"))
+            .Destroy(update => update.Action("DeleteStatusdetails", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("Status")
+        .Title("Status")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="statustemplate">
+    <div id="details-container">
+        <form id="ui_frm_status">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_statusid" min="1" data-bind="value:ui_num_statusid" />
+                    <div class="row">
+                        <div id="displayStatusstage" class="col-md-6">
+                            <div id="stage">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_stag"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstage" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_stage" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_stage" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstage"></label></span>
+                                    <input type="hidden" id="regexexprforstage" />
+                                    <input type="hidden" id="validationmsgforstage" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayState" class="col-md-6">
+                            <div id="state">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_state"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_state" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_state" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstate"></label></span>
+                                    <input type="hidden" id="regexexprforstate" />
+                                    <input type="hidden" id="validationmsgforstate" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayStatus" class="col-md-6">
+                            <div id="status">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_status"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstatus" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_status" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_status" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstatus"></label></span>
+                                    <input type="hidden" id="regexexprforstatus" />
+                                    <input type="hidden" id="validationmsgforstatus" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDate" class="col-md-6">
+                            <div id="date">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_date"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfordate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                      .Name("ui_dt_date")
+                                      .Start(CalendarView.Month)
+                                      .Depth(CalendarView.Month)
+                                      .Format("MMM dd, yyyy")
+                                      .DateInput()
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayTime" class="col-md-6">
+                            <div id="time">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_time"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortime" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_time" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_time" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfortime"></label></span>
+                                    <input type="hidden" id="regexexprfortime" />
+                                    <input type="hidden" id="validationmsgfortime" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavestatus">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var statusstage = '@ConstDefaultValue.STATUSSTAGE';
+    var statusstate = '@ConstDefaultValue.STATUSSTATE';
+    var status = '@ConstDefaultValue.STATUSSTATUS';
+    var date = '@ConstDefaultValue.DATE';
+    var time = '@ConstDefaultValue.TIME';
+    var statusattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Status)';
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+</script>
+<script src="~/scripts/EditStudy/Status.js"></script>

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Anju.Navigate.DataAccess\Anju.Navigate.DataAccess.csproj" />
+    <ProjectReference Include="..\Anju.Navigate.Data\Anju.Navigate.Data.csproj" />
+    <ProjectReference Include="..\OptimaJet.Workflow.Core\OptimaJet.Workflow.Core.csproj" />
+    <ProjectReference Include="..\OptimaJet.Workflow.MSSQL\OptimaJet.Workflow.MSSQL.csproj" />    
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,120 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="Regulatoryrequirementscontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayProposedStudyIND">
+            <div id="proposedStudyIND" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_proposedStudyIND"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforproposedStudyIND" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_proposedStudyIND")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                        .Events(e =>
+                        {
+                        e.Select("onChangeOfINDProposedStudy");
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="rationaleINDExemption">
+            <div id="displayrationaleINDExemption">
+                <div id="rationaleINDExemptionerrmsg">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_rationaleINDExemption"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforrationaleINDExemption" data-toggle="tooltip" />
+                    <label class="col-formEditStudy-labels " id="ui_lbl_rationaleINDExemption"></label>
+                    <div class="col-md-12 p-md-0">
+                        <textarea rows="4" class="k-textbox wid_100" id="ui_txtarea_rationaleForINDExemption" maxlength="1"></textarea>
+                        <input type="text" class="k-textbox wid_100" id="ui_txt_rationaleForINDExemption" maxlength="1">
+                        <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforrationaleForINDExemption"></label></span>
+                        <input type="hidden" id="regexexprforrationaleForINDExemption" />
+                        <input type="hidden" id="validationmsgforrationaleForINDExemption" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="displayFinalINDStatus">
+            <div id="finalINDStatus" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_finalindstatus"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforfinalindstatus" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_finalindstatus")
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues",
+                    "NewStudy",
+                    new { type = @ConstDefaultValue.INDSTATUS });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayINDNumber">
+            <div id="INDNumber">
+                <label class="col-formEditStudy-labels " id="ui_lbl_indnumber"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforindnumber" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100" id="ui_txtarea_indnumber" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_50" id="ui_txt_indnumber" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforindnumber"></label></span>
+                    <input type="hidden" id="regexexprforindnumber" />
+                    <input type="hidden" id="validationmsgforindnumber" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveRegulatoryRequirements">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var regulatoryrequirementsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.RegulatoryRequirements)';
+    var issubmitanindfortheproposedstudy = '@ConstDefaultValue.ISSUBMITANINDFORTHEPROPOSEDSTUDY';
+    var rationaleforindexemption = '@ConstDefaultValue.RATIONALEFORINDEXEMPTION';
+    var finalindstatus = '@ConstDefaultValue.FINALINDSTATUS';
+    var indnumber = '@ConstDefaultValue.INDNUMBER';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+</script>
+<script src="~/scripts/EditStudy/RegulatoryRequirements.js"></script>

@@ -1,0 +1,544 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard overflowHidden" id="contactsdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddContacts" onclick="addContacts()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+            ()
+            .Name("ui_dtg_Contacts")
+            .Columns(columns =>
+            {
+            columns.Bound(c => c.SiteIndex).Width(200).Title("Site Index");
+            columns.Bound(c => c.PrincipalInvestigatorId).Title("id");
+            columns.Bound(c => c.ContactType).Width(200).Title("Contact Type");
+            columns.Bound(c => c.ContactTypeDetails).Width(200).Title("Contact Type Details");
+            columns.Bound(c => c.TaxID).Width(200).Title("Tax ID");
+            columns.Bound(c => c.Salutation).Width(200).Title("Salutation");
+            columns.Bound(c => c.FirstName).Width(200).Title("First Name");
+            columns.Bound(c => c.LastName).Width(200).Title("Last Name");
+            columns.Bound(c => c.Suffix).Width(200).Title("Suffix");
+            columns.Bound(c => c.Title).Width(200).Title("Title");
+            columns.Bound(c => c.Degree).Width(200).Title("Credentials");
+            columns.Bound(c => c.Institution).Width(200).Title("Institution");
+            columns.Bound(c => c.Address1).Width(200).Title("Address Line 1");
+            columns.Bound(c => c.Address2).Width(200).Title("Address Line 2");
+            columns.Bound(c => c.Address3).Width(200).Title("Address Line 3");
+            columns.Bound(c => c.CityName).Width(200).Title("City");
+            columns.Bound(c => c.StateName).Width(200).Title("State");
+            columns.Bound(c => c.PostalCode).Width(200).Title("Postal Code");
+            columns.Bound(c => c.CountryName).Width(200).Title("Country");
+            columns.Bound(c => c.Phone).Width(200).Title("Phone");
+            columns.Bound(c => c.Fax).Width(200).Title("Fax");
+            columns.Bound(c => c.PrimaryEmailId).Width(200).Title("Email");
+            columns.Bound(c => c.Npinumber).Width(200).Title("NPI #");
+            columns.Command(command => command.Custom("Tag").Text("Edit").Click("showContacts")).Width(90);
+            columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteContacts")).Width(90);
+            })
+            .Events(events => events.DataBound("OnDataBoundforContacts"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.StudyId))
+            .Read(read => read.Action("GetContacts", "NewStudy"))
+            .Destroy(update => update.Action("DeleteContacts", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("Contacts")
+        .Title("Contacts")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="contactstemplate">
+    <div id="details-container">
+        <form id="ui_frm_contacts">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_principalInvestigatorid" min="1" data-bind="value:ui_num_principalInvestigatorid" />
+                    <div class="row">
+                        <div id="displaySiteIndex" class="col-md-6">
+                            <div id="siteIndex">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_siteindex"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforsiteindex" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="wid_100 numberFieldWidth" id="ui_num_siteindex" min="1" data-bind="value:ui_num_siteindex" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayContactType" class="col-md-6">
+                            <div id="contactType">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_contacttype"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcontacttype" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_contacttype")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.CONTACTTYPE });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayContactTypeDetails" class="col-md-6">
+                            <div id="contactTypeDetails">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_contacttypedetails"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcontacttypedetails" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_contacttypedetails" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_contacttypedetails" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcontacttypedetails"></label></span>
+                                    <input type="hidden" id="regexexprforcontacttypedetails" />
+                                    <input type="hidden" id="validationmsgforcontacttypedetails" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayTaxID" class="col-md-6">
+                            <div id="taxID">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_taxid"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortaxid" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_taxid" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_taxid" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfortaxid"></label></span>
+                                    <input type="hidden" id="regexexprfortaxid" />
+                                    <input type="hidden" id="validationmsgfortaxid" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displaySalutation" class="col-md-6">
+                            <div id="salutation">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_salutation"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforsalutation" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_salutation")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.SALUTATION });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayFirstname" class="col-md-6">
+                            <div id="firstname">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_firstname"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforfirstname" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_firstname" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_firstname" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforfirstname"></label></span>
+                                    <input type="hidden" id="regexexprforfirstname" />
+                                    <input type="hidden" id="validationmsgforfirstname" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayLastname" class="col-md-6">
+                            <div id="lastname">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_lastname"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforlastname" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_lastname" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_lastname" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforlastname"></label></span>
+                                    <input type="hidden" id="regexexprforlastname" />
+                                    <input type="hidden" id="validationmsgforlastname" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displaySuffix" class="col-md-6">
+                            <div id="suffix">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_suffix"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforsuffix" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_suffix")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.SUFFIX });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayTitle" class="col-md-6">
+                            <div id="title">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_title"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortitle" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_title" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_title" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfortitle"></label></span>
+                                    <input type="hidden" id="regexexprfortitle" />
+                                    <input type="hidden" id="validationmsgfortitle" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayCredentials" class="col-md-6">
+                            <div id="credentials">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_credentials"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcredentials" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <select id="ui_multiselectcredentials" name="ui_multiselectcredentials"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayInstitution" class="col-md-6">
+                            <div id="institution">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_institution"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforinstitution" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_institution")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.PIINSTITUTION });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayAddressLine1" class="col-md-6">
+                            <div id="addressline1">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_addressline1"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforaddressline1" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_addressline1" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_addressline1" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforaddressline1"></label></span>
+                                    <input type="hidden" id="regexexprforaddressline1" />
+                                    <input type="hidden" id="validationmsgforaddressline1" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayAddressLine2" class="col-md-6">
+                            <div id="addressline2">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_addressline2"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforaddressline2" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_addressline2" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_addressline2" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforaddressline2"></label></span>
+                                    <input type="hidden" id="regexexprforaddressline2" />
+                                    <input type="hidden" id="validationmsgforaddressline2" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayAddressLine3" class="col-md-6">
+                            <div id="addressline3">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_addressline3"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforaddressline3" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_addressline3" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_addressline3" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforaddressline3"></label></span>
+                                    <input type="hidden" id="regexexprforaddressline3" />
+                                    <input type="hidden" id="validationmsgforaddressline3" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayCountry" class="col-md-6">
+                            <div id="country">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_country"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcountry" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_country")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("CountryId")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetCountries", "Register");
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayState" class="col-md-6">
+                            <div id="state">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_state"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_state")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("StateId")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetStatesByCountryID", "Register").Data("filterStates");
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .Enable(false)
+                                    .AutoBind(false)
+                                    .CascadeFrom("ui_ddl_country")
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayCity" class="col-md-6">
+                            <div id="city">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_city"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcity" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_city")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Name")
+                                    .DataValueField("CityId")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetCitiesByStateID", "Register").Data("filterCities");
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .Enable(false)
+                                    .AutoBind(false)
+                                    .CascadeFrom("ui_ddl_state")
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayPostalCode" class="col-md-6">
+                            <div id="postalCode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_postalcode"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforpostalcode" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_postalcode" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_postalcode" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforpostalcode"></label></span>
+                                    <input type="hidden" id="regexexprforpostalcode" />
+                                    <input type="hidden" id="validationmsgforpostalcode" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayPhone" class="col-md-6">
+                            <div id="phone">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_phone"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforphone" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_phone" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_phone" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforphone"></label></span>
+                                    <input type="hidden" id="regexexprforphone" />
+                                    <input type="hidden" id="validationmsgforphone" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayFax" class="col-md-6">
+                            <div id="fax">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_fax"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforfax" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_fax" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_fax" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforfax"></label></span>
+                                    <input type="hidden" id="regexexprforfax" />
+                                    <input type="hidden" id="validationmsgforfax" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayEmail" class="col-md-6">
+                            <div id="email">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_email"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforemail" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_email" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_email" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforemail"></label></span>
+                                    <input type="hidden" id="regexexprforemail" />
+                                    <input type="hidden" id="validationmsgforemail" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayNPI" class="col-md-6">
+                            <div id="npi">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_npi"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfornpi" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_npi" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_npi" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfornpi"></label></span>
+                                    <input type="hidden" id="regexexprfornpi" />
+                                    <input type="hidden" id="validationmsgfornpi" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayRegion" class="col-md-6">
+                            <div id="region">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_region"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforregion" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_region")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new
+                                            {
+                                                type = @ConstDefaultValue.REGION
+                                    });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavecontacts">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+var contactsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Contacts)';
+var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+var url = '@Url.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.CREDENTIALS })';
+var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+var siteindex = '@ConstDefaultValue.SITEINDEX';
+var contacttype = '@ConstDefaultValue.CONTACTTYPE';
+var contacttypedetails ='@ConstDefaultValue.CONTACTTYPEDETILS';
+var taxid = '@ConstDefaultValue.TAXID';
+var salutation = '@ConstDefaultValue.SALUTATION';
+var firstname = '@ConstDefaultValue.FIRSTNAME';
+var lastname = '@ConstDefaultValue.LASTNAME';
+var suffix = '@ConstDefaultValue.SUFFIX';
+var title = '@ConstDefaultValue.TITLE';
+var credentials = '@ConstDefaultValue.CREDENTIALS';
+var piiinstitution = '@ConstDefaultValue.PIINSTITUTION';
+var address1 = '@ConstDefaultValue.ADDRESS1';
+var address2 = '@ConstDefaultValue.ADDRESS2';
+var address3 = '@ConstDefaultValue.ADDRESS3';
+var city = '@ConstDefaultValue.CITY';
+var state = '@ConstDefaultValue.STATE';
+var postalcode = '@ConstDefaultValue.POSTALCODE';
+var country = '@ConstDefaultValue.COUNTRY';
+var phone = '@ConstDefaultValue.PHONE';
+var fax = '@ConstDefaultValue.FAX';
+var email = '@ConstDefaultValue.EMAIL';
+var npi = '@ConstDefaultValue.NPI';
+var region = '@ConstDefaultValue.REGION';
+</script>
+<script src="~/scripts/EditStudy/Contacts.js"></script>

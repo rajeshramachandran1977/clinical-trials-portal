@@ -1,0 +1,406 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.DataAccess\\Anju.Navigate.DataAccess.csproj": {}
+  },
+  "projects": {
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.DataAccess\\Anju.Navigate.DataAccess.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.DataAccess\\Anju.Navigate.DataAccess.csproj",
+        "projectName": "Anju.Navigate.DataAccess",
+        "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.DataAccess\\Anju.Navigate.DataAccess.csproj",
+        "packagesPath": "C:\\Users\\Rajes\\.nuget\\packages\\",
+        "outputPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.DataAccess\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\NuGet.Config",
+          "C:\\Users\\Rajes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {
+              "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj": {
+                "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj"
+              },
+              "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj": {
+                "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj"
+              },
+              "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj": {
+                "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[4.6.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.427\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj",
+        "projectName": "Anju.Navigate.Data",
+        "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj",
+        "packagesPath": "C:\\Users\\Rajes\\.nuget\\packages\\",
+        "outputPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\NuGet.Config",
+          "C:\\Users\\Rajes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.427\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj",
+        "projectName": "Anju.Navigate.Utilities",
+        "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj",
+        "packagesPath": "C:\\Users\\Rajes\\.nuget\\packages\\",
+        "outputPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Utilities\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\NuGet.Config",
+          "C:\\Users\\Rajes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {
+              "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj": {
+                "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\Anju.Navigate.Data\\Anju.Navigate.Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.Core": {
+              "target": "Package",
+              "version": "[2.2.5, )"
+            },
+            "NLog.Web.AspNetCore": {
+              "target": "Package",
+              "version": "[4.8.6, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.2, )"
+            },
+            "System.Runtime.Caching": {
+              "target": "Package",
+              "version": "[4.6.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.427\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj": {
+      "version": "4.1.0",
+      "restore": {
+        "projectUniqueName": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj",
+        "projectName": "WorkflowEngine.NETCore-Core",
+        "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj",
+        "packagesPath": "C:\\Users\\Rajes\\.nuget\\packages\\",
+        "outputPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\NuGet.Config",
+          "C:\\Users\\Rajes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "Microsoft.Extensions.DependencyModel": {
+              "target": "Package",
+              "version": "[1.1.1, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "System.Collections.Specialized": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "System.Runtime.Loader": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "System.Security.Cryptography.Csp": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "System.Xml.XmlDocument": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.427\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj": {
+      "version": "4.1.0",
+      "restore": {
+        "projectUniqueName": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj",
+        "projectName": "WorkflowEngine.NETCore-ProviderForMSSQL",
+        "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj",
+        "packagesPath": "C:\\Users\\Rajes\\.nuget\\packages\\",
+        "outputPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.MSSQL\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\NuGet.Config",
+          "C:\\Users\\Rajes\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {
+              "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj": {
+                "projectPath": "E:\\Dump from old laptop\\copied from netserv laptop\\Personal\\Navigate30\\Navigate30\\OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.427\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

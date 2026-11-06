@@ -1,0 +1,374 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="investigatorqualificationsdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayMedicalSpecialty">
+            <div id="medicalspecialty">
+                <label class="col-formEditStudy-labels " id="ui_lbl_medicalspecialty"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextformedicalspecialty" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_medicalspecialty" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_50 ml-0" id="ui_txt_medicalspecialty" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftformedicalspecialty"></label></span>
+                    <input type="hidden" id="regexexprformedicalspecialty" />
+                    <input type="hidden" id="validationmsgformedicalspecialty" />
+                </div>
+            </div>
+        </div>
+        <div id="displayBoardCertification">
+            <div id="boardCertification">
+                <label class="col-formEditStudy-labels " id="ui_lbl_boardcertification"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforboardcertification" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_boardcertification" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_50 ml-0" id="ui_txt_boardcertification" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforboardcertification"></label></span>
+                    <input type="hidden" id="regexexprforboardcertification" />
+                    <input type="hidden" id="validationmsgforboardcertification" />
+                </div>
+            </div>
+        </div>
+        <div id="displayLicenseorEquivalent">
+            <div id="licenseorEquivalent">
+                <label class="col-formEditStudy-labels " id="ui_lbl_licenseorequivalent"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforlicenseorequivalent" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_licenseorequivalent" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_licenseorequivalent" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforlicenseorequivalent"></label></span>
+                    <input type="hidden" id="regexexprforlicenseorequivalent" />
+                    <input type="hidden" id="validationmsgforlicenseorequivalent" />
+                </div>
+            </div>
+        </div>
+        <div id="displayisreceivedGCPtraining">
+            <div id="isreceivedGCPtraining" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_isreceivedGCPtraining"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforisreceivedGCPtraining" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                     .Name("ui_ddl_isreceivedGCPtraining")
+                     .OptionLabel("Select")
+                     .DataTextField("Text")
+                     .DataValueField("Value")
+                     .BindTo(new List<SelectListItem>
+                     () {
+                     new SelectListItem() {
+                     Text = @ConstDefaultValue.YES,
+                     Value = @ConstDefaultValue.YES
+                     },
+                     new SelectListItem() {
+                     Text = @ConstDefaultValue.NO,
+                     Value = @ConstDefaultValue.NO
+                     },
+                     })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayWhenwasyourlastGCPtraining">
+            <div id="whenwasyourlastGCPtraining">
+                <label class="col-formEditStudy-labels " id="ui_lbl_whenwasyourlastGCPtraining"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforwhenwasyourlastGCPtraining" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_whenwasyourlastGCPtraining" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_whenwasyourlastGCPtraining" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforwhenwasyourlastGCPtraining"></label></span>
+                    <input type="hidden" id="regexexprforwhenwasyourlastGCPtraining" />
+                    <input type="hidden" id="validationmsgforwhenwasyourlastGCPtraining" />
+                </div>
+            </div>
+        </div>
+        <div id="displayTypeoftrainingreceived">
+            <div id="typeoftrainingreceived">
+                <label class="col-formEditStudy-labels " id="ui_lbl_typeoftrainingreceived"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfortypeoftrainingreceived" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_typeoftrainingreceived" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_typeoftrainingreceived" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfortypeoftrainingreceived"></label></span>
+                    <input type="hidden" id="regexexprfortypeoftrainingreceived" />
+                    <input type="hidden" id="validationmsgfortypeoftrainingreceived" />
+                </div>
+            </div>
+        </div>
+        <div id="displayListtrialexperience">
+            <div id="listtrialexperience">
+                <label class="col-formEditStudy-labels " id="ui_lbl_listtrialexperience"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforlisttrialexperience" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_listtrialexperience" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_listtrialexperience" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforlisttrialexperience"></label></span>
+                    <input type="hidden" id="regexexprforlisttrialexperience" />
+                    <input type="hidden" id="validationmsgforlisttrialexperience" />
+                </div>
+            </div>
+        </div>
+        <div id="displayisparticipatedinacompanytrial">
+            <div id="isparticipatedinacompanytrial" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_isparticipatedinacompanytrial"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforisparticipatedinacompanytrial" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_isparticipatedinacompanytrial")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                    () {
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.YES,
+                    Value = @ConstDefaultValue.YES
+                    },
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.NO,
+                    Value = @ConstDefaultValue.NO
+                    },
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayDatesoftrialparticipation">
+            <div id="datesoftrialparticipation">
+                <label class="col-formEditStudy-labels " id="ui_lbl_datesoftrialparticipation"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfordatesoftrialparticipation" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_datesoftrialparticipation" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_datesoftrialparticipation" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordatesoftrialparticipation"></label></span>
+                    <input type="hidden" id="regexexprfordatesoftrialparticipation" />
+                    <input type="hidden" id="validationmsgfordatesoftrialparticipation" />
+                </div>
+            </div>
+        </div>
+        <div id="displayDrugnames">
+            <div id="drugnames">
+                <label class="col-formEditStudy-labels " id="ui_lbl_drugnames"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfordrugnames" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_drugnames" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_drugnames" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordrugnames"></label></span>
+                    <input type="hidden" id="regexexprfordrugnames" />
+                    <input type="hidden" id="validationmsgfordrugnames" />
+                </div>
+            </div>
+        </div>
+        <div id="displayProtocolnumbers">
+            <div id="protocolnumbers">
+                <label class="col-formEditStudy-labels " id="ui_lbl_protocolnumbers"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforprotocolnumbers" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_protocolnumbers" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_protocolnumbers" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforprotocolnumbers"></label></span>
+                    <input type="hidden" id="regexexprforprotocolnumbers" />
+                    <input type="hidden" id="validationmsgforprotocolnumbers" />
+                </div>
+            </div>
+        </div>
+        <div id="displayNumberofongoingclinicaltrials">
+            <div id="numberofongoingclinicaltrials">
+                <label class="col-formEditStudy-labels " id="ui_lbl_numberofongoingclinicaltrials"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfornumberofongoingclinicaltrials" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_numberofongoingclinicaltrials" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_numberofongoingclinicaltrials" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfornumberofongoingclinicaltrials"></label></span>
+                    <input type="hidden" id="regexexprfornumberofongoingclinicaltrials" />
+                    <input type="hidden" id="validationmsgfornumberofongoingclinicaltrials" />
+                </div>
+            </div>
+        </div>
+        <div id="displayisinspectedbyahealthauthority">
+            <div id="isinspectedbyahealthauthority" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_isinspectedbyahealthauthority"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforisinspectedbyahealthauthority" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_isinspectedbyahealthauthority")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                    () {
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.YES,
+                    Value = @ConstDefaultValue.YES
+                    },
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.NO,
+                    Value = @ConstDefaultValue.NO
+                    },
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayWhichhealthauthority">
+            <div id="whichhealthauthority">
+                <label class="col-formEditStudy-labels " id="ui_lbl_whichhealthauthority"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforwhichhealthauthority" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_whichhealthauthority" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_whichhealthauthority" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforwhichhealthauthority"></label></span>
+                    <input type="hidden" id="regexexprforwhichhealthauthority" />
+                    <input type="hidden" id="validationmsgforwhichhealthauthority" />
+                </div>
+            </div>
+        </div>
+        <div id="displayDateoflastinspection">
+            <div id="dateoflastinspection" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_dateoflastinspection"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextfordateoflastinspection" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_dateoflastinspection")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayIsinspectedbytheFDA">
+            <div id="isinspectedbytheFDA" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_isinspectedbytheFDA"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_isinspectedbytheFDA" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_isinspectedbytheFDA")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayDateofFDAinspection">
+            <div id="dateofFDAinspection" class="row mt-1 mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_dateofFDAinspection"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextfordateofFDAinspection" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_dateofFDAinspection")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayIsFDAissuedaFDA483form">
+            <div id="isFDAissuedaFDA483form" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_isFDAissuedaFDA483form"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_isFDAissuedaFDA483form" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_isFDAissuedaFDA483form")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayDetailsofthemainobservations">
+            <div id="detailsofthemainobservations">
+                <label class="col-formEditStudy-labels " id="ui_lbl_detailsofthemainobservations"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfordetailsofthemainobservations" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_detailsofthemainobservations" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_detailsofthemainobservations" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordetailsofthemainobservations"></label></span>
+                    <input type="hidden" id="regexexprfordetailsofthemainobservations" />
+                    <input type="hidden" id="validationmsgfordetailsofthemainobservations" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveInvestigatorQualifications">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var investigatorqualificationsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.InvestigatorQualifications)';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var medicalspecialty = '@ConstDefaultValue.MEDICALSPECIALTY';
+    var boardcertification = '@ConstDefaultValue.BOARDCERTIFICATION';
+    var licenseorequivalent = '@ConstDefaultValue.LICENSEOREQUIVALENT';
+    var isreceivedgcptrainingthepast3years = '@ConstDefaultValue.ISRECEIVEDGCPTRAININGTHEPAST3YEARS';
+    var lastgcptraining = '@ConstDefaultValue.LASTGCPTRAINING';
+    var typeoftrainingreceived = '@ConstDefaultValue.TYPEOFTRAININGRECEIVED';
+    var listtrialexperience = '@ConstDefaultValue.LISTTRIALEXPERIENCE';
+    var isparticipatedinacompanytrial = '@ConstDefaultValue.ISPARTICIPATEDINACOMPANYTRIAL';
+    var datesoftrialparticipation = '@ConstDefaultValue.DATESOFTRIALPARTICIPATION';
+    var drugnames = '@ConstDefaultValue.DRUGNAMES';
+    var protocolnumbers = '@ConstDefaultValue.PROTOCOLNUMBERS';
+    var noofongoingclinicaltrials = '@ConstDefaultValue.NOOFONGOINGCLINICALTRIALS';
+    var isinspectedbyahealthauthority = '@ConstDefaultValue.ISINSPECTEDBYAHEALTHAUTHORITY';
+    var whichhealthauthority = '@ConstDefaultValue.WHICHHEALTHAUTHORITY';
+    var dateoflastinspection = '@ConstDefaultValue.DATEOFLASTINSPECTION';
+    var isinspectedbythefda = '@ConstDefaultValue.ISINSPECTEDBYTHEFDA';
+    var dateoffdainspection = '@ConstDefaultValue.DATEOFFDAINSPECTION';
+    var isfdaissueafda483form = '@ConstDefaultValue.ISFDAISSUEAFDA483FORM';
+    var detailsofthemainobservations = '@ConstDefaultValue.DETAILSOFTHEMAINOBSERVATIONS';
+</script>
+<script src="~/scripts/EditStudy/InvestigatorQualifications.js"></script>

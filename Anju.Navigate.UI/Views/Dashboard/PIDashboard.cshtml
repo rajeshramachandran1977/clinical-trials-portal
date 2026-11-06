@@ -1,0 +1,617 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model Anju.Navigate.Data.Users;
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "PI Dashboard";
+    Layout = "~/Views/Shared/_Site.cshtml";
+    var tempvalue = TempData["ModelActive"];
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<input type="hidden" id="tempdata" />
+<input type="hidden" id="Username" value="@ViewBag.Username">
+<input type="hidden" id="LoginUsername" value="@ViewBag.LoginUsername">
+<input type="hidden" id="Proxyuser" value="@ViewBag.Proxyuser">
+
+<div class="modal fade myproxyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content backgnd_color">
+            <div class="modal-header modal_header">
+                <h4 class="modal-title ui_modal_header info">User Preferences</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div class="panel">
+                    <div id="ui_proxyresult" class="panel-body ui_panel backgnd_color p-md-2 collapse">
+
+                    </div>
+                    <div class="panel-body ui_panel backgnd_color p-md-2">
+                        Use the available settings below to indicate your personal preferences within the current system
+                    </div>
+                </div>
+                <div>
+                    <label class="col-form-label rig p-md-2 w-auto">Proxy Name</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_proxyName")
+                    .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                    )
+                </div>
+            </div>
+            <div class="modal-footer p-2">
+                <button type="button" id="ui_btnProxyUserSubmission" class="btn btn-primary pull-right">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ui_mySwitchProxyUserModel" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content backgnd_color">
+            <div class="modal-header modal_header">
+                <h4 class="modal-title ui_modal_header info">Switch Proxy User</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div class="panel">
+                    <div class="panel-body ui_panel backgnd_color p-md-2">
+                        You've been designated to act on-behalf of one or more users. Please select the user account for which you wish to act.
+                    </div>
+                </div>
+                <div>
+                    <label class="col-form-label mandatory rig p-md-2 w-auto">User Account</label>
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_proxyuser")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("ProxyUserName")
+                    .DataValueField("ProxyUserName")
+                    .DataSource(source => source
+                    .Custom()
+                    .Sort(s => s.Add("Id"))
+                    .Transport(tr => tr
+                    .Read(read =>
+                    {
+                    read.Action("GetSwitchUsers", "Administration");
+                    })))
+                    )
+                </div>
+            </div>
+            <div class="modal-footer p-2">
+                <button type="button" id="ui_btnSwitchProxySubmission" class="btn btn-primary pull-right">Switch</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade changePasswordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal_header height_40px backgnd_color">
+                <h4 class="modal-title ui_modal_header pt-md-1">Change Password</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg"></a>
+            </div>
+            <div class="modal-body ui_modal">
+                <div class="row ml-1 font-italic">
+                    Please note that your password must confirm to the following rules:
+                </div>
+                <ul>
+                    <li id="passwordLength"></li>
+                    <li id="passwordNumberic"></li>
+                    <li id="passwordUpperLowerCase"></li>
+                    <li id="passwordSpecial"></li>
+                </ul>
+                <div class="row" id="currentPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Current Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_currentPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleCurrentPassword"></span>
+                </div>
+                <div class="row" id="enterNewPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Enter New Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_enterNewPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleNewPassword"></span>
+                </div>
+                <div class="row" id="confirmNewPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Confirm New Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_confirmNewPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleConfirmPassword"></span>
+                </div>
+            </div>
+            <div class="modal-footer float-right p-2">
+                <button type="button" class="btn btn-primary" id="ui_btn_save">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form role="form" id="ui_frmPIDashboard" method="post">
+    <span id="popupNotification"></span>
+    <div class="row padding_piDashboard">
+        <div class="col-md-2 pl-md-0">
+            <img src="~/Images/Dashboard.jpg" />
+            <label class="task_heading">&nbsp;My Dashboard</label>
+        </div>
+        <div class="col-md-10 text-right">
+            <label class="ui_label ml-1 border-right pr-2">Welcome @ViewBag.Username @ViewBag.Proxyuser</label>
+
+            <img src="~/Images/HomeIcon.jpg" class="myHome registerIcon pl-1" data-toggle="tooltip" title="Home" data-placement="bottom" />
+            <a href="#" class="myHome ui_label ml-1 border-right pr-2">Home</a>
+
+            <img src="~/Images/UserCircleIcon.jpg" class="myProfile registerIcon pl-1" data-toggle="tooltip" title="My Profile" data-placement="bottom" />
+            <a href="#" class="myProfile ui_label ml-1 border-right pr-2">My Profile</a>
+
+            @if (ViewBag.Proxyuser != "")
+            {
+                <img src="~/Images/ChangePasswordIcon.jpg" href=".ui_mySwitchProxyUserModel" data-toggle="modal" class="ui_switchproxyUser registerIcon pl-1" data-toggle="tooltip" title="User Preferences" data-placement="bottom" />
+                <a data-toggle="modal" href=".ui_mySwitchProxyUserModel" class="ui_label ml-1 ui_switchproxyUser border-right pr-2">Switch Proxy User</a>
+            }
+
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".myproxyModal" data-toggle="modal" class="ui_userPrefrence registerIcon pl-1" data-toggle="tooltip" title="User Preferences" data-placement="bottom" />
+            <a href=".myproxyModal" data-toggle="modal" class="ui_userPrefrence ui_label ml-1 border-right pr-2">User Preferences</a>
+
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".changePasswordModal" data-toggle="modal" class="changePassword registerIcon pl-1" data-toggle="tooltip" title="Change Password" data-placement="bottom" />
+            <a href=".changePasswordModal" data-toggle="modal" class="changePassword ui_label ml-1 border-right pr-2">Change Password</a>
+
+            <img src="~/Images/QuestionCircleIcon.jpg" class="help registerIcon pl-1" data-toggle="tooltip" title="Help" data-placement="bottom" />
+            <a href="#" class="help ui_label ml-1 border-right pr-2">Help</a>
+
+            <img src="~/Images/LogoutIcon.jpg" class="logout registerIcon pl-1" data-toggle="tooltip" title="Logout" data-placement="bottom" />
+            <a href="#" class="logout ui_label ml-1">Logout</a>
+        </div>
+    </div>
+    <div id="piDashboardHome">
+        <div class="panel mb-md-1">
+            <div class="panel-body ui_panel backgnd_color p-md-1">This is your Dashboard, Information pertaining to Active Studies are displayed here.</div>
+        </div>
+        <div class="panel panel-default mb-md-1" id="newStudyPanel">
+            <div class="panel-heading"> New Submission</div>
+            <div class="panel-body">
+                <div class="card m-2 ui_panel">
+                    Note! To aid you in the completion of the concept submission, please DOWNLOAD Sample Submission Form for reference. The sample submission form may be used offline to fill up & verify the details. When you are ready to make the submission, you may paste the content onto the Online form.
+                </div>
+                <div class="card mb-md-2 border-0 mr-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" id="ui_btnStartaNewSubmission" class="btn btn-primary pull-right" data-toggle="modal">Start a New Submission</button>
+                            <a class="btn btn-link pull-right ui_link" asp-action="DownloadFiles"
+                               asp-controller="NewStudy"
+                               asp-route-filename="Sample_Submission_Form.docx"
+                               asp-route-subModuleFolderName="CommonDocuments">
+                                DOWNLOAD SAMPLE SUBMISSION FORM
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header modal_header height_40px backgnd_color">
+                                <h4 class="modal-title ui_modal_header pt-md-1">Trial Type and Investigator Attestation</h4>
+                                <a href="javascript:void[0]" data-content="#infoModal" id="helpText"><img class="wid_10 margin_left_190px" src="~/Images/QuestionCircleIcon.jpg" /></a>
+                                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <label class="ui_modal_header">Trial Type:</label>
+                                    <label class="radio-inline ui_modal"><input type="radio" name="trialType" value="Interventional" class="mt-1">  Interventional</label>
+                                    <label class="radio-inline ui_modal"><input type="radio" name="trialType" value="Non-Interventional" class="mt-1">  Non-Interventional</label>
+                                </div>
+                                <div class="modal_help" id="infoModal">
+                                    <div class="card backgnd_color">
+                                        <label class="pl-md-3 ui_modal_header form-inline">Interventional Trial</label>
+                                        <div class="card ui_modal m-md-1">
+                                            A trial where the:
+                                            <ul>
+                                                <li>Medicinal Product is prescribed outside the terms of its Marketing Authorization</li>
+                                                <li>Patient assignment is decided by a protocol</li>
+                                                <li>Prescription of the Investigational Medicinal Product is linked to the decision to include the patient in the study</li>
+                                                <li>Additional diagnostic or monitoring procedures are applied</li>
+                                                <li>Methods other than epidemiological methods are being used for analysis of data</li>
+                                            </ul>
+                                        </div>
+                                        <label class="pl-md-3 ui_modal_header">Non-Interventional Trial</label>
+                                        <div class="card ui_modal m-md-1">
+                                            A study of one or more Medicinal Products which have a Marketing Authorization, where the following conditions are met:
+                                            <ul>
+                                                <li>The products are prescribed in the usual manner in accordance with the terms of that authorization</li>
+                                                <li>The assignment of any patient involved in the study to a particular therapeutic strategy is not decided in advance by a protocol but falls within current practice</li>
+                                                <li>The decision to prescribe a particular Medicinal Product is clearly separated from the decision to include the patient in the study</li>
+                                                <li>No diagnostic or monitoring procedures are applied to the patients in the study other than those which ordinarily applied in the course of the particular therapeutic strategy in question, and</li>
+                                                <li>Epidemiological methods are to be used for the analysis of the data arising from the study</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="onInterventional">
+                                    <label class=" ui_modal_header"> Principal Investigator Attestation Statement:</label>
+                                    <div class="card ui_modal p-md-2">
+                                        @ConfigValues.appName supports medically, and scientifically sound independent research initiated by external investigators and aimed at the advancement of scientific knowledge in therapeutic areas of interest for @ConfigValues.appName. @ConfigValues.appName evaluates unsolicited proposals from independent researchers or their institutions for support. By signing below you represent that:
+                                        <ul class="pl-md-3">
+                                            <li>The research proposal you are submitting was independently conceived by you and not solicited by any @ConfigValues.appName employee,</li>
+                                            <li>You have prior clinical research experience within the previous three years of concept submission,</li>
+                                            <li>The trial will be executed only by you and your staff that have received GCP training within the previous three years of concept submission,</li>
+                                            <li>You have the capability and infrastructure to run the IIT in an ethical and compliance manner,</li>
+                                            <li>You will comply with @ConfigValues.appName safety requirements,</li>
+                                            <li>You assume all of the responsibilities in your role as the Sponsor and Investigator per ICH GCP guidelines/Ethical guidelines for Medical and Health Research involving human subjects.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="onNonInterventional">
+                                    <label class="ui_modal_header"> Principal Investigator Attestation Statement:</label>
+                                    <div class="card ui_modal p-md-2">
+                                        @ConfigValues.appName supports medically, and scientifically sound independent research initiated by external investigators and aimed at the advancement of scientific knowledge in therapeutic areas of interest for @ConfigValues.appName. @ConfigValues.appName evaluates unsolicited proposals from independent researchers or their institutions for support. By signing below you represent that:
+                                        <ul class="pl-md-3">
+                                            <li>The research proposal you are submitting was independently conceived by you and not solicited by any @ConfigValues.appName employee,</li>
+                                            <li>You will comply with @ConfigValues.appName safety requirements,</li>
+                                            <li>You have the capability and infrastructure to run the IIT in an ethical and compliance manner,</li>
+                                            <li>You assume all of the responsibilities in your role as the Sponsor and Investigator per applicable guidelines.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="pt-md-1">
+                                    <label class="ui_modal_checkbox checkbox-inline"><input class="mt-1" type="checkbox" id="modalCheckBox" disabled="disabled" />I Agree</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer float-right p-2">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="ui_btn_newStudy">Submit</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md-12">
+            <div id="tabstrip">
+                <ul>
+                    <li class="k-state-active">My Task List </li>
+                    <li>My Study List</li>
+                </ul>
+                <div>
+                    @(Html.Kendo().Grid
+                    <Anju.Navigate.Data.NewStudy>
+                        ()
+                        .Name("gridMyTaskList")
+                        .Columns(columns =>
+                        {
+                            //columns.Bound(p => p.StudyName).Hidden(false).Width("20%").Title("Study Name").ClientTemplate("#if (StudyNumber===null){#<a onclick='ShowStudyName(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='ShowStudyName(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                            columns.Bound(p => p.StudyId).Hidden(true);
+                            columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='ShowStudyName(this);' href=\\#>#= StudyName#</a> ");
+                            columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Title("PI Name").Width("20%");
+                            columns.Bound(p => p.PITaskStatus).Hidden(false).Title("Task Name").Width("40%").ClientTemplate("#if (PITaskStatus === 'New Proposal Submission' || PITaskStatus === 'Submit Protocol' || PITaskStatus === 'Submit Required ICF Document' || PITaskStatus === 'Re-submit Proposal'|| PITaskStatus === 'Submit Activation Documents'|| PITaskStatus === 'ICF Resubmission Required' || PITaskStatus === 'Resubmit Activation Documents' || PITaskStatus === 'Resubmit Protocol' ||PITaskStatus === 'Resubmit Amendment Request'|| PITaskStatus === 'Resubmit Final Study Data / Report'){#<a onclick='ShowTask(this);' href=\\#>#= PITaskStatus#</a>#}else{# #= PITaskStatus#  #}#");
+                            columns.Bound(p => p.ANJU_AddDate).Title("Assignment Date").Width("20%").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                            columns.Bound(p => p.StudyNumber).Title("StudyNumber").Hidden(true);
+                            columns.Bound(p => p.TitleofTrial).Title("TitleofTrial").Hidden(true);
+                            columns.Bound(p => p.Institution).Title("Institution").Hidden(true);
+                        })
+                        .HtmlAttributes(new { style = "height: 35vh;" })
+                        .Scrollable()
+                        .Groupable()
+                        .Filterable()
+                        .Selectable(selectable => selectable
+                        .Mode(GridSelectionMode.Single)
+                        .Type(GridSelectionType.Cell))
+                        .Sortable()
+                        .Pageable(pageable => pageable
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model => model.Id(p => p.StudyId))
+                        .Read(read => read.Action("GetStudyIdForPI", "Dashboard", new { typeOfGrid = @ConstDefaultValue.TASK }))
+                        )
+                    )
+                </div>
+                <div>
+                    <div class="text-right">
+                        <label class="ui_modal_checkbox checkbox-inline">
+                            <input class="mt-1" type="checkbox" id="hideStudies" />Hide Closed, Rejected and Withdrawn studies
+                        </label>
+                    </div>
+                    <div id="target">
+                        @(Html.Kendo().Grid
+                        <Anju.Navigate.Data.NewStudy>
+                            ()
+                            .Name("gridMyStudyList")
+                            .Columns(columns =>
+                            {
+                                //columns.Bound(p => p.StudyId).Hidden(false).Title("Study Name").Width("30%").ClientTemplate("#if (StudyNumber===null){#<a onclick='Show(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='Show(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                columns.Bound(p => p.StudyId).Hidden(true);
+                                columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= StudyName#</a> ");
+                                columns.Bound(p => p.Stage).Hidden(false).Width("40%").Title("Stage");
+                                columns.Bound(p => p.PITaskStatus).Hidden(true).Title("PITaskStatus");
+                                columns.Bound(p => p.TaskStatus).Hidden(true).Title("TaskStatus");
+                                columns.Bound(p => p.ANJU_AddedBy).Hidden(true).Title("ANJU_AddedBy");
+                                columns.Bound(p => p.StudyNumber).Hidden(true).Title("StudyNumber");
+                                columns.Bound(p => p.TitleofTrial).Hidden(true).Title("TitleofTrial");
+                                columns.Bound(p => p.Institution).Hidden(true).Title("Institution");
+                                columns.Bound(p => p.ISInitiateStudyCloseoutTaskCompleted).Hidden(true).Title("ISInitiateStudyCloseoutTaskCompleted");
+                                columns.Bound(p => p.IsallTaskCompleted).Hidden(true).Title("IsallTaskCompleted");
+                                columns.Bound(p => p.ANJU_ChangeDate).Hidden(false).Title("Submission Date").Width("25%").ClientTemplate("#= ANJU_ChangeDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                columns.Command(command => command.Custom("").Text(" ").IconClass("k-icon k-i-gear").HtmlAttributes(new { @class = "grid_icon" }).Click("studyListActionDisplay").Visible("ShowIcon")).Width("5%");
+                            })
+                            .HtmlAttributes(new { style = "height: 35vh;" })
+                            .Scrollable()
+                            .Groupable()
+                            .Filterable()
+                            .Selectable(selectable => selectable
+                            .Mode(GridSelectionMode.Single)
+                            .Type(GridSelectionType.Cell))
+                            .Sortable()
+                            .Pageable(pageable => pageable
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                            .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model => model.Id(p => p.StudyId))
+                            .Read(read => read.Action("GetStudyIdForPI", "Dashboard", new { typeOfGrid = @ConstDefaultValue.STUDY }))
+                            )
+                        )
+                        <ul id="context-menu" class="contextMenuStyles">
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="piDashboardHelp">
+        <label class="task_heading m-md-0">Welcome to the Help Page</label>
+        <div class="form-group row pl-2">
+            <div class="col-md-11">
+                <table id="reviewExternalDocuments">
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="piDashboardMyProfile">
+        <form class="shadow-lg p-md-4 newWindowMargin">
+            <div class="panel">
+                <div class="panel-body ui_panel study_panel">Here, you can review and/or change any of the registration information you provided. NOTE: changes will be made immediately upon the clicking the Update button.</div>
+            </div>
+            <label class="sub_task_heading pl-md-2 mb-md-0">Professional Contact Information</label>
+            <hr />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group col-md-12" id="firstName">
+                        <label class="col-form-label mandatory wid_35">First Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_firstName")
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="salutation">
+                        <label class="col-form-label mandatory wid_35">Salutation</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_salutation")
+                        .HtmlAttributes(new { @class = "wid_60 " })
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.SALUTATION });
+                            })
+                             .ServerFiltering(true);
+
+                        })
+                        )
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="col-form-label wid_35">Title</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_title")
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="organizationName">
+                        <label class="col-form-label mandatory wid_35">Organization Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_organizationName")
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+
+                    <div class="form-group col-md-12" id="country">
+                        <label class="col-form-label mandatory wid_35">Country</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_country")
+                        .HtmlAttributes(new { @class = "wid_60 " })
+                        .DataTextField("Code")
+                        .DataValueField("CountryId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetCountries", "Register");
+                            })
+                            .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="state">
+                        <label class="col-form-label mandatory wid_35">State/Region</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_state")
+                        .HtmlAttributes(new { @class = "wid_60 " })
+                        .DataTextField("Code")
+                        .DataValueField("StateId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetStatesByCountryID", "Register").Data("filterStates");
+                            })
+                            .ServerFiltering(true);
+                        })
+                        .Enable(false)
+                        .AutoBind(false)
+                        .CascadeFrom("ui_ddl_country")
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="city">
+                        <label class="col-form-label mandatory wid_35">City</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_city")
+                        .HtmlAttributes(new { @class = "wid_60" })
+                        .DataTextField("Name")
+                        .DataValueField("CityId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetCitiesByStateID", "Register").Data("filterCities");
+                            })
+                            .ServerFiltering(true);
+                        })
+                        .Enable(false)
+                        .AutoBind(false)
+                        .CascadeFrom("ui_ddl_state")
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="primaryEmailAddress">
+                        <label class="col-form-label mandatory wid_35">Primary Email Address</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_primaryEmailAddress")
+                        .HtmlAttributes(new { maxlength = 60, @class = "wid_60" })
+                        )
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group col-md-12" id="lastName">
+                        <label class="col-form-label mandatory wid_35">Last Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_lastName")
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="col-form-label wid_35">Suffix</label>
+                        @(Html.Kendo().DropDownList()
+                       .Name("ui_ddl_suffix")
+                        .HtmlAttributes(new { @class = "wid_60 " })
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.SUFFIX });
+                            })
+                            .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="multiselectCredentials">
+                        <label class="col-form-label mandatory wid_35">Credentials</label>
+                        <select id="ui_multiselect_credentials" name="ui_multiselect_credentials" class="wid_60"></select>
+                    </div>
+                    <div class="form-group col-md-12" id="department">
+                        <label class="col-form-label mandatory wid_35">Department</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_department")
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+
+                    <div class="form-group col-md-12" id="zipPostalCode">
+                        <label class="col-form-label mandatory wid_35">Zip/Postal Code</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_zip")
+                        .HtmlAttributes(new { maxlength = 15, @class = "wid_60" })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="phone">
+                        <label class="col-form-label mandatory wid_35">Phone</label>
+                        @(Html.Kendo().MaskedTextBox()
+                        .Name("ui_txt_phone")
+                        .Mask("(999) 999-9999")
+                        .HtmlAttributes(new { maxlength = 60 })
+                        )
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label class="col-form-label wid_35">Fax</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_fax")
+                        .HtmlAttributes(new { maxlength = 60, @class = "wid_60" })
+                        )
+                    </div>
+                    <div class="form-group col-md-12" id="userName">
+                        <label class="col-form-label mandatory wid_35">User Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_userName")
+                        .Enable(false)
+                        .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12" id="addressLine1">
+                    <label class="col-form-label mandatory pr-0  wid_17">Address Line 1</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_addressLine1")
+                    .HtmlAttributes(new { maxlength = 255, @class = "wid_50 ml-2" })
+                    )
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="col-form-label pr-0 wid_17">Address Line 2</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_addressLine2")
+                    .HtmlAttributes(new { maxlength = 255, @class = "wid_50 ml-2" })
+                    )
+                </div>
+                <div class="form-group col-md-12">
+                    <button type="button" class="btn btn-primary float-right" id="ui_btn_myProfile">Update</button>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+    <div id="piDashboardProfileSubmit">
+        <div class="panel offset-4 col-md-4 backgnd_color mt-md-4">
+            <div class="panel-body ui_panel study_panel">
+                <div class="sub_task_heading pt-md-2 pb-md-2">Information was updated successfully</div>
+                <div class=" pt-2 pb-2">User personal information was updated successfully. Press "OK" button to go back to the home page.</div>
+            </div>
+            <div class="modal-footer p-md-1 pb-md-2">
+                <button type="button" class="btn btn-primary float-right" id="ui_btn_myProfilesubmitted">OK</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    var submitrequiredicfdocument = "@Messages.SUBMITREQUIREDICFDOCUMENT";
+    var submitactivationdocuments = "@Messages.SUBMITACTIVATIONDOCUMENTS";
+    var icfresubmissionrequired = "@Messages.ICFRESUBMISSIONREQUIRED";
+    var resubmitactivationdocuments = "@Messages.RESUBMITACTIVATIONDOCUMENTS";
+    var resubmitamendmentrequest = "@Messages.RESUBMITAMENEDMENTREQUEST";
+    var finalStudyDataReport = "@Messages.FINALSTUDYDATAREPORT";
+    var resubmitfinalstudyreport = "@Messages.RESUBMITFINALSTUDYREPORT";
+</script>
+<script src="~/scripts/CommonDashboard.js"></script>
+<script src="~/scripts/MyProfile.js"></script>
+<script src="~/scripts/PIDashboard.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

@@ -1,0 +1,751 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "Scientific Rationale I";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+@using Anju.Navigate.Utilities;
+@model Anju.Navigate.Data.ListOfDocuments
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form role="form" id="ui_frmNewStudy" class="newWindowMargin p-md-4 shadow-lg" method="post">
+
+    <span id="popupNotification"></span>
+
+    <div class="row">
+        <div class="col-md-4 pb-2">
+            <img src="~/Images/Research_ICON2.png" class="register_img" />
+            @if (@ViewBag.pITaskStatus?.ToUpper() == @ConstDefaultValue.SUBMITPROTOCOL.ToUpper())
+            {
+                <label class="task_heading" id="taskHeading">Submit Protocol</label>
+            }
+            else if (@ViewBag.TaskName?.ToUpper() == @ConstDefaultValue.RESUBMITPROTOCOL.ToUpper())
+            {
+                <label class="task_heading" id="taskHeading">Resubmit Protocol</label>
+            }
+            else
+            {
+                <label class="task_heading" id="taskHeading">New Proposal Submission</label>
+            }
+
+        </div>
+        <div class="col-md-8 text-right">
+            <label class="ui_label">Welcome @ViewBag.Username</label>
+        </div>
+    </div>
+
+    <div class="card col-md-12 p-md-2">
+        <div class="padding_left_100px">
+            <div class="row">
+                <div>
+                    <input type="button" class="btn btn-submission no-click" id="scientificRationale" value="Scientific Rationale" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click wid_250px" id="personnelResearchSites" value="Personnel & Research Sites" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click" id="requestedSupport" value="Requested Support" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click" id="confirmation" value="Confirmation" />
+                </div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-submission no-click height_30px width_5" id="1">1</button>
+                <button type="button" class="btn btn-submission no-click height_30px width_5 ml-1" id="2">2</button>
+            </div>
+        </div>
+
+        <div class="row mt-md-2">
+            <div class="col-md-8 border-right">
+                <div class="btn-group float-right">
+                    <button type="button" class="btn btn-primary" onclick="deleteNewStudyDialog();" id="deleteBtn">Delete Current Submission</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+                <input type="hidden" value="@ViewBag.mode" id="mode" />
+                <input type="hidden" value="@ViewBag.StudyType" id="StudyType" />
+                <input type="hidden" id="txtUserName" value=@ViewBag.Username>
+                <input type="hidden" id="TrialPhaseId" />
+                <input type="hidden" id="DrugorCompounddetailsId" />
+                <input type="hidden" id="ConceptDesignandRationaleId" />
+                <input type="hidden" value="@ViewBag.pITaskStatus" id="pITaskStatus" />
+                <input type="hidden" value="@ViewBag.TaskName" id="TaskName" />
+                <button type="button" class="btn btn-primary" onclick="showDialog();">Cancel</button>
+                <button type="button" id="ui_btnSaveandExit" class="btn btn-primary">Save & Exit</button>
+                <button type="button" id="ui_btnSaveandContinue" class="btn btn-primary">Save & Continue...</button>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="step-1">
+        <div class="card">
+            <div class="row pl-md-3">
+                <div class="col-md-2 editer-title mandatory align-items-center d-flex justify-content-center">
+                    Title of Trial
+                </div>
+                <div class="col-md-10 pl-0">
+                    <textarea rows="4" class="k-textbox wid_99" id="ui_txt_titleOfTrial" maxlength="300"></textarea>
+                    <span id="ui_txt_titleOfTrial_span" class="generic_text_small float-right count">300 Characters left to enter</span>
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.StudyType == @ConstDefaultValue.INTERVENTIONAL)
+        {
+            <div class="card mt-md-2">
+                <div class="row pl-md-3">
+                    <div class="col-md-2 editer-title align-items-center d-flex justify-content-center">
+                        Trial Phase (if applicable)
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row pl-2">
+                            <label class="ui_label">
+                                Trial Phase <label class="label_description">(select all that apply)</label>
+                            </label>
+
+                            <div class="custom-control custom-checkbox custom-control-inline col-md-2 pl-5 text-left">
+                                <input type="checkbox" class="custom-control-input" id="PhaseI">
+                                <label class="custom-control-label ui_label" for="PhaseI">Phase I</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control-inline col-md-2 pl-5 text-left">
+                                <input type="checkbox" class="custom-control-input" id="PhaseII">
+                                <label class="custom-control-label ui_label" for="PhaseII">Phase II</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control-inline col-md-2 pl-5 text-left">
+                                <input type="checkbox" class="custom-control-input" id="PhaseIII">
+                                <label class="custom-control-label ui_label" for="PhaseIII">Phase III</label>
+                            </div>
+                            <div class="custom-control custom-checkbox custom-control-inline col-md-2 pl-5 text-left">
+                                <input type="checkbox" class="custom-control-input" id="PhaseIV">
+                                <label class="custom-control-label ui_label" for="PhaseIV">Phase IV</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="card mt-md-2">
+            <div class="row pl-md-3">
+                <div class="col-md-2 editer-title align-items-center d-flex justify-content-center">
+                    Drug/Compound Details.
+                </div>
+                <div class="col-md-10">
+
+                    <div class="row mb-2">
+                        <div class="form-group col-md-12 mb-0" id="primaryDrug">
+                            <div class="row">
+                                <div class="col-md-3 pl-2">
+                                    <label for="ui_lblPrimaryCompound" class="mandatory ui_label">Primary [Company Name] Compound</label>
+                                </div>
+                                <div class="col-md-4">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_primaryDrug")
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PRIMARY, @class = "wid_100" });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 pl-2">
+                                    <label for="ui_lblSecondaryCompound" class="ui_label">Secondary [Company Name] Compound</label>
+                                </div>
+                                <div class="col-md-4">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_secondaryDrug")
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.SECONDARY });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                                <div class="col-md-4">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_drugOrCompoundTypeForSecondary")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDTYPEFORSECONDARY });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <div class="row">
+                                <div class="col-md-3 p-2">
+                                    <label for="ui_lblTertiaryCompound" class="ui_label">Tertiary [Company Name] Compound</label>
+                                </div>
+                                <div class="col-md-4">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_tertiaryDrug")
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.TERTIARY });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                                <div class="col-md-4">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_drugOrCompoundTypeForTertiary")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDTYPEFORTERTIARY });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-md-2">
+            <div class="row pl-md-3">
+                <div class="col-md-2  editer-title align-items-center d-flex justify-content-center">
+                    Concept Design and Rationale.
+                </div>
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-12 pl-0">
+                            <label class="form-check-inline mandatory ui_label pl-2 ">Indication </label>
+                            <div class="label_description pl-2"> (List primary and any secondary indications)</div>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_indication" maxlength="4000"></textarea>
+                            <span id="ui_txt_indication_span" class="generic_text_small float-right count">4000 Characters left to enter</span>
+                        </div>
+
+                        <div class="col-md-12 pl-0">
+                            <label class="form-check-inline mandatory ui_label pl-2">Rationale for Trial</label>
+                            <div class="label_description pl-2">Summarize the rationale (e.g. medical need, advantage of suggested innovative approach over current best medical practice)</div>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_rationaleForTrial" maxlength="8000"></textarea>
+                            <span id="ui_txt_rationaleForTrial_span" class="generic_text_small float-right count">8000 Characters left to enter</span>
+                        </div>
+
+                        <div class="col-md-12 pl-0">
+                            <label class="form-check-inline mandatory ui_label pl-2">Trial Design</label>
+                            <div class="label_description pl-2">
+                                <div>Enter a concise overview of the trial design in this space, including:</div>
+                                <div>-	Purpose (e.g. safety, efficacy, long-term tolerability)</div>
+                                <div>-	Number of arms</div>
+                                <div>-	Translational research that will be performed.</div>
+                                <div>-	For dose escalation trials include definition of MTD and DLT as well as cohort levels (see below chart)</div>
+                            </div>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_trialDesign" maxlength="8000"></textarea>
+                            <span id="ui_txt_trialDesign_span" class="generic_text_small float-right count">8000 Characters left to enter</span>
+                        </div>
+                        @if (ViewBag.StudyType == @ConstDefaultValue.INTERVENTIONAL)
+                        {
+                            <div class="panel wid_98">
+                                <div class="panel-body ui_panel backgnd_color ml-2">Cohort levels for dose escalation trials only.</div>
+                            </div>
+
+                            <div class="col-md-12 pl-2">
+                                @(Html.Kendo().Grid<Anju.Navigate.Data.CohortLevels>
+                                    ()
+                                    .Name("ui_dtg_gridCohortLevels")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.CohortId).Hidden(true);
+                                        columns.Bound(c => c.NoofPatients).Width("15%").Title("No. of Patients").EditorTemplateName("IntegerTextBox");
+                                        columns.Bound(c => c.Cohortlevel).Width("15%").Title("Cohort level");
+                                        columns.Bound(c => c.DoseandFrequencyDrugA).Width("30%").Title("Drug A (dose & Frequency)");
+                                        columns.Bound(c => c.DoseandFrequencyDrugB).Width("32%").Title("Drug B (dose & Frequency) (if applicable)");
+                                        columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteCohortRow")).Width("8%");
+                                    })
+                                    .ToolBar(tools =>
+                                    {
+                                        tools.Create();
+                                        tools.Save();
+                                    })
+                                    .HtmlAttributes(new { style = "height: 250px;" })
+                                    .Scrollable()
+                                    .Groupable(false)
+                                    .Sortable()
+                                    .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+                                    .Pageable(pageable => pageable
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(e => e.RequestEnd("OnsaveCohortLevelChanges"))
+                                    .Model(model => model.Id(p => p.CohortId))
+                                    .Create(update => update.Action("CreateUpdateCohortLevels", "NewStudy", new { Mode = "Create" }))
+                                    .Update(update => update.Action("CreateUpdateCohortLevels", "NewStudy", new { Mode = "Update" }))
+                                    .Read(read => read.Action("GetCohortLevels", "NewStudy"))
+                                    .Destroy(update => update.Action("DeleteCohortLevels", "NewStudy"))
+                                    )
+                                )
+                            </div>
+                        }
+
+                        <div class="col-md-12 pl-2">
+                            <div class="card">
+                                @if (ViewBag.StudyType == @ConstDefaultValue.INTERVENTIONAL)
+                                {
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row" id="blinding">
+                                                <div class="text-right mandatory ui_label wid_20">
+                                                    <label>Blinding</label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @(Html.Kendo().DropDownList()
+                                                    .Name("ui_ddl_blinding")
+                                                    .HtmlAttributes(new { @class = "wid_100" })
+                                                    .DataTextField("Code")
+                                                    .DataValueField("Code")
+                                                    .OptionLabel("Select")
+                                                    .DataSource(source =>
+                                                    {
+                                                    source.Read(read =>
+                                                    {
+                                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.BLINDING });
+                                                    })
+                                                    .ServerFiltering(true);
+                                                    })
+                                                    )
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row" id="structure">
+                                                <div class="text-right mandatory ui_label wid_20">
+                                                    <label>Structure</label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @(Html.Kendo().DropDownList()
+                                                    .Name("ui_ddl_structure")
+                                                    .HtmlAttributes(new { @class = "wid_100" })
+                                                    .DataTextField("Code")
+                                                    .DataValueField("Code")
+                                                    .OptionLabel("Select")
+                                                    .Events(events => events.DataBound("onDataBound"))
+                                                    .DataSource(source =>
+                                                    {
+                                                    source.Read(read =>
+                                                    {
+                                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.STRUCTURE });
+                                                    })
+                                                    .ServerFiltering(true);
+                                                    })
+                                                    )
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row" id="randomized">
+                                                <div class="text-right mandatory ui_label wid_20">
+                                                    <label>
+                                                        Randomized
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @(Html.Kendo().DropDownList()
+                                                    .Name("ui_ddl_randomized")
+                                                    .HtmlAttributes(new { @class = "wid_100" })
+                                                    .DataTextField("Code")
+                                                    .DataValueField("Code")
+                                                    .OptionLabel("Select")
+                                                    .DataSource(source =>
+                                                    {
+                                                    source.Read(read =>
+                                                    {
+                                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.RANDOMIZED });
+                                                    })
+                                                    .ServerFiltering(true);
+                                                    })
+                                                    )
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row" id="multiselectGender">
+                                            <div class="text-right mandatory wid_20 ml-2">
+                                                <label class="ui_label">Gender<label class="label_description">(select all that apply)</label></label>
+                                            </div>
+                                            <div class="custom-control-inline col-md-6 pl-2">
+                                                <select id="ui_multiselectGender" name="ui_multiselectGender" class="wid_60"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row" id="minAge">
+                                            <div class="text-right mandatory wid_20">
+                                                <label class="ui_label">Minimum Age</label>
+                                            </div>
+                                            <div class="col-md-3">
+                                                @(Html.Kendo().DropDownList()
+                                                .Name("ui_ddl_minAge")
+                                                .DataTextField("Code")
+                                                .DataValueField("Code")
+                                                .OptionLabel("Select")
+                                                .HtmlAttributes(new { @class = "wid_100" })
+                                                .DataSource(source =>
+                                                {
+                                                source.Read(read =>
+                                                {
+                                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.MINIMUMAGE });
+                                                });
+                                                })
+                                                )
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row" id="maxAge">
+                                            <div class="text-right mandatory wid_20">
+                                                <label class="ui_label">Maximum Age</label>
+                                            </div>
+                                            <div class="col-md-3">
+                                                @(Html.Kendo().DropDownList()
+                                                .Name("ui_ddl_maxAge")
+                                                .DataTextField("Code")
+                                                .DataValueField("Code")
+                                                .OptionLabel("Select")
+                                                .DataSource(source =>
+                                                {
+                                                source.Read(read =>
+                                                {
+                                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.MAXIMUMAGE });
+                                                });
+                                                })
+                                                .HtmlAttributes(new { @class = "wid_100" })
+                                                )
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 pl-0 mt-md-2">
+                            <label class="form-check-inline mandatory ui_label pl-2">Patient Population</label>
+                            <div class="label_description pl-2"> (List Key Disease specific inclusion & exclusion criteria)</div>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_patientPopulation" maxlength="4000"></textarea>
+                            <span id="ui_txt_patientPopulation_span" class="generic_text_small float-right count">4000 Characters left to enter</span>
+                        </div>
+                        <div class="col-md-12 pl-0">
+                            <label class="form-check-inline mandatory ui_label pl-2">Key Inclusion Criteria</label>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_keyInclusionCriteria" maxlength="4000"></textarea>
+                            <span id="ui_txt_keyInclusionCriteria_span" class="generic_text_small float-right count">4000 Characters left to enter</span>
+                        </div>
+                        <div class="col-md-12 pl-0">
+                            <label class="form-check-inline mandatory ui_label pl-2">Key Exclusion Criteria</label>
+                            <textarea rows="4" class="k-textbox wid_99" id="ui_txt_exclusionCriteria" maxlength="4000"></textarea>
+                            <span id="ui_txt_exclusionCriteria_span" class="generic_text_small float-right count">4000 Characters left to enter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-md-2">
+            <div class="row pl-md-3">
+                <div class="col-md-2 editer-title mandatory align-items-center d-flex justify-content-center">
+                    Objectives & Endpoints
+                </div>
+                <div class="col-md-10 pl-2">
+                    @(Html.Kendo().Grid<Anju.Navigate.Data.ObjectivesandEndpoints>
+                        ()
+                        .Name("ui_dtg_gridObjectivesandEndpoints")
+                        .Columns(columns =>
+                        {
+                        columns.Bound(c => c.ObjandEndPointsId).Hidden(true);
+                        columns.Bound(c => c.ObjectiveType).Width("22%").Title("Objective Type").EditorTemplateName("ObjectiveType");
+                        columns.Bound(c => c.ObjectiveName).Width("20%").Title("Objective Name").EditorTemplateName("ObjectiveName");
+                        columns.Bound(c => c.ObjectiveDescription).Width("20%").Title("Objective Description");
+                        columns.Bound(c => c.EndpointDescription).Width("30%").Title("End Point Description");
+                        columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteObjectivesandEndpoints")).Width("8%");
+                        })
+                        .ToolBar(tools =>
+                        {
+                            tools.Create();
+                            tools.Save();
+                        })
+                        .HtmlAttributes(new { style = "height: 250px;" })
+                        .Scrollable()
+                        .Groupable(false)
+                        .Sortable()
+                        .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+                        .Pageable(pageable => pageable
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(e => e.RequestEnd("OnsaveObjectiveEndpointChanges"))
+                        .Model(model => model.Id(p => p.ObjandEndPointsId))
+                        .Create(update => update.Action("CreateUpdateObjectivesandEndpoints", "NewStudy", new { Mode = "Create" }))
+                        .Update(update => update.Action("CreateUpdateObjectivesandEndpoints", "NewStudy", new { Mode = "Update" }))
+                        .Read(read => read.Action("GetObjectivesandEndpoints", "NewStudy"))
+                        .Destroy(update => update.Action("DeleteObjectivesandEndpoints", "NewStudy"))
+                        )
+                    )
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.StudyType == @ConstDefaultValue.INTERVENTIONAL)
+        {
+            <div class="card mt-md-2">
+                <div class="row pl-md-3">
+                    <div class="col-md-2 editer-title mandatory align-items-center d-flex justify-content-center">
+                        Treatment Information (includes co-therapy)
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-12 pl-0">
+                                <label class="ui_label mandatory pl-2">How many treatment arms apply to this trial?</label>
+                                <textarea rows="4" class="k-textbox wid_99" id="ui_txt_treatmentArms" maxlength="300"></textarea>
+                                <span id="ui_txt_treatmentArms_span" class="generic_text_small float-right count">300 Characters left to enter</span>
+                            </div>
+                            <div class="col-md-12 pl-0">
+                                <label class="ui_label pl-2">For intervention studies complete the table below for each arm:</label>
+                                <div class="ui_label pl-2">Example of how to complete the below table</div>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="row_description">Treatment Arm</th>
+                                            <th class="row_description">Number of Patients Planned</th>
+                                            <th class="row_description">Type of Trial Drug</th>
+                                            <th class="row_description">Compound (specify brand or generic)</th>
+                                            <th class="row_description">Min Dose and unit</th>
+                                            <th class="row_description">Max Dose and unit</th>
+                                            <th class="row_description">Frequency</th>
+                                            <th class="row_description">Admin Route</th>
+                                            <th class="row_description">Generic Acceptable (applies only for comparable)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="row_description">Arm X</td>
+                                            <td class="row_description">15</td>
+                                            <td class="row_description">Investigational</td>
+                                            <td class="row_description">Zometa (brand)</td>
+                                            <td class="row_description">5mg</td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description">weekly</td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description">Yes/No/NA</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description">Comparator</td>
+                                            <td class="row_description">Denosumab</td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description">Co-therapy</td>
+                                            <td class="row_description">Femara</td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                            <td class="row_description"></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="table_header">Treatment Arm</th>
+                                            <th class="table_header">Number of Patients Planned</th>
+                                            <th class="table_header">Type of Trial Drug</th>
+                                            <th class="table_header">Compound (specify brand or generic)</th>
+                                            <th class="table_header">Min Dose and unit</th>
+                                            <th class="table_header">Max Dose and unit</th>
+                                            <th class="table_header">Frequency</th>
+                                            <th class="table_header">Admin Route</th>
+                                            <th class="table_header">Generic Acceptable (applies only for comparable)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="row_description">Can be a number or a letter as per protocol</td>
+                                            <td class="row_description"># of planned patients per treatment arm</td>
+                                            <td class="row_description">Enter either Investigational; Co-Therapy or Comparator for each compound within each treatment arm</td>
+                                            <td class="row_description">Enter all @ConfigValues.appName & External Drugs that apply (For comparator compounds please specify if branded or generic will be used.)</td>
+                                            <td class="row_description">30 mg, 50 mg etc</td>
+                                            <td class="row_description">30 mg, 50 mg etc</td>
+                                            <td class="row_description">Daily, weekly,...</td>
+                                            <td class="row_description">IV, PO...</td>
+                                            <td class="row_description">Only applies to 'Comparators' (Select Yes or No)</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                @(Html.Kendo().Grid<Anju.Navigate.Data.TreatmentInformation>
+                                    ()
+                                    .Name("ui_dtg_gridTreatmentInformation")
+                                    .Columns(columns =>
+                                    {
+                                    columns.Bound(c => c.TreatmentInfoId).Hidden(true);
+                                    columns.Bound(c => c.TreatmentArm).Width("10%").Title("Treatment Arm");
+                                    columns.Bound(c => c.NoofPatientsPlanned).Width("10%").Title("Number of Patients Planne");
+                                    columns.Bound(c => c.TypeofTrialDrug).Width("9%").Title("Type of Trial Drug").EditorTemplateName("TypeofTrialDrug");
+                                    columns.Bound(c => c.Compound).Width("10%").Title("Compound (specify brand or generic)");
+                                    columns.Bound(c => c.Mindosage).Width("10%").Title("Min Dose and unit");
+                                    columns.Bound(c => c.Maxdosage).Width("10%").Title("Max Dose and unit");
+                                    columns.Bound(c => c.Frequency).Width("10%").Title("Frequency");
+                                    columns.Bound(c => c.AdminRoute).Width("10%").Title("Admin Route");
+                                    columns.Bound(c => c.GenericAcceptable).Width("13%").Title("Generic Acceptable (applies only for comparable)").EditorTemplateName("YesNoDropDown");
+                                    columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteTreatmentInformation")).Width("8%");
+                                    })
+                                    .ToolBar(tools =>
+                                    {
+                                        tools.Create();
+                                        tools.Save();
+                                    })
+                                    .HtmlAttributes(new { style = "height: 250px;" })
+                                    .Scrollable()
+                                    .Groupable(false)
+                                    .Sortable()
+                                    .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+                                    .Pageable(pageable => pageable
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(e => e.RequestEnd("OnsaveTreatementInfoChanges"))
+                                    .Model(model => model.Id(p => p.TreatmentInfoId))
+                                    .Create(update => update.Action("CreateUpdateTreatmentInformation", "NewStudy", new { Mode = "Create" }))
+                                    .Update(update => update.Action("CreateUpdateTreatmentInformation", "NewStudy", new { Mode = "Update" }))
+                                    .Read(read => read.Action("GetTreatmentInformation", "NewStudy"))
+                                    .Destroy(update => update.Action("DeleteTreatmentInformation", "NewStudy"))
+                                    )
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="card p-md-2 mt-md-2">
+        <div class="row">
+            <div class="col-md-8 border-right">
+                <div class="btn-group float-right">
+                    <button type="button" class="btn btn-primary" onclick="deleteNewStudyDialog();" id="deleteBtnEnd">Delete Current Submission</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary" onclick="showDialog();">Cancel</button>
+                <button type="button" id="ui_btnSaveandExitEnd" class="btn btn-primary">Save & Exit</button>
+                <button type="button" class="btn btn-primary" id="ui_btnSaveandContinueEnd">Save & Continue...</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        @Html.Partial("~/Views/Common/CancelNewStudy.cshtml")
+        @Html.Partial("~/Views/Common/DeleteNewStudy.cshtml")
+        @Html.Partial("~/Views/Common/DeleteRecordDialogBox.cshtml")
+    </div>
+</form>
+<script>
+    var griddatanotsaved = '@Messages.GRIDDATANOTSAVED';
+    var titleoftrialrequired = '@Messages.TITLEOFTRIALREQUIRED';
+    var primarycompound = '@Messages.PRIMARYCOMPOUND';
+    var indicationrequired = '@Messages.INDICATIONREQUIRED';
+    var rationalefortrialrequired = '@Messages.RATIONALEFORTRIALREQUIRED';
+    var trialdesignrequired = '@Messages.TRIALDESIGNREQUIRED';
+    var blindingrequired = '@Messages.TRIALDESIGNREQUIRED';
+    var structurerequired = '@Messages.STRUCTUREREQUIRED';
+    var randomizedrequired = '@Messages.RANDOMIZEDREQUIRED';
+    var genderrequired = '@Messages.GENDERREQUIRED';
+    var minimumagerequired = '@Messages.MINIMUMAGEREQUIRED';
+    var maximumagerequired = '@Messages.MAXIMUMAGEREQUIRED';
+    var patientpopulationrequired = '@Messages.PATIENTPOPULATIONREQUIRED';
+    var keyinclusioncriteriarequired = '@Messages.KEYINCLUSIONCRITERIAREQUIRED';
+    var keyexclusioncriteriarequired = '@Messages.KEYEXCLUSIONCRITERIAREQUIRED';
+    var howmanytreatmentarmsapplytothistrialrequired = '@Messages.HOWMANYTREATMENTARMSAPPLYTOTHISTRIALREQUIRED';
+    var maximumagecannotbelessthanminimumage = '@Messages.MAXIMUMAGECANNOTBELESSTHANMINIMUMAGE';
+    var cohortlevelsrequired = '@Messages.COHORTLEVELSREQUIRED';
+    var objectivetypeandobjectivenameisrequired = '@Messages.OBJECTIVETYPEANDOBJECTIVENAMEISREQUIRED';
+    var objectivetypeisrequired = '@Messages.OBJECTIVETYPEISREQUIRED';
+    var objectivenameisrequired = '@Messages.OBJECTIVENAMEISREQUIRED';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var resubmitproposal = '@Messages.RESUBMITPROPOSAL';
+    var characterslefttoenter = '@Messages.CHARACTERSLEFTTOENTER';
+    var contactadministratoronerror = '@Messages.CONTACTADMINISTRATORONERROR';
+    var studytypeinterventional = '@ConstDefaultValue.STUDYTYPEINTERVENTIONAL';
+    var deletemessagetitlebox = '@Messages.DELETEMESSAGETITLEBOX';
+    var saveandexit = '@ConstDefaultValue.SAVEANDEXIT';
+    var saveandcontinue = '@ConstDefaultValue.SAVEANDCONTINUE';
+    var parallelgroup = '@ConstDefaultValue.PARALLELGROUP';    
+    var resubmitProtocol = '@ConstDefaultValue.RESUBMITPROTOCOL';
+    var submitProtocol = '@ConstDefaultValue.SUBMITPROTOCOL';
+</script>
+<script src="~/scripts/ScientificRationaleI.js"></script>
+<script src="~/scripts/GriddatanotSaved.js"></script>
+<script src="~/scripts/Common/Common.js"></script>
+

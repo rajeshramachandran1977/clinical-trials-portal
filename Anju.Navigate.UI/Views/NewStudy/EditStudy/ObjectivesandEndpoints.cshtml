@@ -1,0 +1,166 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="objectivescontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddObjectivesandendpoints" onclick="addObjectivesandendpoints()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    @(Html.Kendo().Grid<Anju.Navigate.Data.ObjectivesandEndpoints>
+        ()
+        .Name("ui_dtg_gridObjectivesandEndpoints")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ObjandEndPointsId).Hidden(true);
+            columns.Bound(c => c.ObjectiveType).Width("20%").Title("Objective Type");
+            columns.Bound(c => c.ObjectiveName).Width("20%").Title("Objective Name");
+            columns.Bound(c => c.ObjectiveDescription).Width("25%").Title("Objective Description");
+            columns.Bound(c => c.EndpointDescription).Width("15%").Title("End Point Description");
+            columns.Command(command => command.Custom("Tag").Text("Edit").Click("showObjectivesandendpoints")).Width("10%");
+            columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteObjectivesandendpoints")).Width("10%");
+
+        })
+        .Events(events => events.DataBound("OnDataBoundforObjectivesandEndpoints"))
+        .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+        .Scrollable()
+        .Groupable(false)
+        .Sortable()
+        .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.ObjandEndPointsId))
+        .Read(read => read.Action("GetObjectivesandEndpoints", "NewStudy"))
+        .Destroy(update => update.Action("DeleteObjectivesandEndpoints", "NewStudy"))
+        )
+    )
+    @(Html.Kendo().Window()
+    .Name("ObjectivesandEndpoints")
+    .Title("Objectives and End points")
+    .Actions(actions => actions.Clear())
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(800)
+    )
+
+</div>
+<script type="text/x-kendo-template" id="objectivesandendpointstemplate">
+    <div id="details-container">
+        <form id="ui_frm_objectivesandendpoints">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_objandendpointsid" min="1" data-bind="value:ui_num_objandendpointsid" />
+                    <div id="displayObjectivetype">
+                        <div id="objectivetype" class="row">
+                            <div class="col-md-3">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_objectivetype"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforobjectivetype" data-toggle="tooltip" />
+                            </div>
+                            <div class="col-md-3">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_objectivetype")
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues",
+                                "NewStudy",
+                                new { type = @ConstDefaultValue.OBJECTIVETYPES });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                 .ToClientTemplate()
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayObjectiveName">
+                        <div id="objectiveName" class="row">
+                            <div class="col-md-3">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_objectivename"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforobjectivename" data-toggle="tooltip" />
+                            </div>
+                            <div class="col-md-3">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_objectivename")
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues",
+                                "NewStudy",
+                                new { type = @ConstDefaultValue.OBJECTIVENAMES });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                 .ToClientTemplate()
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayObjectivedescription">
+                        <div id="objectivedescription">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_objectivedescription"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextforobjectivedescription" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_objectivedescription" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_objectivedescription" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforobjectivedescription"></label></span>
+                                <input type="hidden" id="regexexprforobjectivedescription" />
+                                <input type="hidden" id="validationmsgforobjectivedescription" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayEndpointDescription">
+                        <div id="endpointDescription">
+                            <label class="col-formEditStudy-labels " id="ui_lbl_endpointdescription"></label>
+                            <img src="/Images/helppic.gif" id="ui_img_helpTextforendpointdescription" data-toggle="tooltip" />
+                            <div class="col-md-12 p-md-0">
+                                <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_endpointdescription" maxlength="1"></textarea>
+                                <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_endpointdescription" maxlength="1">
+                                <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforendpointdescription"></label></span>
+                                <input type="hidden" id="regexexprforendpointdescription" />
+                                <input type="hidden" id="validationmsgforendpointdescription" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSaveObjectivesandendpoints">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var objectivesandendpointsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Objectives)';
+    var objectivetypes = '@ConstDefaultValue.OBJECTIVETYPES';
+    var objectivenames = '@ConstDefaultValue.OBJECTIVENAMES';
+    var objectivedescription = '@ConstDefaultValue.OBJECTIVEDESCRIPTION';
+    var endpointdescription = '@ConstDefaultValue.ENDPOINTDESCRIPTION';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var charLength = '@ConstDefaultValue.CHARACTERSLEFTTOENTER';
+</script>
+<script src="~/scripts/EditStudy/ObjectivesandEndpoints.js"></script>

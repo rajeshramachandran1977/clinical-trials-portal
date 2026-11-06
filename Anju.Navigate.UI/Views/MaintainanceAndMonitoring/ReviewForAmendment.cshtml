@@ -1,0 +1,436 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ReviewForAmendment";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<div class="p-md-4 shadow-lg newWindowMargin">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0">Review for Amendment</label>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel" id="piPanel">
+            <div>Please review Amendment Request - Summary of Requested Changes and optional additional documents. If the submission requires re-work, you have the option of returning it to the investigator. In the case of Resubmission Required, please have a discussion with the Investigator before selecting "Resubmit" and submitting this task.</div>
+            <div> If the submission is acceptable, record the team decision and identify which system workflow steps will be necessary to "activate" the amendment.</div>
+            <div> If the decision is "Rejected" there will be a chance to discuss the rejection with the Investigator prior to the Amendment Notification Letter being created and sent.</div>
+        </div>
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyId</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+    </div>
+    <div class="form-group row">
+        <div class="col-md-12 pl-md-5">
+            <table id="reviewactivationdocuments">
+            </table>
+        </div>
+    </div>
+    <hr />
+    <div class="form-group row">
+        <label class="ui_label">Please classify the document(s) submitted by PI</label>
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+            ()
+            .Name("ui_dtg_reviewForAmendmentGrid")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.DocumentId).Hidden(true);
+                columns.Command(command => command.Custom("Tag").Text("Tag").Click("showDetails")).Width("8%");
+                columns.Bound(c => c.DocumentName).Width("19%").Title("Document Name").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= DocumentName#</a> ");
+                columns.Bound(c => c.DocumentStatus).Width("15%").Title("Document Status");
+                columns.Bound(c => c.DocumentType).Width("15%").Title("Document Type");
+                columns.Bound(c => c.DocumentSubType).Width("15%").Title("Document Sub-Type");
+                columns.Bound(c => c.DocumentVersion).Width("20%").Title("Original / Amendment Version");
+                columns.Bound(c => c.SubModuleName).Hidden(true);
+                columns.Bound(c => c.StudyId).Hidden(true);
+                columns.Bound(c => c.OriginalDate).Hidden(true);
+                columns.Bound(c => c.ExpirationDate).Hidden(true);
+                columns.Bound(c => c.DocumentName).Hidden(true);
+                columns.Command(command => { command.Destroy(); }).Width("8%");
+            })
+            .HtmlAttributes(new { style = "height:200px", @class = "ui_label wid_100" })
+            .Scrollable()
+            .AutoBind(false)
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.DocumentId))
+            .Read(read => read.Action("GetDocumentsByStudyID", "NewStudy").Data("additionalInfo"))
+            .Destroy(update => update.Action("DeleteDocuments", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+            .Name("Details")
+            .Title("Review Document")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(800)
+        )
+    </div>
+    <div class="form-group row" id="amendmentDecision">
+        <label class="col-form-label mandatory">Decision</label>
+        <div>
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_decision")
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+                source.Read(read =>
+                {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.AMENDMENTDECISION });
+                })
+                .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row" id="chkbox">
+        <label class="col-md-1"></label>
+        <input type="checkbox" class="custom-control-input" id="changePi">
+        <label class="custom-control-label ui_label pt-md-1" for="" id="checkboxLabel">The amendment request includes a change in the Primary Investigator</label>
+    </div>
+
+    <div id="activateTaskandProfile">
+        <div class="card mt-3">
+            <div class="card-header p-1">Study Profile Updates</div>
+            <div class="card-body">
+                <div class="row" id="studyProfileUpdates">
+                    <label class="col-form-label mandatory">Study Profile Updates Required?</label>
+                    <div>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_studyProfileUpdates")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+                        )
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="col-form-label col-md-3">Comments<label class="font-italic generic_text_small">These comments can serve as a reminder and record of required updates</label></label>
+                        <textarea class="k-textbox col-md-8" rows="4" id="ui_txt_comments" maxlength="300"></textarea>
+                        <span class="float-right generic_text_small count">300 Characters left to enter</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3" id="activateTasks">
+            <div class="card-header p-1">Select Amendment "activation" tasks required</div>
+            <div class="card-body">
+                <div class="row">
+                    <label class="col-form-label">Task Name</label>
+                    <label class="col-form-label offset-3">Create Task</label>
+
+                </div>
+                <div class="row" id="protocolSubmission">
+                    <label class="col-form-label mandatory col-md-4">Protocol Submission for Amendment</label>
+                    <div class="offset-2">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_protocolSubmission")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+                        )
+                    </div>
+
+                </div>
+                <div class="row" id="manageContractStatus">
+                    <label class="col-form-label mandatory col-md-4 p-0 m-0">Manage Contract Status for Amendment</label>
+                    <div class="offset-2">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_manageContractStatus")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+                        )
+                    </div>
+
+                </div>
+                <div class="row" id="submitRequiredICF">
+                    <label class="col-form-label mandatory col-md-4">Submit Required ICF for Amendment</label>
+                    <div class="offset-2">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_submitRequiredICF")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+                        )
+                    </div>
+
+                </div>
+                <div class="row" id="drugActivities">
+                    <label class="col-form-label mandatory col-md-4">Drug Activities for Amendment</label>
+                    <div class="offset-2">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_drugActivities")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+
+                        )
+                    </div>
+                </div>
+                <div class="row" id="identifyActivivationDocs">
+                    <label class="col-form-label mandatory col-md-4">Identify "Activation" Documents for Amendment</label>
+                    <div class="offset-2">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_identifyActivivationDocs")
+                        .OptionLabel("Select")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .BindTo(new List<SelectListItem>
+                              () {
+                              new SelectListItem() {
+                              Text = @ConstDefaultValue.YES,
+                              Value = @ConstDefaultValue.YES
+                              },
+                              new SelectListItem() {
+                              Text =  @ConstDefaultValue.NO,
+                              Value = @ConstDefaultValue.NO
+                              },
+                              })
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right col-md-12 pt-md-2">
+        <button type="button" class="btn btn-primary" id="ui_btn_submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="ui_btn_cancel" onclick="showDialog();">Cancel</button>
+    </div>
+</div>
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <form id="ui_frm_tagForm">
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Download</label>
+                <div class="col-md-9">
+                    <a href="javascript:void(0);" class="fileDownload" filename="#= DocumentName #" subModuleFolderName="#= SubModuleName #" studyId="#=StudyId #">#= DocumentName #</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Uploaded By</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_uploadedBy")
+                    .HtmlAttributes(new { @class = "wid_100" })
+                    )
+                </div>
+            </div>
+
+            <div class="form-group row" id="documentName">
+                <label class="col-form-label col-md-3 mandatory">Document Name</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_documentName")
+                    .HtmlAttributes(new { @class = "wid_100" })
+                    .Value("#= DocumentName #")
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentStatus">
+                <label class="col-form-label col-md-3 mandatory">Document Status</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentStatus")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentType">
+                <label class="col-form-label col-md-3 mandatory">Document Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("CodeId")
+                    .OptionLabel("Select")    
+                    .Events(events => events.Change("onDocumentTypeChange"))
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                        })
+                        .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentSubType">
+                <label class="col-form-label col-md-3" id="documentSubTypeLabel">Document Sub-Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentSubType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .Events(events => events.DataBound("onSubtypeDataBound"))
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterDocumentSubType");
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .CascadeFrom("ui_ddl_documentType")
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="amendmentVersion">
+                <label class="col-form-label col-md-3 mandatory">Original / Amendment Version</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_amendmentVersion")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Original Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_originalDate")
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .ToClientTemplate()
+                    )
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Expiration Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_expirationDate")
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-primary" id="btn-DocumentSubmit">Submit</button>
+                    <button type="button" class="btn btn-primary" id="btn-DocumentCancel">Cancel</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</script>
+<script src="~/scripts/ReviewForAmendment.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.EmailService", "Anju.EmailService\Anju.EmailService.csproj", "{C6C1A86B-9AE4-4F26-A1C8-04B2B25FFF5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.EmailService.BusinessAccess", "Anju.EmailService.BusinessAccess\Anju.EmailService.BusinessAccess.csproj", "{74D2C592-6283-4E4E-8E81-46B6BBF5D72D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.EmailService.DataAccess", "Anju.EmailService.DataAccess\Anju.EmailService.DataAccess.csproj", "{C1410699-6761-491B-81A7-F3F85CB370C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.EmailService.Utilities", "Anju.EmailService.Utilities\Anju.EmailService.Utilities.csproj", "{5120B556-F659-4AA0-8334-904F700B4E6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6C1A86B-9AE4-4F26-A1C8-04B2B25FFF5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C1A86B-9AE4-4F26-A1C8-04B2B25FFF5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C1A86B-9AE4-4F26-A1C8-04B2B25FFF5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C1A86B-9AE4-4F26-A1C8-04B2B25FFF5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74D2C592-6283-4E4E-8E81-46B6BBF5D72D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74D2C592-6283-4E4E-8E81-46B6BBF5D72D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74D2C592-6283-4E4E-8E81-46B6BBF5D72D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74D2C592-6283-4E4E-8E81-46B6BBF5D72D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1410699-6761-491B-81A7-F3F85CB370C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1410699-6761-491B-81A7-F3F85CB370C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1410699-6761-491B-81A7-F3F85CB370C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1410699-6761-491B-81A7-F3F85CB370C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5120B556-F659-4AA0-8334-904F700B4E6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5120B556-F659-4AA0-8334-904F700B4E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5120B556-F659-4AA0-8334-904F700B4E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5120B556-F659-4AA0-8334-904F700B4E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96A31BAD-BB19-4A2D-BFA1-835C99552A68}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://52.165.21.31:8080/tfs/navigate
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Anju.EmailService\\Anju.EmailService.csproj
+		SccProjectName1 = Anju.EmailService
+		SccLocalPath1 = Anju.EmailService
+		SccProjectUniqueName2 = Anju.EmailService.BusinessAccess\\Anju.EmailService.BusinessAccess.csproj
+		SccProjectName2 = Anju.EmailService.BusinessAccess
+		SccLocalPath2 = Anju.EmailService.BusinessAccess
+		SccProjectUniqueName3 = Anju.EmailService.DataAccess\\Anju.EmailService.DataAccess.csproj
+		SccProjectName3 = Anju.EmailService.DataAccess
+		SccLocalPath3 = Anju.EmailService.DataAccess
+		SccProjectUniqueName4 = Anju.EmailService.Utilities\\Anju.EmailService.Utilities.csproj
+		SccProjectName4 = Anju.EmailService.Utilities
+		SccLocalPath4 = Anju.EmailService.Utilities
+	EndGlobalSection
+EndGlobal

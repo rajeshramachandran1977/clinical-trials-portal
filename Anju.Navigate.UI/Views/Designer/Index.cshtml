@@ -1,0 +1,261 @@
+﻿@{
+    ViewBag.Title = "Designer";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <title>Designer</title>
+    <script src="@Url.Content("~/js/jquery.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/css/semantic.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/workflowdesigner.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/site.css")" rel="stylesheet" type="text/css" />
+    @*<link href="@Url.Content("~/css/pace-theme-minimal.css")" rel="stylesheet" type="text/css" />*@
+    <script>window.paceOptions = { restartOnPushState: false };</script>
+    <script src="@Url.Content("~/js/pace.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/konva.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/ace.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/semantic.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/workflowdesigner.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/json5.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/jquery.auto-complete.min.js")" type="text/javascript"></script>
+</head>
+<body>
+    <script>
+        $(document).ajaxStart(function () { Pace.restart(); });
+    </script>
+    <div id="content" class="wfe-application">
+        <div class="ui pointing menu">
+            <div class="left menu">
+                <div class="item">
+                    <select id="codes" class="ui dropdown" asp-items="@(new SelectList(ViewBag.Schemes, "Id", "Code"))"></select>
+                </div>
+            </div>
+            <a href="javascript:OnNew()" class="item secondary">New scheme</a>
+            <div class="menu">
+                <div class="item">
+                    <div class="ui action input">
+                        <input type="text" placeholder="Enter Schema Name" id="txtSchema">
+                        <button onclick="javascript:OnSave()" class="ui button positive">Save scheme</button>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:DownloadScheme()" class="item">Download XML</a>
+            <a href="javascript:OnDelete()" class="red item">Delete scheme</a>
+        </div>
+        <div class="wfe-application-content">
+            <div id="wfdesigner"></div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+
+    $('#codes').on('change',
+        function () {
+            if ($('#codes').val() !== "0") {
+                var processid = QueryString.processid;
+                var p = { schemecode: this.value, processid: processid };
+                wfdesigner.load(p);
+            }
+        });
+
+
+    var QueryString = function () {
+        // This function is anonymous, is executed immediately and
+        // the return value is assigned to QueryString!
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            // If first entry with this name
+            if (typeof query_string[pair[0]] === "undefined") {
+                query_string[pair[0]] = pair[1];
+                // If second entry with this name
+            } else if (typeof query_string[pair[0]] === "string") {
+                var arr = [query_string[pair[0]], pair[1]];
+                query_string[pair[0]] = arr;
+                // If third or later entry with this name
+            } else {
+                query_string[pair[0]].push(pair[1]);
+            }
+        }
+        return query_string;
+    }();
+
+    var schemecode = $("#txtSchema").val();
+    var processid = QueryString.processid;
+    var graphwidth = 600;
+    var graphminheight = 600;
+    var graphheight = graphminheight;
+
+    var wfdesigner = undefined;
+    function wfdesignerRedraw() {
+        var data;
+
+        if (wfdesigner != undefined) {
+            data = wfdesigner.data;
+            wfdesigner.destroy();
+        }
+
+        WorkflowDesignerConstants.FormMaxHeight = 600;
+        wfdesigner = new window.WorkflowDesigner({
+            name: 'simpledesigner',
+            apiurl: '/Designer/API',
+            renderTo: 'wfdesigner',
+            imagefolder: '/images/',
+            graphwidth: graphwidth,
+            graphheight: graphheight,
+            //mode: 'readonly',
+            //mode: 'printable'
+            //notrendertoolbar : true,
+            //notshowwindows : true,
+            //disableobjectmovements : true
+        });
+
+        if (data == undefined) {
+            var isreadonly = false;
+            if (processid != undefined && processid !== '')
+                isreadonly = true;
+
+            var p = { schemecode: $("#txtSchema").val(), processid: processid, readonly: isreadonly };
+            if (wfdesigner.exists(p))
+                wfdesigner.load(p);
+            else
+                wfdesigner.create();
+        }
+        else {
+            wfdesigner.data = data;
+            wfdesigner.render();
+        }
+    }
+
+    $(window).resize(function () {
+        if (window.wfResizeTimer) {
+            clearTimeout(window.wfResizeTimer);
+            window.wfResizeTimer = undefined;
+        }
+        window.wfResizeTimer = setTimeout(function () {
+            var w = $(window).width();
+            var h = $(window).height();
+
+            if (w > 300)
+                graphwidth = w - 40;
+
+            if (h > 300)
+                graphheight = h - 250;
+
+            if (graphheight < graphminheight)
+                graphheight = graphminheight;
+
+            wfdesignerRedraw();
+        }, 150);
+
+    });
+
+    $(window).resize();
+
+    function DownloadScheme() {
+        wfdesigner.downloadscheme();
+    }
+
+
+    function OnSave() {
+
+        var schemeSelected = $("#codes").val();
+        var schemecode = $("#txtSchema").val();
+
+        if (schemeSelected === "0" && schemecode === "") {
+            alert("Either Enter New Scheme Name or Select scheme from Dropdown to Save");
+
+        } else {
+
+            if (schemecode === "") {
+                wfdesigner.schemecode = schemeSelected;
+            } else {
+                wfdesigner.schemecode = schemecode;
+            }
+
+            var err = wfdesigner.validate();
+            if (err != undefined && err.length > 0) {
+                alert(err);
+            }
+            else {
+                wfdesigner.save(function () {
+                    alert('The scheme is saved!');
+                    location.reload();
+                });
+            }
+        }
+    }
+
+    function OnDelete() {
+
+        var schemeSelected = $("#codes").val();
+
+        if (schemeSelected === "0") {
+            alert("Select scheme from Dropdown to Delete");
+
+        } else {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Designer/Delete?scheme=' + schemeSelected,
+                success: function (resultData) { alert("Scheme Deleted Successfully"); location.reload(); }
+            });
+        }
+    }
+
+    function OnNew() {
+        wfdesigner.create();
+    }
+
+
+    function createInstance() {
+        $.ajax({
+            type: 'GET',
+            url: '/Designer/Create',
+            data: { schemeName: wfdesigner.schemecode },
+            success: function (resultData) {
+                document.getElementById("serverdata").innerHTML = JSON.stringify(resultData, undefined, 2);
+
+            },
+            fail: function () {
+                alert("Error Creating an instance");
+            }
+        });
+    }
+
+    function getCommands() {
+        $.ajax({
+            type: 'GET',
+            url: '/Designer/GetCommands',
+            success: function (resultData) {
+                document.getElementById("serverdata").innerHTML = JSON.stringify(resultData, undefined, 2);
+
+            },
+            fail: function () {
+                alert("Error in GetCommands");
+            }
+        });
+    }
+
+    function executeCommand() {
+        $.ajax({
+            type: 'GET',
+            url: '/Designer/ExecuteCommand',
+            success: function (resultData) {
+                document.getElementById("serverdata").innerHTML = JSON.stringify(resultData, undefined, 2);
+
+            },
+            fail: function () {
+                alert("Error in GetCommands");
+            }
+        });
+    }
+
+
+</script>

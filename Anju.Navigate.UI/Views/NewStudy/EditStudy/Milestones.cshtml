@@ -1,0 +1,270 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard overflowHidden" id="milestonesdetailscontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddMilestones" onclick="addMilestones()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Milestones>
+            ()
+            .Name("ui_dtg_Milestones")
+            .Columns(columns =>
+                    {
+                            columns.Bound(c => c.MilestoneId).Hidden(true);
+                            columns.Bound(c => c.StudyId).Hidden(true);
+                            columns.Bound(c => c.ID).Title("Row No").Hidden(true).ClientTemplate("#= renderNumber(data) #");
+                            columns.Bound(c => c.ID).Title("ID").Width(50).ClientTemplate("#= renderRecordNumber(data) #");
+                            columns.Bound(c => c.Name).Width(200).Title("Contact Type");
+                            columns.Bound(c => c.Type).Width(100).Title("Milestone Type");
+                            columns.Bound(c => c.Phase).Width(120).Title("Milestone Phase");
+                            columns.Bound(c => c.Parameters).Width(150).Title("Milestone Parameters");
+                            columns.Bound(c => c.Dependency).Width(100).Title("Dependency");
+                            columns.Bound(c => c.Estimatedcompletiondate).Width(180).Title("Estimated Completion Date").ClientTemplate("#= Estimatedcompletiondate ? kendo.toString(kendo.parseDate(Estimatedcompletiondate), 'MMM dd, yyyy') : '' #");
+                            columns.Bound(c => c.Milestonecompletiondate).Width(180).Title("Milestone Completion Date").ClientTemplate("#= Milestonecompletiondate ? kendo.toString(kendo.parseDate(Milestonecompletiondate), 'MMM dd, yyyy') : '' #");
+                            columns.Bound(c => c.MilestoneStatus).Width(100).Title("Status");
+                            columns.Bound(c => c.Remindersentdate).Width(150).Title("Reminder Sent Date").ClientTemplate("#= Remindersentdate ? kendo.toString(kendo.parseDate(Remindersentdate), 'MMM dd, yyyy') : '' #");
+                            columns.Command(command => command.Custom("Tag").Text("Edit").Click("showMilestones")).Width(90);
+                            columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteMilestones")).Width(90);
+                        })
+                        .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+                        .Scrollable()
+                        .Groupable(false)
+                        .Sortable()
+                        .Pageable(pageable => pageable
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Events(events =>
+                                {
+                events.DataBound("resetRowNumber");
+            })
+            .Events(events => events.DataBound("OnDataBoundforMilestones"))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+
+            .Model(model => model.Id(p => p.MilestoneId))
+            .Read(read => read.Action("GetMilestones", "NewStudy"))
+            .Destroy(update => update.Action("DeleteMilestones", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("Milestones")
+        .Title("Milestones")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="milestonestemplate">
+    <div id="details-container">
+        <form id="ui_frm_milestones">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_milestoneid" min="1" data-bind="value:ui_num_milestoneid" />
+                    <div class="row">
+                        <div id="displayName" class="col-md-6">
+                            <div id="Name">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_name"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforname" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_name" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_name" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforname"></label></span>
+                                    <input type="hidden" id="regexexprforname" />
+                                    <input type="hidden" id="validationmsgforname" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayType" class="col-md-6">
+                            <div id="type">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_type"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortype" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_type")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.MILESTONETYPE });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayPhase" class="col-md-6">
+                            <div id="phase">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_phase"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforphase" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_phase")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues",
+                                    "NewStudy",
+                                    new { type = @ConstDefaultValue.MILESTONEPHASE });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayParameters" class="col-md-6">
+                            <div id="parameters">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_parameters"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforparameters" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_parameters" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_parameters" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforparameters"></label></span>
+                                    <input type="hidden" id="regexexprforparameters" />
+                                    <input type="hidden" id="validationmsgforparameters" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayDependency" class="col-md-6">
+                            <div id="dependency">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_dependency"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfordependency" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="numberFieldWidth" onkeypress="return event.charCode >= 48 && event.charCode <= 57" id="ui_num_dependency" min="1" data-bind="value:ui_num_dependency" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayEstimatedcompletiondate" class="col-md-6">
+                            <div id="estimatedcompletiondate">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_estimatedcompletiondate"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforestimatedcompletiondate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_estimatedcompletiondate")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayMilestonecompletiondate" class="col-md-6">
+                            <div id="milestonecompletiondate">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_milestonecompletiondate">test</label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextformilestonecompletiondate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_milestonecompletiondate")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayStatus" class="col-md-6">
+                            <div id="status">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_status"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstatus" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_milestonestatus")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.MILESTONESTATUS });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayRemindersentdate" class="col-md-6">
+                            <div id="remindersentdate">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_remindersentdate"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforremindersentdate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_remindersentdate")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavemilestones">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script>
+    var milestonesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Milestones)';
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var milestonename = '@ConstDefaultValue.MILESTONENAME';
+    var milestonetype = '@ConstDefaultValue.MILESTONETYPE';
+    var milestonephase = '@ConstDefaultValue.MILESTONEPHASE';
+    var milestoneparameters = '@ConstDefaultValue.MILESTONEPARAMETERS';
+    var dependency = '@ConstDefaultValue.DEPENDENCY';
+    var estimatedcompletiondate = '@ConstDefaultValue.ESTIMATEDCOMPLETIONDATE';
+    var milestonecompletiondate = '@ConstDefaultValue.MILESTONECOMPLETIONDATE';
+    var status = '@ConstDefaultValue.STATUS';
+    var remindersentdate = '@ConstDefaultValue.REMINDERSENTDATE';
+</script>
+<script src="~/scripts/EditStudy/Milestones.js"></script>

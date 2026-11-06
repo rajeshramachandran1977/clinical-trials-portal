@@ -1,0 +1,297 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<div class="container-fluid">
+    <span id="popupNotification"></span>
+    <div class="row padding_row">
+        <div class="col-md-2 pl-md-0">
+            <img src="~/Images/Dashboard.jpg" />
+            <label class="task_heading">&nbsp;My Dashboard</label>
+            <input type="hidden" id="LoginUsername" value=@ViewBag.LoginUsername>
+            <input type="hidden" id="userType" value=@ViewBag.userType>
+        </div>
+        <div class="col-md-10 pr-md-0 text-right">
+            <label class="ui_label ml-1 border-right pr-2">Welcome @ViewBag.LoginUsername</label>
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".changePasswordModal" data-toggle="modal" class="changePassword registerIcon pl-1" data-toggle="tooltip" title="Change Password" data-placement="bottom" />
+            <a href=".changePasswordModal" data-toggle="modal" class="changePassword ui_label ml-1 border-right pr-2">Change Password</a>
+
+            <img src="~/Images/LogoutIcon.jpg" class="logout registerIcon pl-1" data-toggle="tooltip" title="Logout" data-placement="bottom" />
+            <a href="#" class="logout ui_label ml-1">Logout</a>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="tabstrip">
+                    <ul>
+                        <li class="k-state-active dashboard">Users </li>
+                        <li class="dashboard">List of Values</li>
+                        <li class="dashboard">Meta Data</li>
+                        <li class="dashboard">Global Settings</li>
+                        <li class="dashboard">Help</li>
+                    </ul>
+                    <div>
+                        <div id="users"></div>
+                    </div>
+                    <div>
+                        <div id="listOfValues"></div>
+                    </div>
+                    <div>
+                        <div id="metaData"></div>
+                    </div>
+                    <div>
+                        <div id="globalSettingsDiv">
+                            @(Html.Kendo().Grid<Anju.Navigate.Data.GlobalSettings>()
+                              .Name("GlobalSettinggrid")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.GlobalKey).Width("25%");
+                                  columns.Bound(c => c.GlobalValue).Width("25%").ClientTemplate("#if (GlobalKey === 'External Users Help Page'){#<a class='openModal' data-id='external'  href=\\#>#= GlobalValue#</a>#}else if (GlobalKey === 'Internal Users Help Page'){#<a class='openModal' data-id='internal' href=\\#>#= GlobalValue#</a>#}else if (GlobalKey === 'LOGIN_PAGE_CONTENT'){#<a class='openLoginPageModal' href=\\#>#= GlobalValue#</a>#}else if (GlobalKey === 'BannerUpload'){#<a class='openBannerUploadModal' href=\\#>#= GlobalValue#</a>#}else if (GlobalKey === 'BackgroundUpload'){#<a class='openBackgroundUploadModal' href=\\#>#= GlobalValue#</a>#}else{# #= GlobalValue#  #}#");
+                                  columns.Bound(c => c.Remarks).Width("36%");
+                                  columns.Bound(c => c.IsActive).Width("7%").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />");
+                                  columns.Command(command => { command.Edit(); }).Width("7%");
+                              })
+                               .Events(events =>
+                               {
+                                   events.Save("OnCreateUpdateModal");
+                                   events.DataBound("onDataBound");
+                                   //events.Edit("onEdit");
+                               })
+                              .HtmlAttributes(new { style = "height: 60vh;" })
+                              .Scrollable()
+                              .Groupable()
+                              .Sortable()
+                              .Filterable()
+                              .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+                              .Pageable(pageable => pageable
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                              .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(e => e.RequestEnd("OnGlobalSettingsaveChanges"))
+                              //.Events(events => events.Error("error_handler"))
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.GlobalId);
+                                  model.Field(o => o.GlobalKey).Editable(false);
+                              })
+                              .Update(update => update.Action("UpdateGlobalSetting", "Administration"))
+                              .Read(read => read.Action("GetGlobalSetting", "Administration"))
+                              )
+                            )
+
+                        </div>
+                        <div id="globalSettingsHelpDocDiv" class="ml-2">
+                            <div class="row mb-2 pl-3 wid_40" id="helpUpload">
+                                <h4 class="ui_label labeltest"></h4>
+
+                                @(Html.Kendo().Upload()
+                                .Name("helpFiles")
+                                .Multiple(false)
+                                .Async(a => a
+                                .Save("SaveHelpDocuments", "NewStudy")
+                                .Remove("RemoveHelpDocuments", "NewStudy")
+                                .AutoUpload(false)
+                                )
+                                .Events(events => events
+                                    .Upload("onUpload")
+                                )
+                                )
+                            </div>
+                            @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+                               ()
+                               .Name("ui_dtg_helpDocuments")
+                               .Columns(columns =>
+                               {
+                                   columns.Bound(c => c.DocumentId).Hidden(true);
+                                   columns.Bound(c => c.DocumentName).Width("80%").Title("Document Name").ClientTemplate(" <a onclick='ShowDocument(this);' href=\\#>#= DocumentName#</a> ");
+                                   columns.Bound(c => c.SubModuleName).Hidden(true);
+                                   columns.Bound(c => c.StudyId).Hidden(true);
+                                   columns.Command(command => { command.Destroy(); }).Width("20%");
+                               })
+                               .HtmlAttributes(new { style = "height:42vh;", @class = "ui_label wid_100" })
+                               .Scrollable()
+                               .AutoBind(true)
+                               .Groupable(false)
+                               .Sortable()
+                               .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+                               .Pageable(pageable => pageable
+                               .PageSizes(true)
+                               .ButtonCount(5))
+                               .DataSource(dataSource => dataSource
+                               .Ajax()
+                               .Model(model => model.Id(p => p.DocumentId))
+                               .Read(read => read.Action("GetDocumentsByStudyID", "NewStudy").Data("additionalDocumentInfo"))
+                               .Destroy(update => update.Action("DeleteDocuments", "NewStudy"))
+                               )
+                            )
+                            <div class="row float-right mt-2">
+                                <button type="button" class="btn btn-primary ml-1 mr-1" id="ui_btn_helpDocumentSave">Save</button>
+                                <button type="button" class="btn btn-primary mr-3" id="ui_btn_back">Back</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="help"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="helpView">
+    <label class="task_heading m-md-0">Welcome to the Help Page</label>
+    <div class="form-group row pl-2">
+        <div class="col-md-11">
+            <table id="reviewInternalDocuments">
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade changePasswordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal_header height_40px backgnd_color">
+                <h4 class="modal-title ui_modal_header pt-md-1">Change Password</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg"></a>
+            </div>
+            <div class="modal-body ui_modal">
+                <div class="row ml-1 font-italic">
+                    Please note that your password must confirm to the following rules:
+                </div>
+                <ul>
+                    <li id="passwordLengthChangePwd"></li>
+                    <li id="passwordNumberic"></li>
+                    <li id="passwordUpperLowerCase"></li>
+                    <li id="passwordSpecial"></li>
+                </ul>
+                <div class="row" id="currentPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Current Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_currentPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleCurrentPassword"></span>
+                </div>
+                <div class="row" id="enterNewPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Enter New Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_enterNewPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleNewPassword"></span>
+                </div>
+                <div class="row" id="confirmNewPassword">
+                    <label class="ui_label mandatory wid_35 pl-3">Confirm New Password</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_confirmNewPassword")
+                    .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                    )
+                    <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleConfirmPassword"></span>
+                </div>
+            </div>
+            <div class="modal-footer float-right p-2">
+                <button type="button" class="btn btn-primary" id="ui_btn_save">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loginPageContentModal">
+    <div class="modal-dialog" id="modal_dialog">
+        <div class="modal-content">
+            <div class="modal-header modal_header backgnd_color">
+                <h4 class="modal-title ui_modal_header pt-md-1">Login Page Content</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div class="row mr-1">
+                    <textarea rows="4" class="k-textbox col-md-12" id="ui_txt_loginText"></textarea>
+                    <div class="ui_label pl-md-2 font-italic font-weight-normal">Use <strong>$$</strong> to enter the text in the next line in Login Page.</div>
+                </div>
+            </div>
+            <div class="modal-footer float-right">
+                <button type="button" id="ui_btn_loginContentSave" class="btn btn-primary ml-1 mr-1">Save</button>
+                <button type="button" class="btn btn-primary" id="ui_btn_loginContentCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bannerUploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal_header backgnd_color">
+                <h4 class="modal-title ui_modal_header pt-md-1">Banner Upload</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div id="bannerFileUpload">
+                    @(Html.Kendo().Upload()
+                       .Name("files")
+                       .Validation(validation => validation.AllowedExtensions(new string[] { ".jpg", ".png" }))
+                       .Multiple(false)
+                       .Async(a => a
+                       .Save("SaveBannerUploadDocuments", "Dashboard")
+                       .AutoUpload(false)
+                       )
+                    )
+                </div>
+                <div class="ui_label pl-md-1 font-italic font-weight-normal">You can only upload <strong>JPG</strong>, <strong>PNG</strong> files.</div>
+            </div>
+            <div class="modal-footer float-right">
+                <button type="button" class="btn btn-primary ml-1 mr-1" id="ui_btn_bannerUploadSave">Save</button>
+                <button type="button" class="btn btn-primary" id="ui_btn_bannerUploadCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="backgroundUploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal_header backgnd_color">
+                <h4 class="modal-title ui_modal_header pt-md-1">Login Background Upload</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div id="backgroundFileUpload">
+                    @(Html.Kendo().Upload()
+                       .Name("loginBackgroundUpload")
+                       .Validation(validation => validation.AllowedExtensions(new string[] { ".jpg", ".png" }))
+                       .Multiple(false)
+                       .Async(a => a
+                       .Save("SaveLoginBackgroundDocuments", "Dashboard")
+                       .AutoUpload(false)
+                       )
+                    )
+                </div>
+                <div class="ui_label pl-md-1 font-italic font-weight-normal">You can only upload <strong>JPG</strong>, <strong>PNG</strong> files.</div>
+            </div>
+            <div class="modal-footer float-right">
+                <button type="button" class="btn btn-primary ml-1 mr-1" id="ui_btn_backgroundUploadSave">Save</button>
+                <button type="button" class="btn btn-primary" id="ui_btn_backgroundUploadCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    var VerbiageForNewUser = '@ConstDefaultValue.VERBIAGEFORNEWUSER';
+    var LOGIN_PAGE_CONTENT = '@ConstDefaultValue.LOGIN_PAGE_CONTENT';
+    var EMAIL_DEFAULT_POSTBOX = '@ConstDefaultValue.EMAIL_DEFAULT_POSTBOX';
+    var appName = '@ConstDefaultValue.APPNAME';
+    var EXTERNALUSERSHELPPAGE = '@ConstDefaultValue.EXTERNALUSERSHELPPAGE';
+    var INTERNALUSERSHELPPAGE = '@ConstDefaultValue.INTERNALUSERSHELPPAGE';
+    var BANNERUPLOAD = '@ConstDefaultValue.BANNERUPLOAD';
+    var BACKGROUNDUPLOAD = '@ConstDefaultValue.BACKGROUNDUPLOAD';
+</script>
+<script src="~/scripts/Dashboard.js"></script>
+<script src="~/scripts/EditNewUser.js"></script>
+<script src="~/scripts/InternalNewUser.js"></script>
+<script src="~/scripts/Administration.js"></script>
+<script src="~/scripts/Common/Common.js"></script> 

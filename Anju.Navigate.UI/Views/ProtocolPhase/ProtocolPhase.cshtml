@@ -1,0 +1,295 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model Anju.Navigate.Data.ListOfDocuments
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ProtocolPhase";
+}
+<link href="~/css/navigateStyles.css" rel="stylesheet" />
+
+<div class="p-md-4 shadow-lg newWindowMargin">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0" id="taskHeading">Drug Activities</label>
+    <hr />
+    <div class="panel" id="panelForPI">
+        <div class="panel-body study_panel ui_panel" id="piPanel">Please record comments related to Drug specific activities for this study.</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+
+    <div class="row pt-2" id="chkbox">
+        <label class="mandatory col-md-1 pl-md-4"></label>
+        <input type="checkbox" class="custom-control-input" id="requestAccepted">
+        <label class="custom-control-label ui_label pt-md-1" for="requestAccepted" id="checkboxLabel">I have adequately forecasted and completed all drug related activities required for this study</label>
+    </div>
+    <div class="row" id="drugActivitiesCmt">
+        <div class="col-md-12">
+            <label class="wid_10 col-form-label">Comments</label>
+            <textarea class="k-textbox wid_80" rows="4" id="ui_txt_comments" maxlength="300"></textarea>
+            <span class="float-right generic_text_small count">300 Characters left to enter</span>
+        </div>
+    </div>
+    <div id="FMVDocument" class="card">
+        <div class="card-header"><strong>FMV Document Upload</strong></div>
+        <div class="card-body">
+            <div class="ui_label">Archive completed documentation of the approved FMV analysis of the final budget performed by the FMV Associate (FMVA)</div>
+            <div class="form-group row" id="FMVDocumentError">
+                <label class="col-form-label col-md-4 mandatory">Upload completed FMV approval of budget and confirmation</label>
+                <div class="col-md-8 mt-md-2">
+                    <button type="button" data-target=".addFMVDocModal" data-toggle="modal"><span class="k-icon k-i-plus"></span>Add Document</button>
+                    <a href="javascript:void(0);" class="ui_link col-md-7" id="FMVDocumentDownload">DOWNLOAD</a>
+                    <button type="button" id="ui_btn_RemoveFMVDocument"><span class="k-icon k-i-delete"></span>Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="submitActivationDocs">
+
+        <div class="form-group row">
+            <table id="activationdocumentlist">
+            </table>
+        </div>
+
+    </div>
+    <div id="requiredICFDocs">
+        <div class="form-group row">
+            <label class=" col-form-label mandatory">Upload ICF Document</label>
+            <div class="col-md-6">
+                @(Html.Kendo().Upload()
+                .Name("fileICFDoc")
+                .Files(
+                    files =>
+                    {
+                        foreach (var f in Model.Documents)
+                        {
+                            files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                        }
+                    })
+                .Multiple(false)
+                .Async(a => a
+                .Save("SaveICFDocuments", "ProtocolPhase")
+                .Remove("RemoveICFDocuments", "ProtocolPhase")
+                .AutoUpload(true)
+                )
+                // .Events(events => events
+                // .Upload("onUploadICFDocument")
+                //.Remove("onremoveICFDocument")
+                //)
+                )
+            </div>
+        </div>
+    </div>
+    <div id="finalActivationReview">
+        <div class="card">
+            <div class="card-header"><strong>Activation Review Status</strong></div>
+            <div class="card-body">
+                <div class="row">
+                    <label class="col-form-label">Download VDR Checklist</label>
+                    <div>
+                        <a class="btn btn-link ui_link ml-1" asp-action="DownloadFiles"
+                           asp-controller="NewStudy"
+                           asp-route-filename="VDR Checklist.doc"
+                           asp-route-subModuleFolderName="CommonDocuments">
+                            VDR Checklist
+                        </a>
+                    </div>
+                </div>
+                <div class="form-group row" id="checklistUpload">
+                    <label class="mandatory col-form-label">Upload completed checklist</label>
+                    <div class="col-md-8 mt-md-2">
+                        <button type="button" data-target=".addFMVDocModal" data-toggle="modal" id="AddChecklistDocument"><span class="k-icon k-i-plus"></span>Add Document</button>
+                        <a href="javascript:void(0);" class="ui_link col-md-7" id="checklistDownload">DOWNLOAD</a>
+                        <button type="button" id="ui_btn_removeChecklistDocument"><span class="k-icon k-i-delete"></span>Remove</button>
+                    </div>
+                </div>
+
+                <div class="row" id="activationDate">
+                    <label class="mandatory col-form-label">Study Activation Date<label class="font-italic generic_text_small">Drug Shipment Date</label></label>
+                    <div class="col-md-4">
+                        @(Html.Kendo().DatePicker()
+                        .Name("ui_dt_studyActivation")
+                        .HtmlAttributes(new { })
+                        .Format("MMM dd, yyyy")
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="icfResubmissionRequired">
+        <div class="row">
+            <label class="col-form-label">Download ICF</label>
+            <a href="javascript:void(0);" class="ui_link col-md-7 mt-md-2" id="downloadICF">Download ICF</a>
+        </div>
+        <div class="row" id="Reupload">
+            <label class="col-form-label mandatory">Please Re-Upload ICF</label>
+            <div class="col-md-8 mt-md-2">
+
+                @(Html.Kendo().Upload()
+                   .Name("fileReUploadICFDoc")
+                   .Multiple(false)
+                   .Async(a => a
+                   .Save("SaveReuploadICFDocuments", "ProtocolPhase")
+                   .Remove("RemoveReuploadICFDocuments", "ProtocolPhase")
+                   .AutoUpload(true)
+                   )
+                  .Events(events => events
+                  .Select("onSelectReUploadDocuments")
+                  .Success("onsuccessReUploadDocuments")
+                )
+                )
+            </div>
+
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+
+    <div class="modal fade addFMVDocModal">
+        <div class="modal-dialog" id="modal_dialog">
+            <div class="modal-content">
+                <form method="post" id="frm_FMVDocumentDetails">
+                    <div class="modal-header modal_header" id="modalHeading">Upload FMV Analysis</div>
+                    <div class="modal-body">
+                        <div class="row ml-md-2 mr-0" id="FMVUpload">
+                            @(Html.Kendo().Upload()
+                            .Name("FMVUploadFile")
+                            .Multiple(false)
+                            .Async(a => a
+                            .Save("SaveFMVDocuments", "ProtocolPhase")
+                            .Remove("RemoveFMVDocuments", "ProtocolPhase")
+                            .AutoUpload(false)
+                            )
+                            .Events(events => events
+                            .Select("onSelectFMVDocuments")
+                            .Upload("onUploadFMVDocuments")
+                            .Remove("onremoveFMVDocuments")
+                            .Success("onsuccessFMVDocuments")
+                            )
+                            .HtmlAttributes(new { aria_label = "files" })
+                            )
+                        </div>
+                        <hr />
+                        <div class="form-group row" id="FMVdocumentName">
+                            <label class="col-md-4 col-form-label mandatory">Document Name</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_FMVdocumentName")
+                                .HtmlAttributes(new { @class = "wid_100" })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="FMVdocumentStatus">
+                            <label class="col-md-4 col-form-label mandatory">Document Status</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_FMVdocumentStatus")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Document Type</label>
+                            <div class="col-md-8">
+                                <label class="ui_label font-weight-light" id="ui_lbl_documentType">Budget</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Document Sub-Type</label>
+                            <div class="col-md-8">
+                                <label class="ui_label font-weight-light" id="ui_lbl_documentSubType">FMV Analysis</label>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="FMVVersion">
+                            <label class="col-md-4 col-form-label mandatory">Original / Amendment Version</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_FMVVersion")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Original Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_FMVOriginalDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Expiration Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_FMVExpiryDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-1">
+                        <button type="button" id="btn_FMVDocumentSubmit" class="btn btn-primary">Submit</button>
+                        <input type="button" id="btn_FMVDocumentCancel" value="Cancel" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</div>
+<script>
+    var appName = '@ConfigValues.appName';
+</script>
+<script src="~/scripts/ProtocolPhase.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

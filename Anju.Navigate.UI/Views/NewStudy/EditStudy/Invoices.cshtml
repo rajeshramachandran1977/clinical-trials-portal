@@ -1,0 +1,494 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="overflowHidden" id="invoicedetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_Invoicedetails" onclick="addInvoicedetails()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Invoicedetails>
+            ()
+            .Name("ui_dtg_Invoices")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.InvoicesdetailsId).Hidden(true);
+                columns.Bound(c => c.StudyId).Hidden(true);
+                columns.Bound(c => c.Checksenttosite).Width(200).Title("Check Sent to Site").ClientTemplate("#= Checksenttosite ? kendo.toString(kendo.parseDate(Checksenttosite), 'MMM dd, yyyy') : '' #");
+                columns.Bound(c => c.Descriptionofpayment).Width(200).Title("Description of payment");
+                columns.Bound(c => c.Invoicedate).Width(150).Title("Invoice Date").ClientTemplate("#= Invoicedate ? kendo.toString(kendo.parseDate(Invoicedate), 'MMM dd, yyyy') : '' #"); ;
+                columns.Bound(c => c.Invoicenumber).Width(150).Title("Invoice No.");
+                columns.Bound(c => c.Ponumber).Width(150).Title("PO Number");
+                columns.Bound(c => c.Currency).Width(100).Title("Currency");
+                columns.Bound(c => c.Paymentamount).Width(150).Title("Payment Amount");
+                columns.Bound(c => c.Lineitem).Width(200).Title("Line Item");
+                columns.Bound(c => c.Generalledgernumber).Width(200).Title("General Ledger Number");
+                columns.Bound(c => c.Departmentcode).Width(150).Title("Department Code");
+                columns.Bound(c => c.Budgetsource).Width(150).Title("Budget Source");
+                columns.Bound(c => c.Personnel).Width(100).Title("Personnel");
+                columns.Bound(c => c.Procedural).Width(100).Title("Procedural");
+                columns.Bound(c => c.Irbfees).Width(105).Title("IRB Fees");
+                columns.Bound(c => c.Irbannualfees).Width(200).Title("IRB Annual Fees");
+                columns.Bound(c => c.Administrative).Width(150).Title("Administrative");
+                columns.Bound(c => c.Pharmacy).Width(100).Title("Pharmacy");
+                columns.Bound(c => c.Startup).Width(100).Title("Start-Up");
+                columns.Bound(c => c.Correlative).Width(100).Title("Correlative");
+                columns.Bound(c => c.Other).Width(100).Title("Other");
+                columns.Bound(c => c.Organizationtype).Width(150).Title("Organization Type");
+                columns.Bound(c => c.Natureofexpenditure).Width(200).Title("Nature of Expenditure");
+                columns.Bound(c => c.Purposeofexpenditure).Width(200).Title("Purpose of Expenditure");
+                columns.Bound(c => c.Settingofactivity).Width(200).Title("Setting of Activity");
+                columns.Command(command => command.Custom("Tag").Text("Edit").Click("showInvoicedetails")).Width(80);
+                columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteInvoicedetails")).Width(80);
+            })
+            .Events(events => events.DataBound("OnDataBoundforInvoicedetails"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.InvoicesdetailsId))
+            .Read(read => read.Action("GetInvoicesdetails", "NewStudy"))
+            .Destroy(update => update.Action("DeleteInvoicedetails", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("Invoices")
+        .Title("Invoices")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="invoicestemplate">
+    <div id="details-container">
+        <form id="ui_frm_invoices">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_invoicedetailsid" min="1" data-bind="value:ui_num_invoicedetailsid" />
+                    <div class="row">
+                        <div id="displayChecksenttosite" class="col-md-6">
+                            <div id="checksenttosite">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_checksenttosite"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforchecksenttosite" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_checksenttosite")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDescriptionofpayment" class="col-md-6">
+                            <div id="descriptionofpayment">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_descriptionofpayment"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfordescriptionofpayment" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_descriptionofpayment" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_descriptionofpayment" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordescriptionofpayment"></label></span>
+                                    <input type="hidden" id="regexexprfordescriptionofpayment" />
+                                    <input type="hidden" id="validationmsgfordescriptionofpayment" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayInvoicedate" class="col-md-6">
+                            <div id="invoicedate">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_invoicedate"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforinvoicedate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_invoicedate")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayInvoicenumber" class="col-md-6">
+                            <div id="invoicenumber">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_invoicenumber"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforinvoicenumber" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_invoicenumber" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_invoicenumber" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforinvoicenumber"></label></span>
+                                    <input type="hidden" id="regexexprforinvoicenumber" />
+                                    <input type="hidden" id="validationmsgforinvoicenumber" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayCurrency" class="col-md-6">
+                            <div id="currency">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_currency"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcurrency" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_currency")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.CURRENCY });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayPONumber" class="col-md-6">
+                            <div id="ponumber">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_ponumber"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforponumber" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_ponumber" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_ponumber" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforponumber"></label></span>
+                                    <input type="hidden" id="regexexprforponumber" />
+                                    <input type="hidden" id="validationmsgforponumber" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayPaymentamount" class="col-md-6">
+                            <div id="paymentamount">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_paymentamount"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforpaymentamount" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_paymentamount" data-bind="value:ui_num_paymentamount" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayLineitem" class="col-md-6">
+                            <div id="lineitem">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_lineitem"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforlineitem" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_lineitem" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_lineitem" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforlineitem"></label></span>
+                                    <input type="hidden" id="regexexprforlineitem" />
+                                    <input type="hidden" id="validationmsgforlineitem" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayGeneralledgernumber" class="col-md-6">
+                            <div id="generalledgernumber">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_generalledgernumber"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforgeneralledgernumber" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_generalledgernumber" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_generalledgernumber" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforgeneralledgernumber"></label></span>
+                                    <input type="hidden" id="regexexprforgeneralledgernumber" />
+                                    <input type="hidden" id="validationmsgforgeneralledgernumber" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDepartmentcode" class="col-md-6">
+                            <div id="departmentcode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_departmentcode"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfordepartmentcode" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_departmentcode" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_departmentcode" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordepartmentcode"></label></span>
+                                    <input type="hidden" id="regexexprfordepartmentcode" />
+                                    <input type="hidden" id="validationmsgfordepartmentcode" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayBudgetsource" class="col-md-6">
+                            <div id="budgetsource">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_budgetsource"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforbudgetsource" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_budgetsource")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.BUDGETSOURCE });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayPersonnel" class="col-md-6">
+                            <div id="personnel">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_personnel"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforpersonnel" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_personnel" data-bind="value:ui_num_personnel" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayIRBFees" class="col-md-6">
+                            <div id="IRBFees">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_irbfees"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforirbfees" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_irbfees" data-bind="value:ui_num_irbfees" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayProcedural" class="col-md-6">
+                            <div id="procedural">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_procedural"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforprocedural" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_procedural" min="1" data-bind="value:ui_num_procedural" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayIRBAnnualfees" class="col-md-6">
+                            <div id="IRBAnnualFees">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_irbannualfees"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforirbannualfees" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_irbannualfees" min="1" data-bind="value:ui_num_irbannualfees" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayAdministrative" class="col-md-6">
+                            <div id="administrative">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_administrative"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforadministrative" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_administrative" min="1" data-bind="value:ui_num_administrative" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayPharmacy" class="col-md-6">
+                            <div id="pharmacy">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_pharmacy"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforpharmacy" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_pharmacy" min="1" data-bind="value:ui_num_pharmacy" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayStartup" class="col-md-6">
+                            <div id="startup">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_startup"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforstartup" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_startup" min="1" data-bind="value:ui_num_startup" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayCorrelative" class="col-md-6">
+                            <div id="correlative">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_correlative"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcorrelative" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_correlative" min="1" data-bind="value:ui_num_correlative" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayOther" class="col-md-6">
+                            <div id="other">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_other"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforother" data-toggle="tooltip" />
+                                <div>
+                                    <input type="number" class="floatNumberField numberFieldWidth" step="0.01" id="ui_num_other" min="1" data-bind="value:ui_num_other" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayOrganizationtype" class="col-md-6">
+                            <div id="organizationtype">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_organizationtype"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfororganizationtype" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_organizationtype")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.ORGANIZATIONTYPE });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayNatureofexpenditure" class="col-md-6">
+                            <div id="natureofexpenditure">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_natureofexpenditure"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfornatureofexpenditure" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_natureofexpenditure")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.NATUREOFEXPENDITURE });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayPurposeofexpenditure" class="col-md-6">
+                            <div id="purposeofexpenditure">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_purposeofexpenditure"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforpurposeofexpenditure" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_purposeofexpenditure")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PURPOSEOFEXPENDITURE });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displaySettingofactivity" class="col-md-6">
+                            <div id="settingofactivity">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_settingofactivity"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforsettingofactivity" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                      .Name("ui_ddl_settingofactivity")
+                                      .HtmlAttributes(new { @class = "wid_100" })
+                                      .DataTextField("Code")
+                                      .DataValueField("Code")
+                                      .OptionLabel("Select")
+                                      .DataSource(source =>
+                                      {
+                                      source.Read(read =>
+                                      {
+                                      read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.USERSTATUS });
+                                      })
+                                      .ServerFiltering(true);
+                                      })
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSaveinvoices">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+   var charslefttoenter = '@ConstDefaultValue.CHARACTERSLEFTTOENTER';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var invoicesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Invoices)';
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var checksenttosite = '@ConstDefaultValue.CHECKSENTTOSITE';
+    var descriptionofpayment = '@ConstDefaultValue.DESCRIPTIONOFPAYMENT';
+    var invoicedate = '@ConstDefaultValue.INVOICEDATE';
+    var invoicenumber = '@ConstDefaultValue.INVOICENUMBER';
+    var ponumber = '@ConstDefaultValue.PONUMBER';
+    var currency = '@ConstDefaultValue.CURRENCY';
+    var paymentamount = '@ConstDefaultValue.PAYMENTAMOUNT';
+    var lineitem = '@ConstDefaultValue.LINEITEM';
+    var generalledgernumber = '@ConstDefaultValue.GENERALLEDGERNUMBER';
+    var departmentcode = '@ConstDefaultValue.DEPARTMENTCODE';
+    var budgetsource = '@ConstDefaultValue.BUDGETSOURCE';
+    var personnelspend = '@ConstDefaultValue.PERSONNELSPEND';
+    var procedural = '@ConstDefaultValue.PROCEDURAL';
+    var irbfees = '@ConstDefaultValue.IRBFEES';
+    var irbannualfees = '@ConstDefaultValue.IRBANNUALFEES';
+    var administrativeportionofthepayment = '@ConstDefaultValue.ADMINISTRATIVEPORTIONOFTHEPAYMENT';
+    var pharmacyportionofthepayment = '@ConstDefaultValue.PHARMACYPORTIONOFTHEPAYMENT';
+    var startup = '@ConstDefaultValue.STARTUP';
+    var correlative = '@ConstDefaultValue.CORRELATIVE';
+    var other = '@ConstDefaultValue.OTHER';
+    var organizationtype = '@ConstDefaultValue.ORGANIZATIONTYPE';
+    var natureofexpenditure = '@ConstDefaultValue.NATUREOFEXPENDITURE';
+    var purposeofexpenditure = '@ConstDefaultValue.PURPOSEOFEXPENDITURE';
+    var settingofactivity = '@ConstDefaultValue.SETTINGOFACTIVITY';
+</script>
+<script src="~/scripts/EditStudy/Invoices.js"></script>

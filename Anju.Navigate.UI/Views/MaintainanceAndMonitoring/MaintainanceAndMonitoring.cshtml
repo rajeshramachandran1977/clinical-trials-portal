@@ -1,0 +1,60 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI;
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "MaintainanceAndMonitoring";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<form class="p-md-4 shadow-lg newWindowMargin">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0" id="taskHeading">SAE Final Reconciliation Report Confirmation</label>
+    <hr />
+    <div class="panel" id="panelForPI">
+        <div class="panel-body study_panel ui_panel" id="piPanel">Please click the checkbox below to confirm and acknowledge that the PI has reported all Serious Adverse Events to @ConfigValues.appName and that the Final Reconciliation Report has been uploaded to in.site</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername />
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName />
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item" id="submissionSummary"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item" id="studyProfile"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="studyProfileUpdates">
+        <label class="task_heading m-md-0" id="taskHeading">Confirm Amendment-related Study Profile Updates:</label>
+        <hr />
+    </div>
+    <div class="row pt-2" id="chkbox">
+        <label class="mandatory col-md-1 pl-md-4"></label>
+        <input type="checkbox" class="custom-control-input" id="resubmissionReason">
+        <label class="custom-control-label ui_label pt-md-1" for="resubmissionReason" id="checkboxLabel">I hereby deem "SAE Final Reconciliation Report Confirmation" milestone as complete</label>
+    </div>
+    <div class="studyProfileUpdates row pt-md-2">
+        <label for="ui_lbl_comments" class="col-md-1 col-form-label ">Comments </label>
+        <textarea rows="4" class="k-textbox col-md-10 wid_100 ml-md-3" id="ui_txt_comments" maxlength="300"></textarea>
+        <span class="generic_text_small col-md-11 ml-md-4 text-right count">300 Characters left to enter</span>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="ui_btn_submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="ui_btn_cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</form>
+<script src="~/scripts/MaintainanceAndMonitoring.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

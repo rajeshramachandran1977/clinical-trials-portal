@@ -1,0 +1,65 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model Anju.Navigate.Data.ListOfDocuments
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "UpdateDocumentforPatientAccrualUpdate";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form role="form" id="ui_frmResubmission" class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <label class="task_heading m-md-0">Submit Updated Document(s)</label>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel" id="piPatientAccuralPanel">Please upload document(s) pertaining to the study by clicking on the Select files... button below</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value="@ViewBag.Institution" />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div>
+        @(Html.Kendo().Upload()
+       .Name("filesforupload")
+       .Multiple(true)
+       .Async(a => a
+       .Save("SaveSubmitUpdateDocuments", "MaintainanceAndMonitoring")
+       .Remove("RemoveUpdatedDocuments", "MaintainanceAndMonitoring")
+       .AutoUpload(false)
+       )
+       .HtmlAttributes(new { aria_label = "files" })
+        )
+    </div>
+</form>
+
+<div class="row pt-3">
+    <div class="col-md-12 text-right">
+        <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+    </div>
+</div>
+<div>
+    <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+</div>
+
+<script>
+var approved = @Messages.DECISIONAPPROVED;
+var rejected ="@Messages.DECISIONREJECTED";
+</script>
+
+<script src="~/scripts/UpdatedDocuments.js"></script>
+

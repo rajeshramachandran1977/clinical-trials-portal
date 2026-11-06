@@ -1,0 +1,168 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="researchgroupdescriptiondetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayStudysponsorname">
+            <div id="studysponsorname">
+                <label class="col-formEditStudy-labels " id="ui_lbl_studysponsorname"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforstudysponsorname" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_studysponsorname" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_studysponsorname">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstudysponsorname"></label></span>
+                    <input type="hidden" id="regexexprforstudysponsorname" />
+                    <input type="hidden" id="validationmsgforstudysponsorname" />
+                </div>
+            </div>
+        </div>
+        <div id="displayStudydrugsource">
+            <div id="studydrugsource">
+                <label class="col-formEditStudy-labels" id="ui_lbl_studydrugsource"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_studydrugsource" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_studydrugsource" maxlength='1'></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_studydrugsource" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstudydrugsource"></label></span>
+                    <input type="hidden" id="regexexprforstudydrugsource" />
+                    <input type="hidden" id="validationmsgforstudydrugsource" />
+                </div>
+            </div>
+        </div>
+        <div id="displayCooperativegroupstudy">
+            <div id="cooperativegroupstudy" class="row">
+                <div class="col-md-3">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_cooperativegroupstudy"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_cooperativegroupstudy" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_cooperativegroupstudy")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                    () {
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.YES,
+                    Value = @ConstDefaultValue.YES
+                    },
+                    new SelectListItem() {
+                    Text = @ConstDefaultValue.NO,
+                    Value = @ConstDefaultValue.NO
+                    },
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayCooperativegroupname">
+            <div id="cooperativegroupname" class="row">
+                <div class="col-md-3">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_cooperativegroupname"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_cooperativegroupname" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_cooperativegroupname")
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues",
+                    "NewStudy",
+                    new { type = @ConstDefaultValue.COOPERATIVEGROUPNAME });
+                    });
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayCooperativegroupnameother">
+            <div id="cooperativegroupnameother">
+                <label class="col-formEditStudy-labels" id="ui_lbl_cooperativegroupnameother"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_cooperativegroupnameother" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_cooperativegroupnameother" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_cooperativegroupnameother" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcooperativegroupnameother"></label></span>
+                    <input type="hidden" id="regexforcooperativegroupnameother" />
+                    <input type="hidden" id="validationmsgforcooperativegroupnameother" />
+                </div>
+            </div>
+        </div>
+        <div id="displayPhysiciannetworkstudy">
+            <div id="physiciannetworkstudy" class="row">
+                <div class="col-md-3">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_physiciannetworkstudy"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_physiciannetworkstudy" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_physiciannetworkstudy")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayPhysiciannetworknames">
+            <div id="physiciannetworknames" class="row">
+                <div class="col-md-3">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_multiselectphysiciannetworknames"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_multiselectphysiciannetworknames" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-9">
+                    <select id="ui_multiselectphysiciannetworknames" name="ui_multiselectphysiciannetworknames"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right mt-2">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveResearchGroupDescription">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var researchgroupdescriptionattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.ResearchGroupDescription)';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var url = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.PHYSICIANNETWORKNAMES })';
+
+    var studysponsor = '@ConstDefaultValue.STUDYSPONSOR';
+    var studydrugsource = '@ConstDefaultValue.STUDYDRUGSOURCE';
+    var iscooperativegroupstudy = '@ConstDefaultValue.ISCOOPERATIVEGROUPSTUDY';
+    var cooperativegroupname = '@ConstDefaultValue.COOPERATIVEGROUPNAME';
+    var cooperativegroupnameother = '@ConstDefaultValue.COOPERATIVEGROUPNAMEOTHER';
+    var isphysiciannetworkstudy = '@ConstDefaultValue.ISPHYSICIANNETWORKSTUDY';
+    var physiciannetworknames = '@ConstDefaultValue.PHYSICIANNETWORKNAMES';
+</script>
+<script src="~/scripts/EditStudy/ResearchGroupDescription.js"></script>

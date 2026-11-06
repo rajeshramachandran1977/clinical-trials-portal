@@ -1,0 +1,65 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+@(Html.Kendo().Dialog().Visible(false)
+   .Name("ui_dlgYesNo")
+   .Title("Cancel")
+   .Content("<p>Are you sure you want to Cancel?<p>")
+   .HtmlAttributes(new { @class = "ui_label" })
+   .Width(400)
+   .Modal(true)
+   .Actions(actions =>
+   {
+    actions.Add().Text("Yes").Primary(true)
+    .Action("onCancel");
+    actions.Add().Text("No");
+
+})
+   .Events(ev => ev.Close("onClose"))
+)
+
+@(Html.Kendo().Dialog().Visible(false)
+   .Name("ui_dlgYesNofornongrid")
+   .Title("Cancel")
+   .Content("<p>Are you sure you want to Cancel?<p>")
+   .HtmlAttributes(new { @class = "ui_label" })
+   .Width(400)
+   .Modal(true)
+   .Actions(actions =>
+   {
+    actions.Add().Text("Yes").Primary(true)
+    .Action("onCancelfornongrid");
+    actions.Add().Text("No");
+
+})
+   .Events(ev => ev.Close("onClose"))
+)
+<script>
+    function onClose() {
+        $("#ui_btnCancel").fadeIn();
+    }
+
+    function onOpen() {
+        $("#ui_btnCancel").fadeOut();
+    }
+
+    function showDialog() {
+        $('#ui_dlgYesNo').data("kendoDialog").open();
+        return true;
+    }
+
+    function showDialogfornongrid() {
+        $('#ui_dlgYesNofornongrid').data("kendoDialog").open();
+        return true;
+    }
+
+    $(document).ready(function () {
+        $('#ui_btnCancel').on('click', function (e) {
+            e.preventDefault();
+            validate.resetForm();
+        });
+    });
+
+</script>

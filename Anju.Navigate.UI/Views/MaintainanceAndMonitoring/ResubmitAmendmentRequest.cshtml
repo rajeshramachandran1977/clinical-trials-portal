@@ -1,0 +1,86 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ResubmitAmendmentRequest";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<form role="form" id="ui_frmResubmission" class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0">Resubmit Amendment Request</label>
+    <hr />
+    <div class="text-center ui_label font-weight-light redColor">
+        <div>The information you submit on this website will be used in accordance with our Privacy Policy.</div>
+        <div><a class="btn btn-link ui_link">[link]</a></div>
+    </div>
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel" id="piPanel">
+            <div>Please resubmit the requested amendment documents in the fields provided below. You may upload new documents and/or remove/replace previously provided documents.</div>
+            <div>A document summarizing the requested changes is required. Additional documents in support of the amendment request may be uploaded.</div>
+        </div>
+        <div class="pt-3">
+            <ul>
+                <li class="list_item">Milestones: @ViewBag.StudyId</li>
+                <li class="list_item">Submitted By @ViewBag.AssignedUsername</li>
+                <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+                <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+            </ul>
+        </div>
+        <hr />
+        <div>
+            <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+            <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+            <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+            <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        </div>
+
+
+        <div class="row">
+            <label class="mandatory col-form-label">Amendment - Summary of requested changes</label>
+            <div class="wid_40">
+                @(Html.Kendo().Upload()
+                .Name("addMandatoryFile")
+                .Multiple(false)
+                .Async(a => a
+                .Save("SaveMandatoryAmendmentDocuments", "MaintainanceAndMonitoring")
+                .Remove("RemoveUpdatedDocuments", "MaintainanceAndMonitoring")
+                .AutoUpload(false)
+                )
+                .HtmlAttributes(new { aria_label = "files" })
+                )
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-form-label">Add Additional Document</label>
+            <div class="wid_40">
+                @(Html.Kendo().Upload()
+                        .Name("uploadAdditionalfiles")
+                        .Multiple(true)
+                        .Async(a => a
+                        .Save("SaveAdditionalAmendmentDocuments", "MaintainanceAndMonitoring")
+                        .Remove("RemoveUpdatedDocuments", "MaintainanceAndMonitoring")
+                        .AutoUpload(false)
+                        )
+                        .HtmlAttributes(new { aria_label = "files" })
+                )
+            </div>
+        </div>
+        <div class="row" id="chkbox">
+            <label class="col-md-1"></label>
+            <input type="checkbox" class="custom-control-input" id="changePi">
+            <label class="custom-control-label ui_label pt-md-1" for="" id="checkboxLabel">The amendment request includes a change in the Primary Investigator</label>
+        </div>
+    </div>
+</form>
+
+<div class="row pt-3">
+    <div class="col-md-12 text-right">
+        <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/AmendProtocolOrBudget.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

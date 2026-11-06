@@ -1,0 +1,81 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "Home Page";
+}
+<link rel="stylesheet" href="~/css/login.css" />
+
+<div class="row pl-3 pt-3">
+    <div class="bg-img col-8 p-5" id="LoginBackground">
+        <p class="login_content_head">Furthering Anju's Commitment to Drug Research !</p>
+        <div class="login_page_content text-white pb-md-1" id="ui_txt_bannerText">
+            <div class="login_page_content text-white pb-md-1">
+                Anju's US Oncology is committed to discovering innovative new therapies, collaborating to advance science and improving patient care.
+            </div>
+            <div class="login_page_content text-white pb-md-1">
+                The mission and purpose of the Anju's IIT Program is to provide support for investigator-initiated oncology research that advances scientific knowledge and improve patient outcomes for marketed products and investigational agents.
+            </div>
+            <div class="login_page_content text-white pb-md-1">
+                Begin by registering as a new user and create your in.site account.
+            </div>
+        </div>
+        <div class="text-center">
+            <button id="btnRegister" class="btn register_btn mt-md-5">Register</button>
+        </div>
+        <p class="generic_text_small text-center" id="newUserButtonText">(For non Anju's users only)</p>
+    </div>
+    <form id="frmLogin" class="login-container col-4 shadow-lg">
+        <h4>Login to Navigate</h4>
+        <span id="popupNotification"></span>
+        <label class="login_title">Investigator Initiated Trials</label>
+        <div id="loginUserName" class="form-group row">
+            <label for="username" class="login_label col-md-12">User Name</label>
+            @(Html.Kendo().TextBox()
+            .Name("ui_txtUsername")
+            .HtmlAttributes(new { id = "userName", @class = "ml-2 wid_95" })
+            )
+        </div>
+        <div id="loginPassword" class="form-group row">
+            <label for="password" class="login_label col-md-12">Password</label>
+            @(Html.Kendo().TextBox()
+            .Name("ui_txtPassword")
+            .HtmlAttributes(new { id = "password", type = "password", @class = "ml-2 wid_95" })
+            )
+            <span class="fa fa-eye toggle-password password_icon"></span>
+        </div>
+        <div>
+            <div class="ui_link forgot_pwd">
+                <a href="@Url.Action("ForgetPassword", "Login" )">Forget Password </a>
+            </div>
+            <div class="ui_link forgot_name">
+                <a href="#" onClick="GetAdminEmail()">Forgot User Name</a>
+            </div>
+            <input class="btn btn-primary" id="Submit" type="submit" value="Submit" />
+            <p id="errorMsg" class="errorMsg"></p>
+        </div>
+    </form>
+</div>
+<script>
+    var VerbiageForNewUser = '@ConstDefaultValue.VERBIAGEFORNEWUSER';
+    var LOGIN_PAGE_CONTENT = '@ConstDefaultValue.LOGIN_PAGE_CONTENT';
+    var EXTERNALUSER="@ConstDefaultValue.EXTERNALUSER";
+    var PI="@ConstDefaultValue.PI";
+    var RESETPASSWORD="@ConstDefaultValue.RESETPASSWORD";
+    var PASSWORDEXPIRED="@Messages.PASSWORDEXPIRED";
+    var IISADMIN="@ConstDefaultValue.IISADMIN";
+    var MSL="@ConstDefaultValue.MSL";
+    var PROGRAMLEADER="@ConstDefaultValue.PROGRAMLEADER";
+    var TRIALLEADER="@ConstDefaultValue.TRIALLEADER";
+    var ADMIN="@ConstDefaultValue.ADMIN";
+    var SOMETHNGWENTWRONG="@Messages.SOMETHNGWENTWRONG";
+    var USERNAMEREQUIRED="@Messages.USERNAMEREQUIRED";
+    var PASSWORDEREQUIRED="@Messages.PASSWORDEREQUIRED";
+    var FORGOTTENUSERNAMESUBJECT="@Messages.FORGOTTENUSERNAMESUBJECT";
+    var INVALIDUSERNAMEPASSWORD="@Messages.INVALIDUSERNAMEPASSWORD";
+    var SOMETHNGWENTWRONG="@Messages.SOMETHNGWENTWRONG";
+</script>
+<script src="~/scripts/Login/Login.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

@@ -1,0 +1,176 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="overflowHidden" id="reviewsandnotesdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddReviewsandNotes" onclick="addReviewsandNotesdetails()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.ReviewsandNotes>
+            ()
+            .Name("ui_dtg_ReviewsandNotes")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.ReviewsandNotesId).Hidden(true);
+                columns.Bound(c => c.StudyId).Hidden(true);
+                columns.Bound(c => c.Reviewdate).Width("20%").Title("Review Date").ClientTemplate("#= Reviewdate ? kendo.toString(kendo.parseDate(Reviewdate), 'MMM dd, yyyy') : '' #");
+                columns.Bound(c => c.Username).Width("15%").Title("User Name");
+                columns.Bound(c => c.Role).Width("15%").Title("Role");
+                columns.Bound(c => c.Reviewstep).Width("15%").Title("Review Step");
+                columns.Bound(c => c.Submissioncomments).Width("15%").Title("Submission Comments");
+                columns.Bound(c => c.Decision).Width("15%").Title("Decision");
+                columns.Command(command => command.Custom("Tag").Text("Edit").Click("showReviewsandNotes")).Width("10%");
+                columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteReviewsandNotes")).Width("10%");
+            })
+            .Events(events => events.DataBound("OnDataBoundforReviewsandNotes"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.ReviewsandNotesId))
+            .Read(read => read.Action("GetReviewsandNotes", "NewStudy"))
+            .Destroy(update => update.Action("DeleteReviewsandNotes", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("ReviewsandNotes")
+        .Title("Reviews and Notes")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="reviewsandnotestemplate">
+    <div id="details-container">
+        <form id="ui_frm_reviewsandnotes">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_reviewsandnotesid" min="1" data-bind="value:ui_num_reviewsandnotesid" />
+                    <div class="row">
+                        <div id="displayReviewdate" class="col-md-6">
+                            <div id="reviewdate">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_reviewdate"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforreviewdate" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                      .Name("ui_dt_reviewdate")
+                                      .Start(CalendarView.Month)
+                                      .Depth(CalendarView.Month)
+                                      .Format("MMM dd, yyyy")
+                                      .DateInput()
+                                      .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayUsername" class="col-md-6">
+                            <div id="username">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_username"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforusername" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_username" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_username" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforusername"></label></span>
+                                    <input type="hidden" id="regexexprforusername" />
+                                    <input type="hidden" id="validationmsgforusername" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayRole" class="col-md-6">
+                            <div id="role">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_role"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforrole" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_role" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_role" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforrole"></label></span>
+                                    <input type="hidden" id="regexexprforrole" />
+                                    <input type="hidden" id="validationmsgforrole" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayReviewstep" class="col-md-6">
+                            <div id="reviewstep">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_reviewstep"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforreviewstep" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_reviewstep" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_reviewstep" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforreviewstep"></label></span>
+                                    <input type="hidden" id="regexexprforreviewstep" />
+                                    <input type="hidden" id="validationmsgforreviewstep" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displaySubmissioncomments" class="col-md-6">
+                            <div id="submissioncomments">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_submissioncomments"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforsubmissioncomments" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_submissioncomments" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_submissioncomments" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforsubmissioncomments"></label></span>
+                                    <input type="hidden" id="regexexprforsubmissioncomments" />
+                                    <input type="hidden" id="validationmsgforsubmissioncomments" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDecision" class="col-md-6">
+                            <div id="decision">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_decision"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfordecision" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_decision" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_decision" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfordecision"></label></span>
+                                    <input type="hidden" id="regexexprfordecision" />
+                                    <input type="hidden" id="validationmsgfordecision" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavereviewsandnotes">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var reviewsandnotesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.ReviewsandNotes)';
+    var reviewdate = '@ConstDefaultValue.REVIEWDATE';
+    var username = '@ConstDefaultValue.USERNAME';
+    var roleforgeneraldetails = '@ConstDefaultValue.ROLEFORGENERALDETAILS';
+    var reviewstep = '@ConstDefaultValue.REVIEWSTEP';
+    var submissioncomments = '@ConstDefaultValue.SUBMISSIONCOMMENTS';
+    var decision = '@ConstDefaultValue.REVIEWDECISIONFORGENERALDETAILS';
+</script>
+<script src="~/scripts/EditStudy/ReviewsandNotes.js"></script>

@@ -1,0 +1,49 @@
+html, body {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#header {
+    height: 80px !important;
+    background: #fff;
+}
+
+#main {
+    min-height: 92% !important;
+    padding-top: 80px !important;
+}
+
+#footer {
+    height: 50px !important;
+    color: #000;
+    background: #fff;
+    font-size: 12px;
+    text-align: center;
+    padding: 10px;
+}
+
+#anjuLogo {
+    align-self: center;
+}
+
+.height_40px {
+    height: 40px
+}
+
+.backgnd_color {
+    background-color: #cce5ff;
+}
+
+.ui_modal_header {
+    font-size: 12px !important;
+    font-weight: bold;
+}
+
+.ui_modal {
+    font-size: 12px !important;
+}
+
+.ui_link {
+    font-size: 12px !important;
+    color: #1a0dab;
+}

@@ -1,0 +1,299 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ManageContractStatus";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<div class="shadow-lg p-md-4 newWindowMargin">
+    <label class="task_heading">Manage Contract Status</label>
+    <span id="popupNotification"></span>
+    <hr />
+    <div class="panel">
+        <div class="panel-body ui_panel study_panel">Please complete the following data. When the Contract Status = Fully-Executed Contract, you must upload a copy of the final "Schedule A"</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution/>
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+
+    <div class="form-group row" id="contractType">
+        <label class="col-md-3 col-form-label mandatory">Contract Type</label>
+        <div>
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_contractType")
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.CONTRACTTYPE });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="contractStatus">
+        <label class="col-md-3 col-form-label mandatory">Contract Status</label>
+        <div>
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_contractStatus")
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.CONTRACTSTATUS });
+            })
+            .ServerFiltering(true);
+            })
+            .Events(e =>
+            {
+            e.Select("onChangeOfContractStatus");
+            })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="currentLocation">
+        <label class="col-md-3 col-form-label mandatory">Current Location</label>
+        <div>
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_currentLocation")
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.CURRENTLOCATION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Contact Name</label>
+        <div class="col-md-3 p-0">
+            @(Html.Kendo().TextBox()
+            .Name("ui_txt_contactName")
+            .HtmlAttributes(new { @class = "wid_100" })
+            )
+        </div>
+    </div>
+    <div id="ifCIF">
+        <div class="form-group row" id="CIFSubmission">
+            <label class="col-md-3 col-form-label mandatory">CIF Submission Date</label>
+            <div>
+                @(Html.Kendo().DatePicker()
+                .Name("ui_dt_CIFSubmission")
+                .Start(CalendarView.Year)
+                .Depth(CalendarView.Year)
+                .Format("MMM dd, yyyy")
+                .Value(CalendarView.Month.ToString())
+                .DateInput()
+                .HtmlAttributes(new { title = "monthpicker" })
+                )
+            </div>
+        </div>
+    </div>
+    <div id="ifFullyExecutedContract">
+        <div class="form-group row" id="contractDoc">
+            <label class="col-md-3 col-form-label mandatory">Upload Executed Contract Document</label>
+            <div class="col-md-8 mt-md-1">
+                <button type="button" id="ui_modal_contractDocument" data-target="#addContractDocModal" data-toggle="modal"><span class="k-icon k-i-plus"></span>Add Document</button>
+                <a href="javascript:void(0);" class="ui_link col-md-7" id="contractDocDownload">DOWNLOAD</a>
+                <button type="button" id="btn_RemoveContractDoc"><span class="k-icon k-i-delete"></span>Remove</button>
+            </div>
+        </div>
+        <div class="modal fade" id="addContractDocModal">
+            <div class="modal-dialog" id="modal_dialog">
+                <div class="modal-content">
+                    <form method="post" id="frm_contractDocDetails">
+                        <div class="modal-header modal_header">Upload Executed Contract Document</div>
+                        <div class="modal-body">
+                            <div class="row ml-md-2 mr-0" id="uploadFile">
+                                @(Html.Kendo().Upload()
+                                .Name("contractUploadfile")
+                                .Multiple(false)
+                                .Async(a => a
+                                .Save("SavecontractDocument", "ProtocolPhase")
+                                .Remove("RemovecontractDocument", "ProtocolPhase")
+                                .AutoUpload(false)
+                                )
+                                .Events(events => events
+                                .Select("onSelectContractUpload")
+                                .Upload("onUploadContractUpload")
+                                .Remove("onremoveContractUpload")
+                                .Success("onsuccessContractUpload")
+
+                                )
+                                .HtmlAttributes(new { aria_label = "files" })
+
+                                )
+                            </div>
+                            <hr />
+                            <div class="form-group row" id="contractDocumentName">
+                                <label class="col-md-4 col-form-label mandatory">Document Name</label>
+                                <div class="col-md-8">
+                                    @(Html.Kendo().TextBox()
+                                    .Name("ui_txt_contractDocumentName")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group row" id="contractDocumentStatus">
+                                <label class="col-md-4 col-form-label mandatory">Document Status</label>
+                                <div class="col-md-8">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_contractDocumentStatus")
+                                    .HtmlAttributes(new { @class = "wid_60" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label">Document Type</label>
+                                <div class="col-md-8">
+                                    <label class="ui_label font-weight-light" id="ui_lbl_documentType">Contract</label>
+                                </div>
+                            </div>
+                            <div class="form-group row" id="contractVersion">
+                                <label class="col-md-4 col-form-label mandatory">Original / Amendment Version</label>
+                                <div class="col-md-8">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_contractVersion")
+                                    .HtmlAttributes(new { @class = "wid_60" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label">Original Date</label>
+                                <div class="col-md-8">
+                                    @(Html.Kendo().DatePicker()
+                                    .Name("ui_dt_contractOriginalDate")
+                                    .HtmlAttributes(new { })
+                                    .Format("MMM dd, yyyy")
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label">Expiration Date</label>
+                                <div class="col-md-8">
+                                    @(Html.Kendo().DatePicker()
+                                    .Name("ui_dt_contractExpiryDate")
+                                    .HtmlAttributes(new { })
+                                    .Format("MMM dd, yyyy")
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer p-1">
+                            <button type="button" id="btn-ContractDocumentSubmit" class="btn btn-primary">Submit</button>
+                            <input type="button" id="btn-ContractDocumentCancel" value="Cancel" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id="contractExecution">
+            <label class="col-md-3 col-form-label mandatory">Contract Execution Date</label>
+            <div>
+                @(Html.Kendo().DatePicker()
+                .Name("ui_dt_contractExecution")
+                .Start(CalendarView.Year)
+                .Depth(CalendarView.Year)
+                .Format("MMM dd, yyyy")
+                .Value(CalendarView.Month.ToString())
+                .DateInput()
+                .HtmlAttributes(new { title = "monthpicker" })
+                )
+            </div>
+        </div>
+        <div class="form-group row" id="contractEffective">
+            <label class="col-md-3 col-form-label mandatory">Contract Effective Date</label>
+            <div>
+                @(Html.Kendo().DatePicker()
+                .Name("ui_dt_contractEffective")
+                .Start(CalendarView.Year)
+                .Depth(CalendarView.Year)
+                .Format("MMM dd, yyyy")
+                .Value(CalendarView.Month.ToString())
+                .DateInput()
+                .HtmlAttributes(new { title = "monthpicker" })
+                )
+            </div>
+        </div>
+        <div class="form-group row" id="contractExpiration">
+            <label class="col-md-3 col-form-label mandatory">Contract Expiration Date</label>
+            <div>
+                @(Html.Kendo().DatePicker()
+                .Name("ui_dt_contractExpiration")
+                .Start(CalendarView.Year)
+                .Depth(CalendarView.Year)
+                .Format("MMM dd, yyyy")
+                .Value(CalendarView.Month.ToString())
+                .DateInput()
+                .HtmlAttributes(new { title = "monthpicker" })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="text-right col-md-12">
+        <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Common/CancelDialogBox.cshtml")
+    </div>
+</div>
+
+<script src="~/scripts/ManageContractStatus.js"></script>
+<script src="~/scripts/Common/Common.js"></script>
+ 

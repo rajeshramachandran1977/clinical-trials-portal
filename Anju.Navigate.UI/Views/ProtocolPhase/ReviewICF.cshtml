@@ -1,0 +1,400 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ReviewICF";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<div class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0">Review ICF</label>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel" id="piPanel">Please review the ICF submission.</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="col-md-12 pl-md-2">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+             ()
+             .Name("ui_dtg_ICFDocuments")
+             .Columns(columns =>
+             {
+             columns.Bound(c => c.DocumentId).Hidden(true);
+             columns.Command(command => command.Custom("Tag").Text("Tag").Click("showDetails")).Width("8%");
+             columns.Bound(c => c.DocumentName).Width("20%").Title("Document Name").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= DocumentName#</a> ");
+             columns.Bound(c => c.DocumentStatus).Width("20%").Title("Document Status");
+             columns.Bound(c => c.DocumentType).Width("15%").Title("Document Type");
+             columns.Bound(c => c.DocumentSubType).Width("15%").Title("Document Sub-Type");
+             columns.Bound(c => c.DocumentVersion).Width("22%").Title("Original / Amendment Version");
+             columns.Bound(c => c.SubModuleName).Hidden(true);
+             columns.Bound(c => c.StudyId).Hidden(true);
+             columns.Bound(c => c.OriginalDate).Hidden(true);
+             columns.Bound(c => c.ExpirationDate).Hidden(true);
+             columns.Bound(c => c.DocumentName).Hidden(true);
+             })
+
+             .HtmlAttributes(new { style = "height:250px;", @class = "ui_label" })
+             .Scrollable()
+             .Groupable(false)
+             .Sortable()
+             .Pageable(pageable => pageable
+             .Refresh(true)
+             .PageSizes(true)
+             .ButtonCount(5))
+             .DataSource(dataSource => dataSource
+             .Ajax()
+             .Model(model => model.Id(p => p.DocumentId))
+             .Read(read => read.Action("GetDocumentsByStudyID", "NewStudy").Data("additionalInfo"))
+             )
+        )
+        @(Html.Kendo().Window()
+        .Name("Details")
+        .Title("Review Document")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(800)
+        )
+    </div>
+    <div class="form-group row pt-md-2" id="icfReview">
+        <label class="col-form-label mandatory">ICF Review Decision</label>
+        <div class="col-md-6">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_icfReview")
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .Events(e =>
+            {
+                e.Select("onChangeofICFReview");
+            })
+            .DataSource(source =>
+            {
+                source.Read(read =>
+                {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.REVIEWICFDECISION });
+                })
+                .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="ICFUpload">
+        <label class="col-form-label mandatory">Please Upload Redlined ICF</label>
+        <div class="col-md-8">
+            <button type="button" id="ui_btn_addIcfDocument" data-target="#icfDocModal" data-toggle="modal"><span class="k-icon k-i-plus"></span>Add Document</button>
+            <a href="javascript:void(0);" class="ui_link col-md-7" id="icfDownload">DOWNLOAD</a>
+            <button type="button" id="ui_btn_removeIcfDocument"><span class="k-icon k-i-delete"></span>Remove</button>
+        </div>
+    </div>
+    <div class="modal fade" id="icfDocModal">
+        <div class="modal-dialog" id="modal_dialog">
+            <div class="modal-content">
+                <form method="post" id="frm_icfDocumentDetails">
+                    <div class="modal-header modal_header">Upload Redlined ICF</div>
+                    <div class="modal-body" id="icfFileUpload">
+                        <div class="row ml-md-2 mr-0">
+                            @(Html.Kendo().Upload()
+                            .Name("icfUploadFiles")
+                            .Multiple(false)
+                            .Async(a => a
+                            .Save("SaveRedLineDocuments", "ProtocolPhase")
+                            .Remove("RemoveRedLineDocuments", "ProtocolPhase")
+                            .AutoUpload(false)
+                            )
+                            .Events(events => events
+                            .Select("onSelectICFDocuments")
+                            .Upload("onUploadICFDocuments")
+                            .Remove("onremoveICFDocuments")
+                            .Success("onsuccessICFDocuments")
+
+                            )
+                            .HtmlAttributes(new { aria_label = "files" })
+
+                            )
+                        </div>
+                        <hr />
+                        <div class="form-group row" id="icfDocumentName">
+                            <label class="col-md-4 col-form-label mandatory">Document Name</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_icfDocumentName")
+                                .HtmlAttributes(new { @class = "wid_100" })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="icfDocumentStatus">
+                            <label class="col-md-4 col-form-label mandatory">Document Status</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_icfDocumentStatus")
+                                .HtmlAttributes(new { @class = "wid_60" }).DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Document Type</label>
+                            <div class="col-md-8">
+                                <label class="ui_label font-weight-light" id="ui_lbl_documentType">Regulatory</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Document Sub-Type</label>
+                            <div class="col-md-8">
+                                <label class="ui_label font-weight-light" id="ui_lbl_documentSubType">ICF</label>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="icfVersion">
+                            <label class="col-md-4 col-form-label mandatory">Original / Amendment Version</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_icfVersion")
+                                .HtmlAttributes(new { @class = "wid_60" }).DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Original Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_icfOriginalDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd yyyy")
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Expiration Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_icfExpiryDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd yyyy")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-1">
+                        <button type="button" id="ui_btn_icfDocumentSubmit" value="Submit" class="btn btn-primary">Submit</button>
+                        <input type="button" id="ui_btn_icfDocumentCancel" value="Cancel" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-form-label">ICF Review Comment</label>
+        <div class="col-md-9 pl-2">
+            <textarea rows="4" class="k-textbox wid_100" id="ui_txt_ICFReviewCmts" maxlength="300"></textarea>
+            <span class="generic_text_small float-right count">300 Characters left to enter</span>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="ui_btn_submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="ui_btn_cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+        @Html.Partial("~/Views/Common/CancelDialogBox.cshtml")
+    </div>
+</div>
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <form id="ui_frm_tagForm">
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Download</label>
+                <div class="col-md-9">
+                    <a href="javascript:void(0);" class="fileDownload" filename="#= DocumentNameWithOutExtension ##=DocumentExtension#" subModuleFolderName="#= SubModuleName #" studyId="#=StudyId #">#=DocumentNameWithOutExtension##=DocumentExtension#</a>
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Uploaded By</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_uploadedBy")
+                    .HtmlAttributes(new { @class = "wid_100", disabled = "disabled" })
+                    )
+                </div>
+            </div>
+
+            <div class="form-group row" id="documentName">
+                <label class="col-form-label col-md-3 mandatory">Document Name</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_documentName")
+                    .HtmlAttributes(new { @class = "wid_100" })
+                    .Value("#= DocumentName #")
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentStatus">
+                <label class="col-form-label col-md-3 mandatory">Document Status</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentStatus")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentType">
+                <label class="col-form-label col-md-3 mandatory">Document Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("CodeId")
+                    .OptionLabel("Select")
+                    .Events(events => events.Change("onDocumentTypeChange"))
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                        })
+                        .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentSubType">
+                <label class="col-form-label col-md-3" id="documentSubTypeLabel">Document Sub-Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentSubType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .Events(events => events.DataBound("onSubTypeDataBound"))
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterDocumentSubType");
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .CascadeFrom("ui_ddl_documentType")
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="amendmentVersion">
+                <label class="col-form-label col-md-3 mandatory">Original / Amendment Version</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_amendmentVersion")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Original Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_originalDate")
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .ToClientTemplate()
+                    )
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Expiration Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_expirationDate")
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-primary" id="ui_btn_documentSubmit">Submit</button>
+                    <button type="button" class="btn btn-primary" id="ui_btn_documentCancel">Cancel</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</script>
+<script src="~/scripts/ReviewICF.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

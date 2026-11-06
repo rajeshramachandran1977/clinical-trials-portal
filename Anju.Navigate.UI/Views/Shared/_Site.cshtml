@@ -1,0 +1,59 @@
+﻿@using Anju.Navigate.Utilities;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <link href="~/kendo/css/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/kendo/css/kendo.bootstrap-v4.min.css" rel="stylesheet" />
+    <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <script src="~/kendo/js/popper.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/kendo/js/kendo.all.min.js"></script>
+    <script src="~/kendo/js/kendo.aspnetmvc.min.js"></script>
+    <script src="~/scripts/Site.js"></script>
+    <script>
+        var usageTermsUrl='@ConstDefaultValue.USAGETERMSURL';
+        var privacyPolicyUrl='@ConstDefaultValue.PRIVACYPOLICYURL';
+    </script>
+</head>
+<body>
+    <header id="header" class="fixed-top ">
+        <div class="container-fluid">
+            <div class="row">
+                <img src="~/Images/AnjuLogo.jpg" class="col-md-1" id="anjuLogo" />
+                <img class="col-md-11" height="80" id="bannerImage" />
+            </div>
+        </div>
+    </header>
+    <main role="main" id="main">
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    </main>
+    <footer id="footer" class="border-top">
+        <div class="container-fluid noprint">
+            &copy; @ConfigValues.Year Anju Software, <b>Version:@ConfigValues.version</b> | <a href="#" id="termsAndConditions" target="_blank">Terms & Condition</a> | <a href="#" id="privacyPolicy" target="_blank">Privacy Policy</a> | <a href="#helpModal" data-toggle="modal" id="helpLink">Help</a>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="helpModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header height_40px backgnd_color">
+                    <h4 class="modal-title ui_modal_header">Help</h4>
+                    <a href="javascript:void[0]" class="close p-md-3" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg"></a>
+                </div>
+                <div class="modal-body ui_modal">
+                    <div> <label> Questions regarding system support for the in.site application contact:</label></div>
+                    <a class="ui_link" id="helpEmail"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

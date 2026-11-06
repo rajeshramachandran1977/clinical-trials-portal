@@ -1,0 +1,42 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="keyreferencescontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayKeyReferences">
+            <div id="keyreferenceserrmsg">
+                <label class="col-formEditStudy-labels " id="ui_lbl_keyreferencestab"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforkeyreferences" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_keyreferences" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforkeyreferences"></label></span>
+                    <input type="hidden" id="regexexprforkeyreferences" />
+                    <input type="hidden" id="validationmsgforkeyreferences" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveKeyreferences">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var keyreferencesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Keyreferences)';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var keyreferences = '@ConstDefaultValue.KEYREFERENCES';
+</script>
+<script src="~/scripts/EditStudy/KeyReferences.js"></script>

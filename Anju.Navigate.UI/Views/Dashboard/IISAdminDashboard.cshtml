@@ -1,0 +1,545 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using System.Linq
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "IISAdminDashboard";
+    Layout = "~/Views/Shared/_Site.cshtml";
+    var tempvalue = TempData["ModelActive"];
+}
+
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<input type="hidden" id="tempdata" />
+<div class="modal fade myproxyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content backgnd_color">
+            <div class="modal-header modal_header">
+                <h4 class="modal-title ui_modal_header info">User Preferences</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div class="panel">
+                    <div id="ui_proxyresult" class="panel-body ui_panel backgnd_color p-md-2 collapse">
+
+                    </div>
+                    <div class="panel-body ui_panel backgnd_color p-md-2">
+                        Use the available settings below to indicate your personal preferences within the current system
+                    </div>
+                </div>
+                <div>
+                    <label class="col-form-label  rig p-md-2 w-auto">Proxy Name</label>
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_proxyName")
+                    .HtmlAttributes(new { maxlength = 255, @class = "wid_60" })
+                    )
+                </div>
+            </div>
+            <div class="modal-footer p-2">
+                <button type="button" id="ui_btnProxyUserSubmission" class="btn btn-primary pull-right">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade ui_mySwitchProxyUserModel" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content backgnd_color">
+            <div class="modal-header modal_header">
+                <h4 class="modal-title ui_modal_header info">Switch Proxy User</h4>
+                <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg" /></a>
+            </div>
+            <div class="modal-body">
+                <div class="panel">
+                    <div class="panel-body ui_panel backgnd_color p-md-2">
+                        You've been designated to act on-behalf of one or more users. Please select the user account for which you wish to act.
+                    </div>
+                </div>
+                <div>
+                    <label class="col-form-label mandatory rig p-md-2 w-auto">User Account</label>
+                    @(Html.Kendo().DropDownList().Name("ui_ddl_proxyuser")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("ProxyUserName")
+                    .DataValueField("ProxyUserName")
+                    .DataSource(source => source
+                    .Custom()
+                    .Sort(s => s.Add("Id"))
+                    .Transport(tr => tr
+                    .Read(read =>
+                    {
+                    read.Action("GetSwitchUsers", "Administration");
+                    }))))
+                </div>
+            </div>
+            <div class="modal-footer p-2">
+                <button type="button" id="ui_btnSwitchProxySubmission" class="btn btn-primary pull-right">Switch</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row padding_row">
+        <div class="col-md-2 pl-md-0">
+            <img src="~/Images/Dashboard.jpg" />
+            <label class="task_heading">&nbsp;My Dashboard</label>
+        </div>
+        <div class="col-md-10 pr-md-0 text-right">
+            <label class="ui_label ml-1 border-right pr-2">Welcome @ViewBag.Username @ViewBag.Proxyuser</label>
+
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".ui_mySwitchProxyUserModel" data-toggle="modal" class="ui_switchproxyUser registerIcon pl-1" data-toggle="tooltip" title="Switch Proxy User" data-placement="bottom" />
+            <a data-toggle="modal" href=".ui_mySwitchProxyUserModel" class="ui_label ml-1 ui_switchproxyUser border-right pr-2">Switch Proxy User</a>
+
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".myproxyModal" data-toggle="modal" class="ui_userPrefrence registerIcon pl-1" data-toggle="tooltip" title="User Preferences" data-placement="bottom" />
+            <a href=".myproxyModal" data-toggle="modal" class="ui_userPrefrence ui_label ml-1 border-right pr-2">User Preferences</a>
+
+            <img src="~/Images/ChangePasswordIcon.jpg" href=".changePasswordModal" class="changePassword registerIcon pl-1" data-toggle="modal" data-toggle="tooltip" title="Change Password" data-placement="bottom" />
+            <a href=".changePasswordModal" class="changePassword ui_label ml-1 border-right pr-2" data-toggle="modal">Change Password</a>
+
+            <img src="~/Images/LogoutIcon.jpg" class="logout registerIcon pl-1" data-toggle="tooltip" title="Logout" data-placement="bottom" />
+            <a href="#" class="logout ui_label ml-1">Logout</a>
+        </div>
+    </div>
+    <div>
+        <input type="hidden" id="LoginUsername" value=@ViewBag.LoginUsername>
+        <input type="hidden" id="userType" value=@ViewBag.userType>
+        <input type="hidden" id="Proxyuser" value=@ViewBag.Proxyuser>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="tabstrip">
+                    <ul id="dashboardItems">
+                        @if (@ViewBag.userType == @ConstDefaultValue.TRIALLEADER || @ViewBag.userType == @ConstDefaultValue.PROGRAMLEADER || @ViewBag.userType == @ConstDefaultValue.MSL)
+                        {
+                            <li class="k-state-active iis_dashboard_li">Home </li>
+                            <li class="iis_dashboard_li">Search</li>
+                            <li class="iis_dashboard_li">Help</li>
+                        }
+                        @if (@ViewBag.userType == @ConstDefaultValue.IISADMIN)
+                        {
+                            <li class="k-state-active iis_dashboard_li">Home </li>
+                            <li class="iis_dashboard_li">Search</li>
+                            <li class="iis_dashboard_li">Default Milestones</li>
+                            <li class="iis_dashboard_li">Help</li>
+                        }
+                    </ul>
+                    @if (@ViewBag.userType == @ConstDefaultValue.IISADMIN || @ViewBag.userType == @ConstDefaultValue.TRIALLEADER || @ViewBag.userType == @ConstDefaultValue.PROGRAMLEADER || @ViewBag.userType == @ConstDefaultValue.MSL)
+                    {
+                        <div>
+                            <div class="panel pb-md-2">
+                                <div class="panel-body ui_panel backgnd_color">This is your IIT home page. Studies requiring action by you will be listed in the "My Task List" section. Simply click on the task name and you will be given specific instructions for completing the task. For more information about the study, click on the study title to open the study profile.</div>
+                            </div>
+                            <div class="card mb-2">
+                                <div id="homeTabstrip">
+                                    <ul>
+                                        <li class="k-state-active">My Task List</li>
+                                        <li id="listudyList">My Study List</li>
+                                    </ul>
+                                    @if (@ViewBag.userType == @ConstDefaultValue.IISADMIN)
+                                    {
+                                        <div id="userIISAdmin">
+                                            @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+                                                ()
+                                                .Name("gridIISAdminMyTaskList")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(p => p.StudyId).Hidden(false).Title("Study Name").Width("20%").ClientTemplate("#if (StudyNumber===null){#<a onclick='ShowIISAdmin(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='ShowIISAdmin(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                                    columns.Bound(p => p.StudyId).Hidden(true);
+                                                    columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='ShowIISAdmin(this);' href=\\#>#= StudyName#</a> ");
+                                                    columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Width("20%").Title("PI Name");
+                                                    columns.Bound(p => p.TaskName).Hidden(false).Width("30%").Title("Task Name").ClientTemplate(" <a onclick='AssignMSLAndTL(this);' href=\\#>#= TaskName#</a> ");
+                                                    columns.Bound(p => p.Franchise).Hidden(false).Width("15%").Title("Franchise");
+                                                    columns.Bound(p => p.ANJU_AddDate).Hidden(false).Width("15%").Title("Assignment Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                                })
+                                                .HtmlAttributes(new { style = "height: 43vh;" })
+                                                .Scrollable()
+                                                .Groupable()
+                                                .Filterable()
+                                                .Selectable(selectable => selectable
+                                                .Mode(GridSelectionMode.Single)
+                                                .Type(GridSelectionType.Cell))
+                                                .Sortable()
+                                                .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.StudyId))
+                                                .Read(read => read.Action("GetStudyDetails", "Dashboard", new { userType = @ConstDefaultValue.IISADMIN }))
+                                                )
+                                            )
+                                        </div>
+                                    }
+                                    else if (@ViewBag.userType == @ConstDefaultValue.MSL)
+                                    {
+                                        <div id="userMSL">
+                                            @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+                                                ()
+                                                .Name("gridMSLMyTaskList")
+                                                .Columns(columns =>
+                                                {
+
+                                                //columns.Bound(p => p.StudyId).Hidden(false).Width("20%").Title("Study Name").ClientTemplate("#if (StudyNumber===null){#<a onclick='ShowMSL(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='ShowMSL(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                                columns.Bound(p => p.StudyId).Hidden(true);
+                                                columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='ShowMSL(this);' href=\\#>#= StudyName#</a> ");
+                                                columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Width("20%").Title("PI Name");
+                                                columns.Bound(p => p.TaskName).Hidden(false).Width("30%").Title("Task Name").ClientTemplate(" <a onclick='MSLReview(this);' href=\\#>#= TaskName#</a> ");
+                                                columns.Bound(p => p.Franchise).Hidden(false).Width("15%").Title("Franchise");
+                                                columns.Bound(p => p.ANJU_AddDate).Hidden(false).Width("15%").Title("Assignment Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                                })
+                                                .HtmlAttributes(new { style = "height: 43vh;" })
+                                                .Scrollable()
+                                                .Groupable()
+                                                .Filterable()
+                                                .Selectable(selectable => selectable
+                                                .Mode(GridSelectionMode.Single)
+                                                .Type(GridSelectionType.Cell))
+                                                .Sortable()
+                                                .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.StudyId))
+                                                .Read(read => read.Action("GetStudyDetails", "Dashboard", new { userType = @ConstDefaultValue.MSL }))
+                                                )
+                                            )
+                                        </div>
+                                    }
+                                    else if (@ViewBag.userType == @ConstDefaultValue.PROGRAMLEADER)
+                                    {
+                                        <div id="userPL">
+                                            @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+                                                ()
+                                                .Name("gridPLMyTaskList")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(p => p.StudyId).Hidden(false).Title("Study Name").Width("20%").ClientTemplate("#if (StudyNumber===null){#<a onclick='ShowPL(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='ShowPL(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                                    columns.Bound(p => p.StudyId).Hidden(true);
+                                                    columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='ShowPL(this);' href=\\#>#= StudyName#</a> ");
+                                                    columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Width("20%").Title("PI Name");
+                                                    columns.Bound(p => p.TaskName).Hidden(false).Width("30%").Title("Task Name").ClientTemplate(" <a onclick='PLReview(this);' href=\\#>#= TaskName#</a> ");
+                                                    columns.Bound(p => p.Franchise).Hidden(false).Width("15%").Title("Franchise");
+                                                    columns.Bound(p => p.ANJU_AddDate).Hidden(false).Width("15%").Title("Assignment Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                                })
+                                                .HtmlAttributes(new { style = "height: 43vh;" })
+                                                .Scrollable()
+                                                .Groupable()
+                                                .Filterable()
+                                                .Selectable(selectable => selectable
+                                                .Mode(GridSelectionMode.Single)
+                                                .Type(GridSelectionType.Cell))
+                                                .Sortable()
+                                                .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.StudyId))
+                                                .Read(read => read.Action("GetStudyDetails", "Dashboard", new { userType = @ConstDefaultValue.PROGRAMLEADER }))
+                                                )
+                                            )
+                                        </div>
+                                    }
+                                    else if (@ViewBag.userType == @ConstDefaultValue.TRIALLEADER)
+                                    {
+                                        <div id="userPL">
+                                            @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+                                                ()
+                                                .Name("gridTLMyTaskList")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(p => p.StudyId).Hidden(false).Width("20%").Title("Study Name").ClientTemplate("#if (StudyNumber===null){#<a onclick='ShowTL(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='ShowTL(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                                    columns.Bound(p => p.StudyId).Hidden(true);
+                                                    columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='ShowTL(this);' href=\\#>#= StudyName#</a> ");
+                                                    columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Width("20%").Title("PI Name");
+                                                    columns.Bound(p => p.TaskName).Hidden(false).Width("30%").Title("Task Name").ClientTemplate(" <a onclick='TLReview(this);' href=\\#>#= TaskName#</a> ");
+                                                    columns.Bound(p => p.Franchise).Hidden(false).Width("15%").Title("Franchise");
+                                                    columns.Bound(p => p.ANJU_AddDate).Hidden(false).Width("15%").Title("Assignment Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                                    columns.Bound(p => p.StudyNumber).Hidden(true).Title("StudyNumber");
+                                                })
+                                                .HtmlAttributes(new { style = "height: 43vh;" })
+                                                .Scrollable()
+                                                .Groupable()
+                                                .Filterable()
+                                                .Selectable(selectable => selectable
+                                                .Mode(GridSelectionMode.Single)
+                                                .Type(GridSelectionType.Cell))
+                                                .Sortable()
+                                                .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.StudyId))
+                                                .Read(read => read.Action("GetStudyDetails", "Dashboard", new { userType = @ConstDefaultValue.TRIALLEADER }))
+                                                )
+                                            )
+                                        </div>
+                                    }
+                                    <div>
+                                        <div class="text-right">
+                                            <label class="ui_modal_checkbox checkbox-inline">
+                                                <input class="mt-1" type="checkbox" id="hideStudies" />Hide Closed, Rejected and Withdrawn studies
+                                            </label>
+                                        </div>
+                                        <div id="gridMyStudyListDiv">
+                                            @(Html.Kendo().Grid<Anju.Navigate.Data.NewStudy>
+                                                ()
+                                                .Name("gridMyStudyList")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(p => p.StudyId).Hidden(false).Title("Study Name").Width("15%").ClientTemplate("#if (StudyNumber===null){#<a onclick='Show(this);' href=\\#>#= StudyId#: #= TitleofTrial#</a>#}else{#<a onclick='Show(this);' href=\\#>#= StudyNumber#: #= TitleofTrial#</a>#}#");
+                                                    columns.Bound(p => p.StudyId).Hidden(true);
+                                                    columns.Bound(p => p.StudyName).Hidden(false).Title("Study Name").Width("20%").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= StudyName#</a> ");
+                                                    columns.Bound(p => p.ANJU_AddedBy).Hidden(false).Width("15%").Title("PI Name");
+                                                    columns.Bound(p => p.Stage).Hidden(false).Width("12%").Title("Stage");
+                                                    columns.Bound(p => p.State).Hidden(false).Width("20%").Title("State");
+                                                    columns.Bound(p => p.TaskStatus).Hidden(false).Width("21%").Title("Status");
+                                                    columns.Bound(p => p.LocalMRCDecision).Hidden(true).Title("LocalMRCDecision");
+                                                    columns.Bound(p => p.LocalMRCDecision).Hidden(true).Title("GlobalMRCDecision");
+                                                    columns.Bound(p => p.LocalMRCRecordType).Hidden(true).Title("LocalMRCRecordType");
+                                                    columns.Bound(p => p.GlobalMRCRecordType).Hidden(true).Title("GlobalMRCRecordType");
+                                                    columns.Bound(p => p.TaskName).Hidden(true).Title("TaskName");
+                                                    columns.Bound(p => p.GMRCTaskName).Hidden(true).Title("GMRCTaskName");
+                                                    columns.Bound(p => p.GMRCTaskCompleted).Hidden(true).Title("GMRCTaskCompleted");
+                                                    columns.Bound(p => p.GMRCGearTaskCompleted).Hidden(true).Title("GMRCGearTaskCompleted");
+                                                    columns.Bound(p => p.NoOfGearTask).Hidden(true).Title("NoOfGearTask");
+                                                    columns.Bound(p => p.IsallTaskCompleted).Hidden(true).Title("IsallTaskCompleted");
+                                                    columns.Bound(p => p.EnableCloseStudy).Hidden(true).Title("EnableCloseStudy");
+                                                    columns.Bound(p => p.IsIconVisible).Hidden(true).Title("IsIconVisible");
+                                                    columns.Bound(p => p.Institution).Hidden(true).Title("Institution");
+                                                    columns.Bound(p => p.ANJU_AddDate).Hidden(false).Width("12%").Title("Submission Date").ClientTemplate("#= ANJU_AddDate ? kendo.toString(kendo.parseDate(ANJU_AddDate), 'MMM dd, yyyy') : '' #");
+                                                    columns.Command(command => command.Custom("").Text(" ").IconClass("k-icon k-i-gear").HtmlAttributes(new { @class = "grid_icon" }).Click("showDetails").Visible("ShowIcon")).Width("5%");
+                                                })
+                                                .HtmlAttributes(new { style = "height: 43vh;" })
+                                                .Scrollable()
+                                                .Groupable()
+                                                .Filterable()
+                                                .Selectable(selectable => selectable
+                                                .Mode(GridSelectionMode.Single)
+                                                .Type(GridSelectionType.Cell))
+                                                .Sortable()
+                                                .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.StudyId))
+                                                .Read(read => read.Action("GetTaskDetails", "Dashboard").Data("additionalInfo"))
+                                                )
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="search"></div>
+                        @*<div>
+                                <div id="search"></div>
+                                <input type="hidden" id="LoginUsername" value=@ViewBag.LoginUsername>
+                                <input type="hidden" id="userType" value=@ViewBag.userType>
+                                <input type="hidden" id="Proxyuser" value=@ViewBag.Proxyuser>
+                            </div>*@
+                    }
+                    @if (@ViewBag.userType == @ConstDefaultValue.TRIALLEADER || @ViewBag.userType == @ConstDefaultValue.PROGRAMLEADER || @ViewBag.userType == @ConstDefaultValue.MSL)
+                    {
+                        <div class="help"></div>
+                    }
+                    @if (@ViewBag.userType == @ConstDefaultValue.IISADMIN)
+                    {
+                        <div>
+                            @(Html.Kendo().Grid<Anju.Navigate.Data.DefaultMileStone>
+                                ()
+                                .Name("gridDefaultMilestones")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(p => p.DefaultMilestoneId).Hidden(true).Title("Id");
+                                    columns.Bound(p => p.ID).Title("Row No").Hidden(true).Width("10%").ClientTemplate("#= renderNumber(data) #");
+                                    columns.Bound(p => p.ID).Title("ID").Width("10%").ClientTemplate("#= renderRecordNumber(data) #");
+                                    columns.Bound(p => p.MilestoneType).Hidden(false).Width("13%").Title("Milestone Type").EditorTemplateName("MilestoneType");
+                                    columns.Bound(p => p.MilestoneName).Hidden(false).Width("15%").Title("Milestone Name");
+                                    columns.Bound(p => p.BusinessDays).Hidden(false).Width("17%").Title("Enrollment%/Business Days");
+                                    columns.Bound(p => p.Dependency).Hidden(false).Width("10%").Title("Dependency").EditorTemplateName("IntegerTextBox");
+                                    columns.Bound(p => p.StudyPhase).Hidden(false).Width("10%").Title("Study Phase").EditorTemplateName("StudyPhase");
+                                    columns.Bound(p => p.Comments).Hidden(false).Width("35%").Title("Comments");
+                                    columns.Command(command => { command.Destroy(); }).Width("10%");
+                                })
+                                .ToolBar(tools =>
+                                {
+                                    tools.Create();
+                                    tools.Save();
+                                })                              
+
+                                 .Events(events =>
+                               {
+                                   events.Save("OnCreateUpdateModal");
+                                   events.DataBound("resetRowNumber");
+                                  
+                               })
+                                .HtmlAttributes(new { style = "height: 60vh;" })
+                                .Scrollable()
+                                .Groupable()
+                                .Filterable(filterable => filterable
+                                 .Extra(false)
+                                 .Operators(operators => operators
+                                     .ForString(str => str.Clear()
+                                         .StartsWith("Starts with")
+                                         .IsEqualTo("Is equal to")
+                                         .IsNotEqualTo("Is not equal to")
+                                     ))
+                                 )
+                                .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                .Selectable(selectable => selectable
+                                .Mode(GridSelectionMode.Single)
+                                .Type(GridSelectionType.Cell))
+                                .Sortable()
+                                .Pageable(pageable => pageable
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(e => e.RequestEnd("OnDefaultSettingsaveChanges"))
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.DefaultMilestoneId);
+                                    model.Field(o => o.ID).Editable(false);
+                                })
+                                .Read(read => read.Action("GetDefaultMilestoneDetails", "Dashboard"))
+                                .Create(update => update.Action("CreateUpdateDefaultMilestoneDetails", "Dashboard"))
+                                .Update(update => update.Action("CreateUpdateDefaultMilestoneDetails", "Dashboard"))
+                                .Destroy(update => update.Action("DeleteDefaultMilestoneDetails", "Dashboard"))
+                                )
+                            )
+                        </div>
+                        <div class="help"></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contextMenuIISDiv">
+        <ul id="contextMenuIIS" class="contextMenuStyles">
+            @*<li id="modifyStatusMenu" class="ui_label">
+                    Modify Status
+                </li>*@
+            <li id="tabledMenu" class="ui_label">Tabled</li>
+            <li id="initiateCloseoutMenu" class="ui_label">Initiate Study Closeout</li>
+        </ul>
+    </div>
+    <ul id="gearcontext-menu" class="contextMenuStyles">
+    </ul>
+
+    <div class="modal fade changePasswordModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal_header height_40px backgnd_color">
+                    <h4 class="modal-title ui_modal_header pt-md-1">Change Password</h4>
+                    <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg"></a>
+                </div>
+                <div class="modal-body ui_modal">
+                    <div class="row ml-1 font-italic">
+                        Please note that your password must confirm to the following rules:
+                    </div>
+                    <ul>
+                        <li id="passwordLength"></li>
+                        <li id="passwordNumberic"></li>
+                        <li id="passwordUpperLowerCase"></li>
+                        <li id="passwordSpecial"></li>
+                    </ul>
+                    <div class="row" id="currentPassword">
+                        <label class="ui_label mandatory wid_35 pl-3">Current Password</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_currentPassword")
+                        .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                        )
+                        <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleCurrentPassword"></span>
+                    </div>
+                    <div class="row" id="enterNewPassword">
+                        <label class="ui_label mandatory wid_35 pl-3">Enter New Password</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_enterNewPassword")
+                        .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                        )
+                        <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleNewPassword"></span>
+                    </div>
+                    <div class="row" id="confirmNewPassword">
+                        <label class="ui_label mandatory wid_35 pl-3">Confirm New Password</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_confirmNewPassword")
+                        .HtmlAttributes(new { type = "password", @class = "wid_50" })
+                        )
+                        <span class="fa fa-eye mt-1 pt-2 pl-3 position-relative" id="toggleConfirmPassword"></span>
+                    </div>
+                </div>
+                <div class="modal-footer float-right p-2">
+                    <button type="button" class="btn btn-primary" id="ui_btn_save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="helpView">
+        <label class="task_heading m-md-0">Welcome to the Help Page</label>
+        <div class="form-group row pl-2">
+            <div class="col-md-11">
+                <table id="reviewInternalDocuments">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var decisiontabled = "@Messages.DECISIONTABLED";
+    var mslloireview = "@Messages.MSLLOIREVIEW";
+    var pltaskname = "@Messages.PLTASKNAME";
+    var MSL = "@Messages.MSL";
+    var ProgramLeader = "@Messages.PROGRAMLEADER";
+    var TrialLeader = "@Messages.TRIALLEADER";
+    var lmrcdecisionrejectedconfirmedtaskname = "@Messages.LMRCDECISIONREJECTEDCONFIRMEDTASKNAME";
+    var lmrcdecisionapprovedtaskname = "@Messages.LMRCDECISIONAPPROVEDTASKNAME";
+    var lmrcdecisionwithdrawntaskname = "@Messages.LMRCDECISIONWITHDRAWNTASKNAME";
+    var gmrcapprovedtaskname = "@Messages.GMRCAPPROVEDTASKNAME";
+    var fairmarketdocument = "@Messages.FAIRMARKETDOCUMENT";
+    var drugactivities = "@Messages.DRUGACTIVITIES";
+    var managecontractstatus = "@Messages.MANAGECONTRACTSTATUS";
+    var identifyactivationdocuments = "@Messages.IDENTIFYACTIVATIONDOCUMENTS";
+    var reviewicf = "@Messages.REVIEWICF";
+    var reviewactivationdocuments = "@Messages.REVIEWACTIVATIONDOCUMENTS";
+    var reviewprotocol = "@Messages.REVIEWPROTOCOL";
+    var saeFinalReconciliationReportConfirmation = "@Messages.SAEFINALRECONCILIATIONREPORTCONFIRMATION";
+    var resubmitFinalStudyReport = "@Messages.RESUBMITFINALSTUDYREPORT";
+    var stringTempValue = "@tempvalue";
+    var lmrcresumemetting = "@Messages.LMRCRESUMEMETTING";
+    var reviewupdateddocuments = "@Messages.REVIEWUPDATEDDOCUMENTS";
+    var reviewforamendment = "@Messages.REVIEWFORAMENDMENT";
+    var finalActivationreview = "@Messages.FINALACTIVATIONREVIEW";
+    var activationletter = "@Messages.ACTIVATIONLETTER";
+    var IISADMIN = "@Messages.IISADMIN";
+    var active="@Messages.ACTIVE";
+    var enrollmentClosed="@Messages.ENROLLMENTCLOSEDSTATE";
+    var tabled="@Messages.DECISIONTABLED";
+    var initiateStudyCloseout="@Messages.INITIATESTUDYCLOSEOUT";
+    var studyCloseoutInitiated="@Messages.STUDYCLOSEOUTINITIATED";
+    var closeoutActivitiesInProgress="@Messages.CLOSEOUTACTIVITIESINPROGRESS";
+    var initiateStudyCloseoutActionInitiated="@Messages.INITIATESTUDYCLOSEOUTACTIONINITIATED";
+    var tpsrIsInCredi="@Messages.TPSRRECONCILIATION";
+    var drugReconciliation="@Messages.DRUGRECONCILIATION";
+    var budgetReconciliation="@Messages.BUDGETRECONCILIATION";
+    var poCloseoutRequested="@Messages.POCLOSEOUTREQUESTED";
+    var studyProfileUpdatesForAmendment = "@Messages.STUDYPROFILEUPDATESFORAMENDMENT";
+    var reviewRejectionForAmendment = "@Messages.REVIEWREJECTIONFORAMENDMENT";
+    var documentsubmissionreview = "@Messages.DOCUMENTSUBMISSIONREVIEW";
+    var resubmitFianlStudyReportStatus = "@Messages.RESUBMITFINALSTUDYREPORTSTATUS";
+</script>
+
+<script src="~/scripts/IISAdminDashboard.js"></script>
+<script src="~/scripts/Search.js"></script>
+<script src="~/scripts/CommonDashboard.js"></script>

@@ -1,0 +1,152 @@
+{
+  "Activation doc (Identify)": {
+    "Subject": "Activation Documents Required for Study",
+    "Body": "<html><body>The study Param0 has been approved by the IRC.</br><br>Please use the link below to log in to Param1 to identify the list of activation documents required for this study.</br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "LOI Submitted": {
+    "Subject": "Your Submission to SubParam",
+    "Body": "<html><body>Dear Salutation  Param0 <br></br>Thank you for submitting your Proposal Param1 . You should expect to receive email notification of our decision, and information about your next steps (if any), as soon as your submission has been reviewed. You can log in at any time to check the status.<br><br>Please click the link to log in to the system: Param3 <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "LOI review": {
+    "Subject": "Proposal for Review",
+    "Body": "<html><body>A LOI for study Param0 from Param1 has been submitted for your review.<br><br>Please log in to Param2 using the link and review the LOI for further action. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br> Global Medical Affairs Team</body></html>"
+  },
+  "Resubmit LOI Notification": {
+    "Subject": "Resubmit Proposal",
+    "Body": "<html><body>Dear Salutation  Param0 <br></br>The proposal for study Param1 has been reviewed. As discussed with your Medical Science Liaison, Param2 , additional information and/or clarification is required in order to make a decision about this proposal.<br><br>Please use the link to log in to the system: Param3 <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Review Resubmitted LOI": {
+    "Subject": "Review Resubmission",
+    "Body": "<html><body>A Proposal for study Param0 from Param1 has been re-submitted.<br><br>Please log in to Param2 using the link and review the updated information and take further action. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "PL review": {
+    "Subject": "Proposal for Review",
+    "Body": "<html><body>A Proposal for study Param0 from Param1 has been submitted for your review.<br><br>Please log in to Param2 using the link and review the Proposal for further. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Resubmission_after_review": {
+    "Subject": "SubParam Review Complete - Resubmission Required",
+    "Body": "<html><body>The Param0 has reviewed the Proposal for study Param1 from Param2 and a decision of 'Resubmission Required' has been made.<br><br>Please log in to Param3 using the link discuss this decision with the Investigator and request a resubmission of the Proposal for review.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Drug Supply": {
+    "Subject": "Drug Related Activities",
+    "Body": "<html><body>A study Param0 has been approved by the IRC committee.<br><br>Please log in to Param1 and complete the drug related activities for the above study. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "FMV Submit": {
+    "Subject": "Upload Fair Market Value Analysis",
+    "Body": "<html><body>A study titled Param0 has been approved.<br><br>Please log in to Param1 and complete the Budget related activities for the above study. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Contracting": {
+    "Subject": "Manage Contract Status for Amendment",
+    "Body": "<html><body>The protocol for study titled Param0 has been approved.<br><br>Please use the link to log in to Param1 and manage the contract status.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Review ICF ": {
+    "Subject": "Review Submitted ICF",
+    "Body": "<html><body>The ICF for study Param0 from Param1 has been submitted.<br><br>Please log in to Param3 using the link, to review the document.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Resubmit ICF": {
+    "Subject": "Resubmit Required ICF",
+    "Body": "<html><body>Dear Salutation Param0 <br>Please resubmit the updated ICF document for the study entitled Param1<br><br>Please log in to Param2 using the link to log in to the system to upload the document.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Final Activation Review": {
+    "Subject": "Final Activation Review",
+    "Body": "<html><body>A task \"Final Activation Review\" has been created for you for the study Param0<br><br>Please log in to Param1 and perform the final activation review for the above study. <br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Submit ICF": {
+    "Subject": "Submit Required ICF",
+    "Body": "<html><body>Review of the ICF document for the study entitled Param0<br><br>Please log in to Param1 to upload the document.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Review Submitted Protocol": {
+    "Subject": "Protocol review for Study",
+    "Body": "<html><body>The protocol for study Param0 has been submitted.<br><br>Please log in to Param1 and initiate a review of the protocol.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "ReSubmit Activation Docs": {
+    "Subject": "Resubmit Required Activation Document(s)",
+    "Body": "<html><body>Dear Salutation Param0 <br>In preparation for shipment of drug supply for your study Param1,Please log in to Param2 and resubmit the additional required documents.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Activation Docs Review": {
+    "Subject": "Activation Documents submitted",
+    "Body": "<html><body>The activation documents for study Param0 have been submitted by the investigator.<br><br>Please log in to Param1 and review the documents.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Submit Activation doc": {
+    "Subject": "Submit required activation documents",
+    "Body": "\"<html><body>Dear Salutation Param0 <br>Your submission for study Param1 has been reviewed by Param2 Medical Team, and has been approved. <br><br>Please log in to Param1 and provide the additional documentation required:<br><ul>Param4 </ul><br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>\""
+  },
+  "Communicate Activation Letter (Study Activation)": {
+    "Subject": "Study Activation",
+    "Body": "<html><body>Dear Salutation Param0 <br>We are glad to inform you that your study titled Param1 has been activated by Param2 on Param3.Please find the attached letter containing additional details.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Study Withdrawal letter": {
+    "Subject": "Submission $decision, Create / Customize / Deliver Notification Letter",
+    "Body": "<html><body>The study submitted by Param0 entitled Param1 has been $decision. Please log in to Param2 using the link below to prepare the appropriate notification letter for the above study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Approval letter (communication - Create/Deliver Approval Letter)": {
+    "Subject": "Customize Approval Notification letter",
+    "Body": "<html><body>A task 'Create/Deliver Approval letter' has been created for you for the study Param0.<br><br>Please log in to Param1 using the link below to prepare the appropriate letter for the above study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Global Clear Approve": {
+    "Subject": "IRC Review Complete - Clear Contingencies",
+    "Body": "<html><body>A LOI for study Param0 has been reviewed by the IRC committee and has been approved with contingencies.<br><br>Please log in to Param1 using the link below and address the contingencies and either route back to the PI to amend the LOI or if contingencies are minor, re-submit for IRC review.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "IRC clear and resubmit": {
+    "Subject": "Review Complete - Resubmission Required",
+    "Body": "<html><body>The Global MRC has reviewed the Proposal for study  Param0 from Param1 and a decision of 'Resubmission Required' has been made.<br><br>Please log in to Param2 using the link below, discuss this decision with the Investigator and request a resubmission of the Proposal for review.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Safety Reporting confirmation email": {
+    "Subject": "Serious Adverse Events Reporting Confirmation",
+    "Body": "<html><body>Dear Salutation Param0 <br>As LPLT has been submitted for study Param1, confirmation of SAE reporting is required no earlier than 31 days after LPLT.<br><br>Please log in to Param2 using the link below and complete the <b>Serious Adverse Events Reporting Confirmation</b> task.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Document submission  rejected": {
+    "Subject": "Additional Requested Documents - Rejected",
+    "Body": "<html><body>Dear Salutation Param0 <br>The following documents recently submitted for the study Param1 have been rejected:<br><ul>Param2 </ul></br><br><br>If you wish to resubmit  corrected document(s), you may do so by clicking the Updated Document(s) action in the study action list.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Document submission review": {
+    "Subject": "Additional Documents Submitted for Study",
+    "Body": "<html><body>The additional documents requested for study Param0 have been submitted by the investigator.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Study Rejection": {
+    "Subject": "LOI Rejected for Study",
+    "Body": "<html><body>The LOI for study Param0 has been rejected by the STAT/IRC/Executive committee.<br><br>Please log in to Param1 using the link below and review the rejection for the above study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Return to Resubmit": {
+    "Subject": "Review Complete - Resubmission Required",
+    "Body": "<html><body>The Param0 has reviewed the Proposal for study Param1 from Param2 and a decision of 'Resubmission Required' has been made.<br><br>Please log in to Param3 using the link, discuss this decision with the Investigator and request a resubmission of the Proposal for review.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Start Meeting Resubmit (conditionally approved )": {
+    "Subject": "Review Complete - Resubmission Required",
+    "Body": "<html><body>The Param0 has reviewed the Proposal for study Param1 from Param2 and a decision of 'Resubmission Required' has been made.<br><br>Please log in to Param3 using the link, discuss this decision with the Investigator and request a resubmission of the Proposal for review.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Resubmit LOI IRC (notification)": {
+    "Subject": "Resubmit Proposal",
+    "Body": "<html><body>Dear Salutation Param0 <br>The proposal for study Param1 has been reviewed. However, as discussed with your Regional Medical Liaison, Param2, additional information and/or clarification is required in order to make a decision about this proposal.<br><br>Please use the link below to log in to Param3 and provide the required information.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "LOI rejection Letter": {
+    //sub and body are not proper
+    //"Subject": "Customize Approval Notification letter",
+    "Subject": "Customize Rejection Notification letter",
+    "Body": "<html><body>A task 'Create/Deliver Approval letter' has been created for you for the study Param0<br><br>Please log in to Param1 using the link below to prepare the appropriate letter for the above study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Approval letter (communication - Create/Deliver Approval Letter) MD": {
+    "Subject": "Letter of Intent Approval",
+    "Body": "<html><body>Dear Salutation Param0 <br><br>Please find attached the approval letter for your study Param1.This study has been assigned Param2 reference number Param3. The documents required for protocol development and study start-up are included with your approval letter.<br><br>If you have any questions, please refer to your approval letter for specific contact information.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Resubmit LOI IRC (notification) MSL": {
+    "Subject": "LOI Re-submitted",
+    "Body": "<html><body>A LOI for study Param0 has been re-submitted by the Investigator after a review by the STAT committee, RMADL or the IRC committee.<br><br>Please log in to Param1 using the link below and review the updated information and take further action.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Create Activation Letter": {
+    "Subject": "Create Notification Letter",
+    "Body": "<html><body>The study submitted by Param0 entitled Param1 has been confirmed.<br><br>Please log in to Param2 using the link below to prepare the appropriate notification letter for the above study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Submit Protocol": {
+    "Subject": "Protocol submission",
+    "Body": "<html><body>Dear Salutation Param0 <br>You proposal for study Param1 has been approved. <br><br>Please use the link below to log in to Param2 and provide additional details required for the protocol submission related to this study.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Finalize protocol changes": {
+    "Subject": "Finalize Protocol requirements for Study",
+    "Body": "<html><body>Dear Salutation Param0 <br>Please use the link below to login to Param1 and provide additional details for the Protocol for study titled Param2.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  },
+  "Review Additional doucment": {
+    "Subject": "Updated document(s) submitted by Investigator",
+    "Body": "<html><body>The additional documents for study Param0 have been submitted by the investigator.<br></br>Please use the link below to log in to Param1 and review the documents.<br></br>Best Regards,<br><br> Netserv Pvt Ltd.<br>Global Medical Affairs Team</body></html>"
+  }
+}

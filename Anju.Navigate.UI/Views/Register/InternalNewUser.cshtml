@@ -1,0 +1,342 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form id="ui_formInternalNewUser" class="ui_formInternalNewUser">
+    <div class="row">
+        <span id="popupNotification"></span>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <strong>New User Account Information</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group row">
+                                <label class="col-form-label">User Type</label>
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_userType")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Description")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.USERTYPE });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-form-label">Department</label>
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_department")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.DEPARTMENT });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                            <div class="form-group row" id="userStatus">
+                                <label class="col-form-label mandatory">User Status</label>
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_userStatus")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.USERSTATUS });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                            <div class="form-group row" id="primaryEmailAddress">
+                                <label class="col-form-label mandatory">Primary Email Address</label>
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_primaryEmailAddress")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                )
+                                <span class="k-icon k-i-check-circle show_hide_email_icon text-success pt-md-4"></span>
+                            </div>
+
+                            <div class="form-group row" id="userName">
+                                <label class="col-form-label mandatory">User Name</label>
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_userName")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                )
+                                <span class="k-icon k-i-check-circle show_hide_userName_icon text-success pt-md-4"><label>User Name Available</label></span>
+                            </div>
+                            <div class="form-group row" id="password">
+                                <label class="col-form-label mandatory">Password</label>
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_password")
+                                .HtmlAttributes(new { @class = "wid_60", type = "password" })
+                                )
+                                <span class="fa fa-eye toggle-password position-relative pl-md-3 pt-md-2"></span>
+                            </div>
+
+                            <div class="form-group row" id="confirmPassword">
+                                <label class="col-form-label mandatory">Confirm Password</label>
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_confirmPassword")
+                                .HtmlAttributes(new { @class = "wid_60", type = "password" })
+                                )
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="show_hide_notification">
+                                <div class="notification internal_user_pwd">
+                                    <p class="pwd_header" id="passwordHeader">
+                                        <img src="~/Images/Lock_Icon_1.png" class="wid_12px" />
+                                    </p>
+                                    <div class="pwd_notify_icon" id="passwordLength">
+                                        <img id="passwordLengthImg" src="~/Images/Warning.jpg" class="wid_15px" />
+                                    </div>
+                                    <div class="pwd_notify_icon" id="upperLowerCase">
+                                        <img id="upperLowerCaseImg" src="~/Images/Warning.jpg" class="wid_15px" />
+                                    </div>
+
+                                    <div class="pwd_notify_icon" id="number">
+                                        <img id="numberImg" src="~/Images/Warning.jpg" class="wid_15px" />
+                                    </div>
+                                    <div class="pwd_notify_icon" id="specialCharacter">
+                                        <img id="specialCharacterImg" src="~/Images/Warning.jpg" class="wid_15px" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-md-2">
+                <div class="card-header">
+                    <strong>New User Personal Details</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row" id="salutation">
+                        <label class="col-form-label mandatory">Salutation</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_salutation")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        //.OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.SALUTATION });
+                            })
+                            .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+
+                    <div class="form-group row" id="firstName">
+                        <label class="col-form-label mandatory">First Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_firstName")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row" id="lastName">
+                        <label class="col-form-label mandatory">Last Name</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_lastName")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Suffix</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_suffix")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                       .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues", "Register", new { type = @ConstDefaultValue.SUFFIX });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Title</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_title")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row" id="multiselectCredentials">
+                        <label class="col-form-label mandatory">Credentials</label>
+                        @(Html.Kendo().MultiSelect()
+                        .Name("ui_multiselect_credentials")
+                        .DataTextField("Code")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataValueField("CodeId")
+                        .AutoBind(false)
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetCredentials", "Register");
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-md-2">
+                <div class="card-header">
+                    <strong>New User Professional Contact Information</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row" id="addressLine1">
+                        <label class="col-form-label mandatory">Address Line 1</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_addressLine1")
+                        .HtmlAttributes(new { @class = "wid_60" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Address Line 2</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_addressLine2")
+                        .HtmlAttributes(new { @class = "wid_60" })
+                        )
+                    </div>
+
+                    <div class="form-group row" id="country">
+                        <label class="col-form-label mandatory">Country</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_country")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataTextField("Code")
+                        .DataValueField("CountryId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetCountries", "Register");
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+
+                    <div class="form-group row" id="state">
+                        <label class="col-form-label mandatory">State/Region</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_state")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataTextField("Code")
+                        .DataValueField("StateId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetStatesByCountryID", "Register").Data("filterStates");
+                        })
+                        .ServerFiltering(true);
+                        })
+                        .Enable(false)
+                        .AutoBind(false)
+                        .CascadeFrom("ui_ddl_country")
+                        )
+                    </div>
+
+                    <div class="form-group row" id="city">
+                        <label class="col-form-label mandatory">City</label>
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_city")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        .DataTextField("Name")
+                        .DataValueField("CityId")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetCitiesByStateID", "Register").Data("filterCities");
+                        })
+                        .ServerFiltering(true);
+                        })
+                        .Enable(false)
+                        .AutoBind(false)
+                        .CascadeFrom("ui_ddl_state")
+                        )
+                    </div>
+
+                    <div class="form-group row" id="zipPostalCode">
+                        <label class="col-form-label mandatory">Zip/Postal Code</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_zip")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row" id="phone">
+                        <label class="col-form-label mandatory">Phone</label>
+                        @(Html.Kendo().MaskedTextBox()
+                        .Name("ui_txt_phone")
+                        .Mask("(999) 999-9999")
+                        .HtmlAttributes(new { style = "width:40% !important" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Fax</label>
+                        @(Html.Kendo().TextBox()
+                        .Name("ui_txt_fax")
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-md-2">
+                <div>
+                    <input class="btn btn-primary float-right" id="btnAddUser" type="button" value="Add User" />
+                    <input class="btn btn-primary float-right" id="btnResetForm" type="button" value="Reset Form" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="~/scripts/InternalNewUser.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

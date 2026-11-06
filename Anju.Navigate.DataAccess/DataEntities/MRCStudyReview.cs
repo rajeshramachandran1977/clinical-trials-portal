@@ -1,0 +1,55 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace Anju.Navigate.DataAccess
+{
+    public partial class MRCStudyReview : EntityBase
+    {
+        [Key]
+        public int MRCReviewId { get; set; }
+        public int StudyId { get; set; }
+        public string RecordType { get; set; }
+        public string LocalMrcdecision { get; set; }
+        public string LocalMrcdecisionComments { get; set; }
+        public DateTime? LocalMrcdateOfDecision { get; set; }
+        public string LocalMrcdecisionMadeBy { get; set; }
+        public string SaereconciliationFrequency { get; set; }
+        public string GlobalMrcdecision { get; set; }
+        public DateTime? GlobalMrcdecisionDate { get; set; }
+        public string Macsnumber { get; set; }
+        public string StudyNumber { get; set; }
+        public string MRCDecisionRejectedBy { get; set; }
+        public string MRCRejectedDeliveryMethod { get; set; }
+        public string MRCDecisionWithdrawalBy { get; set; }
+        public string MRCWithdrawalDeliveryMethod { get; set; }
+        public string CAResubmissionDecision { get; set; }
+        public string CAResubmissionComments { get; set; }
+        public bool? IsActive { get; set; }
+        public bool? IsDeleted { get; set; }
+        public virtual NewStudy Study { get; set; }
+    }
+
+    public partial class MRCStudyReview_H : HistoryEntityBase
+    {
+        public int StudyId { get; set; }
+        public string RecordType { get; set; }
+        public string LocalMrcdecision { get; set; }
+        public string LocalMrcdecisionComments { get; set; }
+        public DateTime? LocalMrcdateOfDecision { get; set; }
+        public string LocalMrcdecisionMadeBy { get; set; }
+        public string SaereconciliationFrequency { get; set; }
+        public string GlobalMrcdecision { get; set; }
+        public DateTime? GlobalMrcdecisionDate { get; set; }
+        public string Macsnumber { get; set; }
+        public string StudyNumber { get; set; }
+        public string MRCDecisionRejectedBy { get; set; }
+        public string MRCRejectedDeliveryMethod { get; set; }
+        public string MRCDecisionWithdrawalBy { get; set; }
+        public string MRCWithdrawalDeliveryMethod { get; set; }
+        public string CAResubmissionDecision { get; set; }
+        public string CAResubmissionComments { get; set; }
+        public bool? IsActive { get; set; }
+        public bool? IsDeleted { get; set; }      
+        public virtual NewStudy Study { get; set; }
+    }
+}

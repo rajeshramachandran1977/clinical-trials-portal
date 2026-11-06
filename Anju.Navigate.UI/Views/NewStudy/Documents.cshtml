@@ -1,0 +1,490 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+@using Anju.Navigate.UI;
+@model Anju.Navigate.Data.ListOfDocuments
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="overflowHidden" id="documentsdetails">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <input type="hidden" value="@ViewBag.Username" id="Username" />
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddDocuments" data-target="#addNotificationDocModal" data-toggle="modal" onclick="addDocuments()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+        ()
+        .Name("ui_dtg_Documents")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.DocumentId).Hidden(true);
+            columns.Bound(c => c.StudyId).Hidden(true);
+            columns.Bound(c => c.DocumentName).Width("30%").Title("Document Name").ClientTemplate(" <a onclick='ShowDocumentsOnClick(this);' href=\\#>#= DocumentName#</a> ");
+            columns.Bound(c => c.DocumentStatus).Width("30%").Title("Document Status");
+            columns.Bound(c => c.DocumentVersion).Width("30%").Title("Original / Amendment Version");
+            columns.Bound(c => c.DocumentType).Hidden(true).Width("30%").Title("Document Type");
+            columns.Bound(c => c.DocumentSubType).Width("30%").Title("Document Sub-Type");
+            columns.Template(@ConstDefaultValue.MANUAL).Width("30%").Title("Document Source");
+            columns.Bound(c => c.ANJU_AddedBy).Width("30%").Title("Uploaded By");
+            columns.Bound(c => c.Anju_AddedDate).Width("30%").Title("Date of Upload").ClientTemplate("#= Anju_AddedDate ? kendo.toString(kendo.parseDate(Anju_AddedDate), 'MMM dd, yyyy') : '' #"); ;
+            columns.Bound(c => c.OriginalDate).Width("30%").Title("Original Date").ClientTemplate("#= OriginalDate ? kendo.toString(kendo.parseDate(OriginalDate), 'MMM dd, yyyy') : '' #"); ;
+            columns.Bound(c => c.ExpirationDate).Width("30%").Title("Expiration Date").ClientTemplate("#= ExpirationDate ? kendo.toString(kendo.parseDate(ExpirationDate), 'MMM dd, yyyy') : '' #"); ;
+            columns.Command(command => command.Custom("Tag").Text("Edit").Click("showDocuments")).Width(80);
+            columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteDocuments").HtmlAttributes(new { @class = "ui_delete" })).Width(80);
+            columns.Command(command => command.Custom("UnDelete").Text("UnDelete").Click("UndeleteDocuments").HtmlAttributes(new { @class = "ui_undelete" })).Width(80);
+            columns.Bound(c => c.IsActive).Hidden(true);
+            columns.Bound(c => c.IsDeleted).Hidden(true);
+            })
+            .Events(events => events.DataBound("OnDataBoundforDocuments"))
+            .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label mb-1" })
+            .Scrollable()
+            .Groupable(false)
+            .AutoBind(true)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.DocumentId))
+            .Read(read => read.Action("GetDocumentsByStudyID", "NewStudy").Data("additionalInfo"))
+            .Destroy(update => update.Action("DeleteDocuments", "NewStudy"))
+            ))
+        @(Html.Kendo().Window()
+        .Name("Documents")
+        .Title("Documents")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(1000)
+        )
+    </div>
+</div>
+
+<script type="text/x-kendo-template" id="documentstemplate">
+    <div id="details-container">
+        <form id="ui_frm_documents">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_documentideditmode" min="1" data-bind="value:ui_num_documentid" />
+                    <div class="row">
+                        <div id="displayDocumentnameeditmode" class="col-md-6">
+                            <div id="documentnameeditmode">
+                                <label class="col-formEditStudy-labels mandatory" id="ui_lbl_documentnameeditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @*@if (Model != null)
+        {
+            @(Html.Kendo().Upload()
+              .Name("uploadfileseditmode")
+              .Multiple(false)
+              .Async(a => a
+              .Save("CreateUpdateDocumentsEditMode", "NewStudy")
+              .Remove("RemoveLMRCFinalRejectedOrWithdrawalDocuments", "TaskWorkFlow")
+              .AutoUpload(false)
+              )
+              .Files(files =>
+              {
+                  foreach (var f in Model.TrialBudgetDocuments)
+                  {
+                      files.Add().Name(f.DocumentName).Extension(f.DocumentExtension);
+                  }
+              })
+              .ToClientTemplate()
+            )
+        }*@
+                                    <input type="file" name="uploadfileseditmode" id="uploadfileseditmode" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displaydocumentStatuseditmode" class="col-md-6">
+                            <div id="documentstatuseditmode">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_documentstatuseditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                        .Name("ui_ddl_editdocumentStatus")
+                                        .HtmlAttributes(new { @class = "wid_100" })
+                                        .DataTextField("Code")
+                                        .DataValueField("Code")
+                                        .OptionLabel("Select")
+                                        .DataSource(source =>
+                                        {
+                                        source.Read(read =>
+                                        {
+                                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                        })
+                                        .ServerFiltering(true);
+                                        })
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayAmendmentversioneditmode" class="col-md-6">
+                            <div id="amendmentversioneditmode">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_amendmentversioneditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                        .Name("ui_ddl_editamendmentVersion")
+                                        .HtmlAttributes(new { @class = "wid_100" })
+                                        .DataTextField("Code")
+                                        .DataValueField("Code")
+                                        .OptionLabel("Select")
+                                        .DataSource(source =>
+                                        {
+                                        source.Read(read =>
+                                        {
+                                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                        })
+                                        .ServerFiltering(true);
+                                        })
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDocumenttypeeditmode" class="col-md-6">
+                            <div id="documenttypeeditmode">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_documenttypeeditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_editdocumentType")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("CodeId")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayDocumentsubtypeeditmode" class="col-md-6">
+                            <div id="documentsubtypeeditmode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_documentsubtypeeditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                        .Name("ui_ddl_editdocumentSubType")
+                                        .HtmlAttributes(new { @class = "wid_100" })
+                                        .DataTextField("Code")
+                                        .DataValueField("Code")
+                                        .OptionLabel("Select")
+                                        .DataSource(source =>
+                                        {
+                                        source.Read(read =>
+                                        {
+                                        read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterEditDocumentSubTypeeditmode");
+                                        })
+                                        .ServerFiltering(true);
+                                        })
+                                        .CascadeFrom("ui_ddl_editdocumentType")
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDocumentsourceeditmode" class="col-md-6">
+                            <div id="documentsourceeditmode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_documentsourceeditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    <label class="col-formEditStudy-labels " id="ui_lbl_editdocumentsource"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayUploadedbyeditmode" class="col-md-6">
+                            <div id="uploadedbyeditmode">
+                                <div class="col-md-12 p-md-0">                                    
+                                    <label class="col-formEditStudy-labels" id="ui_lbl_uploadedbyeditmode"></label>
+                                </div>
+                                <div class="col-md-12 p-md-0">
+                                    <label class="col-formEditStudy-labels" id="ui_lbl_uploadedpersoneditmode"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayDateofuploadeditmode" class="col-md-6">
+                            <div id="dateofuploadeditmode">
+                                <div class="col-md-12 p-md-0">                                   
+                                    <label class="col-formEditStudy-labels" id="ui_lbl_dateofuploadeditmode"></label>
+                                </div>
+                                <div class="col-md-12 p-md-0">
+                                    <label class="col-formEditStudy-labels" id="ui_lbl_uploadeddateeditmode"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayOriginaldateeditmode" class="col-md-6">
+                            <div id="originaldateeditmode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_originaldateeditmode"></label>                                
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_editeditoriginalDate")
+                                        .HtmlAttributes(new { title = "monthpicker" })
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayExpirationdateeditmode" class="col-md-6">
+                            <div id="expirationdateeditmode">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_expirationdateeditmode"></label>                               
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DatePicker()
+                                        .Name("ui_dt_editeditexpirationDate")
+                                        .Start(CalendarView.Month)
+                                        .Depth(CalendarView.Month)
+                                        .Format("MMM dd, yyyy")
+                                        .DateInput()
+                                        .HtmlAttributes(new { title = "monthpicker" })
+                                        .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer pt-2">
+                <button type="button" class="btn btn-primary mr-1" onclick="showDialog();">Cancel</button>
+                <button type="button" class="btn btn-primary mr-3" id="ui_btnSaveDocumentseditmode">Save</button>
+            </div>
+        </form>
+    </div>
+</script>
+
+<div class="modal fade" id="addNotificationDocModal">
+    <div class="modal-dialog" id="modalEditStudyDialog">
+        <div class="modal-content">
+            <form method="post" id="ui_frm_documents">
+                <div id="details-container">
+                    <span id="popupNotification"></span>
+                    <div class="modal-body">
+                        <div id="flex">
+                            <input type="hidden" id="ui_num_documentid" min="1" data-bind="value:ui_num_documentid" />
+                            <div class="row">
+                                <div id="displayDocumentname" class="col-md-6">
+                                    <div id="documentname">
+                                        <label class="col-formEditStudy-labels" id="ui_lbl_documentname"></label>                                     
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().Upload()
+                                            .Name("uploadfiles")
+                                            .Multiple(false)
+                                            .Async(a => a
+                                            .Save("CreateUpdateDocumentsAddMode", "NewStudy")
+                                            .Remove("DeleteDocuments", "NewStudy")
+                                            .AutoUpload(false)
+                                            )
+                                            .Events(events => events
+                                            .Upload("onUpload")
+                                            )
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="displaydocumentStatus" class="col-md-6">
+                                    <div id="documentstatus">
+                                        <label class="col-formEditStudy-labels" id="ui_lbl_documentstatus"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DropDownList()
+                                            .Name("ui_ddl_documentStatus")
+                                            .HtmlAttributes(new { @class = "wid_100" })
+                                            .DataTextField("Code")
+                                            .DataValueField("Code")
+                                            .OptionLabel("Select")
+                                            .DataSource(source =>
+                                            {
+                                            source.Read(read =>
+                                            {
+                                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                            })
+                                            .ServerFiltering(true);
+                                            })
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="displayAmendmentversion" class="col-md-6">
+                                    <div id="amendmentversion">
+                                        <label class="col-formEditStudy-labels" id="ui_lbl_amendmentversion"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DropDownList()
+                                            .Name("ui_ddl_amendmentVersion")
+                                            .HtmlAttributes(new { @class = "wid_100" })
+                                            .DataTextField("Code")
+                                            .DataValueField("Code")
+                                            .OptionLabel("Select")
+                                            .DataSource(source =>
+                                            {
+                                            source.Read(read =>
+                                            {
+                                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                            })
+                                            .ServerFiltering(true);
+                                            })
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="displayDocumenttype" class="col-md-6">
+                                    <div id="documenttype">
+                                        <label class="col-formEditStudy-labels" id="ui_lbl_documenttype"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DropDownList()
+                                            .Name("ui_ddl_documentType")
+                                            .HtmlAttributes(new { @class = "wid_100" })
+                                            .DataTextField("Code")
+                                            .DataValueField("CodeId")
+                                            .OptionLabel("Select")
+                                            .DataSource(source =>
+                                            {
+                                            source.Read(read =>
+                                            {
+                                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                                            })
+                                            .ServerFiltering(true);
+                                            })
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="displayDocumentsubtype" class="col-md-6">
+                                    <div id="documentsubtype">
+                                        <label class="col-formEditStudy-labels " id="ui_lbl_documentsubtype"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DropDownList()
+                                            .Name("ui_ddl_documentSubType")
+                                            .HtmlAttributes(new { @class = "wid_100" })
+                                            .DataTextField("Code")
+                                            .DataValueField("Code")
+                                            .OptionLabel("Select")
+                                            .DataSource(source =>
+                                            {
+                                            source.Read(read =>
+                                            {
+                                            read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterEditDocumentSubType");
+                                            })
+                                            .ServerFiltering(true);
+                                            })
+                                            .CascadeFrom("ui_ddl_documentType")
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="displayDocumentsource" class="col-md-6">
+                                    <div id="documentsource">
+                                        <label class="col-formEditStudy-labels " id="ui_lbl_documentsource"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @ConstDefaultValue.MANUAL
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="displayUploadedby" class="col-md-6">
+                                    <div id="uploadedby">
+                                        <div class="col-md-12 p-md-0">                                            
+                                            <label class="col-formEditStudy-labels" id="ui_lbl_uploadedby"></label>
+                                        </div>
+                                        <div class="col-md-12 p-md-0">
+                                            <label class="col-formEditStudy-labels" id="ui_lbl_uploadedperson"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="displayDateofupload" class="col-md-6">
+                                    <div id="dateofupload">
+                                        <div class="col-md-12 p-md-0">                                            
+                                            <label class="col-formEditStudy-labels" id="ui_lbl_dateofupload"></label>
+                                        </div>
+                                        <div class="col-md-12 p-md-0">
+                                            <label class="col-formEditStudy-labels" id="ui_lbl_uploadeddate"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="displayOriginaldate" class="col-md-6">
+                                    <div id="originaldate">
+                                        <label class="col-formEditStudy-labels " id="ui_lbl_originaldate"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DatePicker()
+                                            .Name("ui_dt_originalDate")
+                                            .HtmlAttributes(new { title = "monthpicker" })
+                                            .Start(CalendarView.Month)
+                                            .Depth(CalendarView.Month)
+                                            .Format("MMM dd, yyyy")
+                                            .DateInput()
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="displayExpirationdate" class="col-md-6">
+                                    <div id="expirationdate">
+                                        <label class="col-formEditStudy-labels " id="ui_lbl_expirationdate"></label>                                        
+                                        <div class="col-md-12 p-md-0">
+                                            @(Html.Kendo().DatePicker()
+                                            .Name("ui_dt_expirationDate")
+                                            .Start(CalendarView.Month)
+                                            .Depth(CalendarView.Month)
+                                            .Format("MMM dd, yyyy")
+                                            .DateInput()
+                                            .HtmlAttributes(new { title = "monthpicker" })
+                                            )
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-1">
+                        <button type="button" class="btn btn-primary" id="ui_btnSaveDocumentsaddmode">Save</button>
+                        <button type="button" class="btn btn-primary mr-1" onclick="showDialog();">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var documentsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Documents)';
+    var generaldetailsdocument = '@ConstDefaultValue.DOCUMENT';
+    var documentsdocstatus = '@ConstDefaultValue.DOCUMENTSDOCSTATUS';
+    var documentamendmentversion = '@ConstDefaultValue.DOCUMENTAMENDMENTVERSION';
+    var documentdoctype = "@ConstDefaultValue.DOCUMENTDOCTYPE";
+    var documentdocsubtype = '@ConstDefaultValue.DOCUMENTDOCSUBTYPE';
+    var documentsource = '@ConstDefaultValue.DOCUMENTSOURCE';
+    var uploadedby = '@ConstDefaultValue.UPLOADEDBY';
+    var documentdate = '@ConstDefaultValue.DOCUMENTDATE';
+    var originaldate = '@ConstDefaultValue.ORIGINALDATE';
+    var expirationdate = '@ConstDefaultValue.EXPIRATIONDATE';   
+</script>
+<script src="~/scripts/EditStudy/Documents.js"></script>

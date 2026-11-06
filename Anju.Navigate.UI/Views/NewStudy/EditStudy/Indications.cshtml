@@ -1,0 +1,135 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="indicationscontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddIndications" onclick="addIndications()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div>
+        @(Html.Kendo().Grid<Anju.Navigate.Data.StudyIndication>
+        ()
+        .Name("ui_dtg_gridindications")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.IndicationId).Hidden(true);
+            columns.Bound(c => c.IndicationType).Width("40%").Title("Indication Type");
+            columns.Bound(c => c.IndicationCauses).Width("40%").Title("Indication");
+            columns.Command(command => command.Custom("Tag").Text("Edit").Click("showIndications")).Width("10%");
+            columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteIndications")).Width("10%");
+        })
+        .Events(e => e.DataBound("OnDataBoundforStudyIndication"))
+        .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+        .Scrollable()
+        .Groupable(false)
+        .Sortable()
+        .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.IndicationId))
+        .Read(read => read.Action("GetIndications", "NewStudy"))
+        .Destroy(update => update.Action("DeleteIndications", "NewStudy"))
+        )
+        )
+        @(Html.Kendo().Window()
+        .Name("Indications")
+        .Title("Indications")
+        .Actions(actions => actions.Clear())
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(800)
+        )
+    </div>
+</div>
+<script type="text/x-kendo-template" id="indicationstemplate">
+    <div id="details-container">
+        <form id="ui_frm_indications">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_indicationid" min="1" data-bind="value:ui_num_indicationid" />
+                    <div id="displayIndicationtype">
+                        <div id="indicationtype" class="row">
+                            <div class="col-md-3">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_indicationtype"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforindicationtype" data-toggle="tooltip" />
+                            </div>
+                            <div class="col-md-3">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_indicationtype")
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues",
+                                "NewStudy",
+                                new { type = @ConstDefaultValue.INDICATIONTYPE });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                 .ToClientTemplate()
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div id="displayIndication">
+                        <div id="indication" class="row">
+                            <div class="col-md-3">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_indication"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforIndication" data-toggle="tooltip" />
+                            </div>
+                            <div class="col-md-3">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_indication")
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues",
+                                "NewStudy",
+                                new { type = @ConstDefaultValue.INDICATION });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                 .ToClientTemplate()
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSaveindications">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var indicationsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.Indications)';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var indication = '@ConstDefaultValue.INDICATION';
+    var indicationtype ='@ConstDefaultValue.INDICATIONTYPE';
+</script>
+<script src="~/scripts/EditStudy/Indications.js"></script>

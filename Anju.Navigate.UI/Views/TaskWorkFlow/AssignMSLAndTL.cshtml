@@ -1,0 +1,83 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "AssignMSLAndTL";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+    <form role="form" id="ui_frmAssignMSLAndTL" class="newWindowMargin p-md-4 shadow-lg" method="post">
+        <span id="popupNotification"></span>
+        <label class="task_heading m-md-0">Assign MSL and Program Leader to new submission</label>
+        <hr />
+        <div class="panel">
+            <div class="panel-body study_panel ui_panel">The system was unable to automatically assign one or more users to the new submission. Please review the submission summary and assign the appropriate users.</div>
+        </div>
+        <div class="pt-3">
+            <ul>
+                <li class="list_item" id="studyIdAndTitleOfTrial">@ViewBag.StudyId</li>
+                <li class="list_item" id="instituteSubmitted">Submitted By @ViewBag.AssignedUsername</li>
+                <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+                <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+            </ul>
+        </div>
+        <hr />
+        <div class="row form-group" id="msl">
+            <label class="mandatory col-form-label">MSL</label>
+            <div>
+                @(Html.Kendo().DropDownList()
+                .Name("ui_ddl_msl")
+                .DataTextField("UserName")
+                .DataValueField("UserId")
+                .OptionLabel("Select")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                         read.Action("GetUserDetailsByUserType", "TaskWorkFlow", new { userType = @ConstDefaultValue.MSL });
+                    })
+                    .ServerFiltering(true);
+                })
+
+                )
+            </div>
+        </div>
+        <div class="row form-group" id="programLeader">
+            <label class="mandatory col-form-label">Program Leader</label>
+            <div>
+                @(Html.Kendo().DropDownList()
+                .Name("ui_ddl_programLeader")
+                .DataTextField("UserName")
+                .DataValueField("UserId")
+                .OptionLabel("Select")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetUserDetailsByUserType", "TaskWorkFlow", new { userType = @ConstDefaultValue.PROGRAMLEADER });
+                    })
+                    .ServerFiltering(true);
+                })
+                )
+            </div>
+        </div>
+        <div class="row pt-3">
+            <div class="col-md-12 text-right">
+                <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+                <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+            </div>
+        </div>
+        <div>
+
+            <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+            <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+            <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        </div>
+        <div>
+            <partial name="~/Views/Common/CancelDialogBox.cshtml"/>
+        </div>
+    </form>
+<script src="~/scripts/AssignMSLAndTL.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

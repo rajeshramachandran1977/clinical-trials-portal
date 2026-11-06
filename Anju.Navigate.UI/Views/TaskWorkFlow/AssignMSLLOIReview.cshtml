@@ -1,0 +1,186 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "AssignMSLLOIReview";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<form role="form" id="ui_frmAssignMSLLOIReview" class="newWindowMargin p-md-4 shadow-lg" method="post">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0">MSL LOI Review</label>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel">
+            <div> Review this submission for completeness and quality. If the submission requires re-work, you have the option of returning it to the investigator.</div>
+            <div> Please have a discussion with the Investigator before selecting "Resubmit" and submitting this task.</div>
+        </div>
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item" id="studyIdAndTitleOfTrial">@ViewBag.StudyId</li>
+            <li class="list_item" id="instituteSubmitted">Submitted By @ViewBag.AssignedUsername</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="col-md-12 pl-2">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+            ()
+            .Name("ui_dtg_documentList")
+            .Columns(columns =>
+            {
+            columns.Bound(c => c.DocumentId).Hidden(true);
+            columns.Bound(c => c.DocumentName).Width("20%").Title("Document Name").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= DocumentName#</a> ");
+            columns.Bound(c => c.DocumentStatus).Width("20%").Title("Document Status");
+            columns.Bound(c => c.DocumentType).Width("20%").Title("Document Type");
+            columns.Bound(c => c.DocumentSubType).Width("20%").Title("Document Sub-Type");
+            columns.Bound(c => c.DocumentVersion).Width("20%").Title("Original / Amendment Version");
+            columns.Bound(c => c.SubModuleName).Hidden(true);
+            })
+            .HtmlAttributes(new { style = "height: 200px;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.DocumentId))
+            .Read(read => read.Action("GetPIDocuments", "NewStudy").Data("StudyDetailsID"))
+
+            )
+        )
+    </div>
+
+    <div class="row pt-md-3" id="franchise">
+        <label for="ui_lblFranchise" class="mandatory col-md-3 col-form-label">Franchise</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_Franchise")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.FRANCHISE });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row " id="primaryIndication">
+        <label for="ui_lblPrimaryIndication" class="mandatory col-md-3 col-form-label">Primary Indication</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_PrimaryIndication")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PRIMARYINDICATION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+        <div class="col-md-5">
+            <label class="col-form-label text-left col-md-12 wid_100">Value provided by Investigator:</label>
+            <label id="ui_lbl_indication" class="col-form-label text-left pl-md-3 font-weight-normal wid_100"> </label>
+        </div>
+    </div>
+    <div class="row ">
+        <label for="ui_lblSecondaryIndication" class="col-md-3 col-form-label">Secondary Indication(s)</label>
+        <div class="col-md-4">
+            @(Html.Kendo().MultiSelect()
+            .Name("ui_multiselect_SecondaryIndication")
+            .DataTextField("Code")
+            .HtmlAttributes(new { @class = "wid_100 margin_0" })
+            .DataValueField("CodeId")
+            .AutoBind(false)
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PRIMARYINDICATION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row " id="piInstitution">
+        <label for="ui_lblPIInstitution" class="mandatory col-md-3 col-form-label"> PI Institution</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_PIInstitution")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PIINSTITUTION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+        <div class="col-md-5">
+            <label id="ui_lblInstitutionName" class="col-form-label text-left col-md-12 font-weight-normal"></label>
+        </div>
+    </div>
+    <div class="row " id="decision">
+        <label for="ui_lblDecision" class="mandatory col-md-3  col-form-label">Decision</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_Decision")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DECISION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</form>
+<script src="~/scripts/AssignMSLLOIReview.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

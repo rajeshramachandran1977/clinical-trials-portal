@@ -1,0 +1,14 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@model List<Anju.Navigate.Data.SysCodeValues>
+@using Anju.Navigate.Utilities;
+@(Html.Kendo().DropDownListFor(m => m)
+                        .DataValueField("Code")
+                        .DataTextField("Code")
+                        .OptionLabel("Select")
+                        .BindTo((System.Collections.IEnumerable)ViewData["CompanyCompound"])
+
+
+)
+

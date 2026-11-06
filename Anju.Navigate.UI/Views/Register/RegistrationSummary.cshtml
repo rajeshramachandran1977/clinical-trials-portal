@@ -1,0 +1,172 @@
+﻿@model Anju.Navigate.Data.Users
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form id="ui_frmRegistrationSummary">
+    @*Notification pop up*@
+    <span id="popupNotification"></span>
+    <div class="row pt-md-2 pl-md-3">
+        <img src="~/Images/AccountCreateIcon.jpg" class="regstn_sum_icon" /> <label class="task_heading">Registration Summary</label>
+    </div>
+    <div class="panel">
+        <div class="panel-body ui_panel regstn_sum_panel ui_panel">
+            Important! Please verify on this screen that the information you have provided is correct. You can edit this information before you submit. You will also be able to edit this information in your User Profile screen once you log in.
+        </div>
+    </div>
+    <div class="card mt-md-2">
+        <div>
+            <div class="card card-body p-md-0 pl-md-2">
+                <label class="sub_task_heading">Professional Contact Information</label>
+            </div>
+        </div>
+
+        <div class="mt-md-2 pl-md-5 pr-md-5 ml-md-5 mr-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Personal Details</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-form-label">Primary Email Address</label>
+                        @(Html.Kendo().TextBoxFor(m => m.PrimaryEmailId).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">User Name</label>
+                        @(Html.Kendo().TextBoxFor(m => m.UserName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label mandatory">Salutation</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Salutation).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">First Name</label>
+                        @(Html.Kendo().TextBoxFor(m => m.FirstName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label mandatory">Last Name</label>
+                        @(Html.Kendo().TextBoxFor(m => m.LastName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Suffix</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Suffix).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Title</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Title).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    @* <div class="form-group row">
+                        <label class="col-form-label">Credentials</label>
+                            @(Html.Kendo().TextBox()
+                            .Name("ui_multiselect_credentials")
+                            .HtmlAttributes(new { @class = "wid_40" })
+                            )
+                        </div>*@
+                </div>
+            </div>
+        </div>
+        <div class="mt-md-2 pl-md-5 pr-md-5 ml-md-5 mr-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Company Details</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="col-form-label">Organization Name</label>
+                        @(Html.Kendo().TextBoxFor(m => m.OrganizationName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_75" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Department</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Department).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Address</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Address1).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_75" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Country</label>
+                        @(Html.Kendo().TextBoxFor(m => m.CountryName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">State/Region</label>
+                        @(Html.Kendo().TextBoxFor(m => m.StateName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">City</label>
+                        @(Html.Kendo().TextBoxFor(m => m.CityName).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Zip/Postal Code</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Zip).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-form-label">Phone</label>
+                        @(Html.Kendo().TextBoxFor(m => m.MobileNumber).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label">Fax</label>
+                        @(Html.Kendo().TextBoxFor(m => m.Fax).Enable(false)
+                        .HtmlAttributes(new { @class = "wid_40" })
+                        )
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row ml-md-0 mt-md-2">
+            <div class="col-md-12">
+                <input class="btn btn-primary float-right" id="btnConfirm" type="button" value="Confirm" />
+                <input class="btn btn-primary float-right" id="btnEdit" type="button" value="Edit" />
+                <input class="btn btn-primary float-right" id="btnCancel" type="button" onclick="showDialog();" value="Cancel" />
+            </div>
+        </div>
+
+        <div id="YesNoDialog">
+            <partial name="~/Views/Common/CancelDialogBox.cshtml"/>
+        </div>
+        <p id="infoMsg" class="infoMsg text-center"></p>
+        <p id="errorMsg" class="errorMsg text-center"></p>
+
+    </div>
+</form>
+<script src="~/scripts/RegisterSummary.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

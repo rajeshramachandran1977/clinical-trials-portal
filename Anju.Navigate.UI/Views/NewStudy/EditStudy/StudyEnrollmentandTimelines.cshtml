@@ -1,0 +1,240 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="studyenrollmentandtimelinescontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayStudystart">
+            <div id="studystart" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_studystart"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforstudystart" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_trialStart")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displaynoOfPatients">
+            <div id="noOfPatients" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_noofpatients"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextfornoofpatients" data-toggle="tooltip" />
+                </div>
+                <div>
+                    <input type="number" class="wid_100 ml-3 numberFieldWidth" id="ui_num_noofpatients" min="1" max="9999" data-bind="value:ui_num_noofpatients" />
+                </div>
+            </div>
+        </div>
+        <div id="displayStudyduration">
+            <div id="studyduration">
+                <label class="col-formEditStudy-labels " id="ui_lbl_studyduration"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforstudyduration" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_studyduration" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_studyduration" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforstudyduration"></label></span>
+                    <input type="hidden" id="regexexprforstudyduration" />
+                    <input type="hidden" id="validationmsgforstudyduration" />
+                </div>
+            </div>
+        </div>
+        <div id="displayEnrollmentrate">
+            <div id="enrollmentrate" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_enrollmentrate"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforenrollmentrate" data-toggle="tooltip" />
+                </div>
+                <div>
+                    <input type="number" class="ml-3 wid_100 numberFieldWidth" id="ui_num_enrollmentrate" min="1" data-bind="value:ui_num_enrollmentrate" readonly />
+                </div>
+            </div>
+        </div>
+        <div id="displayaretherecompetingstudiesatyourinstitution">
+            <div id="aretherecompetingstudiesatyourinstitution" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_competingstudiesatyourinstitution"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforcompetingstudiesatyourinstitution" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_competingstudies")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                        .Events(e =>
+                        {
+                        e.Select("onChangeOfCompetingStudies");
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="impactPatientAcrual">
+            <div id="displayImpactPatientAcrual">
+                <div id="impactPatientAcrual">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_impactpatientaccrual"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforimpactpatientacrual" data-toggle="tooltip" />
+                    <div class="col-md-12 p-md-0">
+                        <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_impactpatientaccrual" maxlength="1"></textarea>
+                        <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_impactpatientaccrual" maxlength="1">
+                        <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforpatientaccrual"></label></span>
+                        <input type="hidden" id="regexexprforpatientaccrual" />
+                        <input type="hidden" id="validationmsgforpatientaccrual" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="displayRecruitmentEnd">
+            <div id="recruitmentEnd" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_recruitmentend"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforrecruitmentend" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_recruitmentend")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .Value(CalendarView.Month.ToString())
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayCompletionoffinalstudyreport">
+            <div id="completionoffinalstudyreport" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_completionoffinalstudyreport"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforcompletionoffinalstudyreport" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_completionoffinalstudyreport")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .Value(CalendarView.Month.ToString())
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayTrialEnd">
+            <div id="trialEnd" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_trialend"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextfortrialend" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_trialend")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .Value(CalendarView.Month.ToString())
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayNoofpatientspertreatmentgroup">
+            <div id="noofpatientspertreatmentgroup">
+                <label class="col-formEditStudy-labels" id="ui_lbl_noofpatientspertreatmentgroup"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextfornoofpatientspertreatmentgroup" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_noofpatientspertreatmentgroup" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_50 ml-0" id="ui_txt_noofpatientspertreatmentgroup">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfornoofpatientspertreatmentgroup"></label></span>
+                    <input type="hidden" id="regexexprfornoofpatientspertreatmentgroup" />
+                    <input type="hidden" id="validationmsgfornoofpatientspertreatmentgroup" />
+                </div>
+            </div>
+        </div>
+        <div id="displayenrollmentHistory">
+            <div id="enrollmentHistory">
+                <label class="col-formEditStudy-labels" id="ui_lbl_enrollmenthistory"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforenrollmenthistory" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_enrollmenthistory" maxlength="1"></textarea>
+                    <input type="text" class="k-textbox wid_50 ml-0" id="ui_txt_enrollmenthistory" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforenrollmenthistory"></label></span>
+                    <input type="hidden" id="regexexprforenrollmenthistory" />
+                    <input type="hidden" id="validationmsgforenrollmenthistory" />
+                </div>
+            </div>
+        </div>
+        <div id="displayprimaryPublication">
+            <div id="primaryPublication" class="row mb-1">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_primarypublication"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforprimarypublication" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_primarypublication")
+                    .Start(CalendarView.Year)
+                    .Depth(CalendarView.Year)
+                    .Format("MMM dd, yyyy")
+                    .Value(CalendarView.Month.ToString())
+                    .DateInput()
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveEnrollmentandTimelines">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var enrollmentandtimelinesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.StudyEnrollmentandTimelines)';
+
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+
+    var studystart = '@ConstDefaultValue.STUDYSTART';
+    var totalnoofpatients = '@ConstDefaultValue.TOTALNOOFPATIENTS';
+    var studyduration = '@ConstDefaultValue.STUDYDURATION';
+    var competingstudiesatinstitution = '@ConstDefaultValue.COMPETINGSTUDIESATINSTITUTION';
+    var impactpatientaccrualfortheproposedstudy = '@ConstDefaultValue.IMPACTPATIENTACCRUALFORTHEPROPOSEDSTUDY';
+    var recruitmentend = '@ConstDefaultValue.RECRUITMENTEND';
+    var completionoffinalstudyreport = '@ConstDefaultValue.COMPLETIONOFFINALSTUDYREPORT';
+    var trialend = '@ConstDefaultValue.TRIALEND';
+    var noofpatientspertreatmentgroup = '@ConstDefaultValue.NOOFPATIENTSPERTREATMENTGROUP';
+    var enrollmenthistoryforotherrelatedstudies = '@ConstDefaultValue.ENROLLMENTHISTORYFOROTHERRELATEDSTUDIES';
+    var primarypublicationdate = '@ConstDefaultValue.PRIMARYPUBLICATIONDATE';
+    var enrollmentrate = '@ConstDefaultValue.ENROLLMENTRATE';
+</script>
+<script src="~/scripts/EditStudy/StudyEnrollmentandTimelines.js"></script>

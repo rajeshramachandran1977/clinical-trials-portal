@@ -1,0 +1,23 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<div id="modalWindow" class="ui_label">    
+    <div class="row">
+        <div class="col-md-6">
+            <label class="col-formEditStudy-labels" id="ui_lbl_deletetext"></label>
+        </div>
+    </div>
+    <div class="float-right">
+        <button id="ui_btn_yes" class="btn btn-primary"></button>
+        <button id="ui_btn_no" class="btn btn-primary ml-1"></button>
+    </div>    
+</div>
+<script>
+    $(document).ready(function () {
+        $("#ui_lbl_deletetext").html("@Messages.DELETEMESSAGE");
+        $("#ui_btn_yes").html("@Messages.YES");
+        $("#ui_btn_no").html("@Messages.NO");
+    });
+</script>

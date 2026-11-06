@@ -1,0 +1,94 @@
+﻿@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI;
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "IdentifyActivationDocuments";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form role="form" class="p-md-4 shadow-lg newWindowMargin">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0" id="taskHeading">Identify Activation Documents</label>
+    <hr />
+    <div class="panel" id="panelForPI">
+        <div class="panel-body study_panel ui_panel" id="piPanel">Please select the required Activation Documents for this study. Place a checkmark next to each required document. Add documents to the list as needed.</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="txtStudyOwner" value=@ViewBag.StudyOwner>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" value="IdentifyActivationDocuments" id="Pagetital" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="row">
+        <label class="ui_label col-form-label col-md-3">PI submission is IND required</label>
+        <label class="ui_label col-form-label">Yes</label>
+    </div>
+    <table role="grid" class="table table-bordered table-sm" id="ActivationDocumentsTable">
+        <thead class="info">
+            <tr role="row">
+                <th role="columnheader" class="table_header wid_15px"><input type="checkbox" id="selectAll" /></th>
+                <th role="columnheader" class="table_header">Document Name</th>
+                <th role="columnheader" class="table_header">Document Type</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+
+    </table>
+    <div class="row" id="addAdditionalDocument">
+        <label class="ui_label col-form-label">Document Name (if not in the list above)</label>
+        <div class="col-md-4">
+            @(Html.Kendo().TextBox()
+             .Name("ui_txt_addDocumentName")
+             .HtmlAttributes(new { @class = "wid_100" })
+            )
+        </div>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_addDocumentType")
+            .OptionLabel("Select")
+            .DataTextField("DocumentType")
+            .DataValueField("DocumentType")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataSource(source =>
+               {
+                 source.Read(read =>
+                 {
+                   read.Action("GetDocumentType", "TaskWorkFlow");
+                 })
+                 .ServerFiltering(true);
+                })
+            )
+        </div>
+        <button type="button" id="addDocumentType" class="btn btn-primary mb-md-3">Add</button>
+    </div>
+    <div class="text-right col-md-12 pt-md-2">
+        <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Common/CancelDialogBox.cshtml")
+    </div>
+</form>
+<script>
+    var appName= '@ConfigValues.appName';
+</script>
+<script src="~/scripts/IdentifyActivationDocuments.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

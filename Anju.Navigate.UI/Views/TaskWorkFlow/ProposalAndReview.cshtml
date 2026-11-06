@@ -1,0 +1,161 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ProposalAndReview";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form role="form" id="ui_frmResubmission" class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <span id="popupNotification"></span>
+    <label class="task_heading m-md-0" id="taskHeading">Return to PI for Resubmission</label>
+    <hr />
+    <div class="panel" id="panelForPI">
+        <div class="panel-body study_panel ui_panel" id="piPanel">Please indicate if all comments have been discussed with the investigator for resubmission.</div>
+    </div>
+
+    <div>
+        <input type="hidden" id="StudyId" value="@ViewBag.StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="State" value="@ViewBag.State" />
+        <input type="hidden" id="RecordType" value="@ViewBag.RecordType" />
+        <input type="hidden" id="Institution" value="@ViewBag.Institution" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item" id="titleOfTrialWithStudy"></li>
+            <li class="list_item">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="row pt-2" id="chkbox">
+        <label class="mandatory col-md-1 pl-md-4"></label>
+        <input type="checkbox" class="custom-control-input" id="resubmissionReason">
+        <label class="custom-control-label ui_label pt-md-1" for="resubmissionReason" id="checkboxLabel">I have discussed with PI the reason for resubmission</label>
+    </div>
+
+    <div class="card" id="globalMRCContingency">
+        <div class="card-header"><strong>Global MRC Contingency Discussion</strong></div>
+        <div class="card-body">
+            <div class="row" id="contingencies">
+                <label class="col-form-label mandatory">All contingencies have been addressed</label>
+                <div>
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_contingencies")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = "Yes",
+                        Value = "Yes"
+                        },
+                        new SelectListItem() {
+                        Text = "No",
+                        Value = "No"
+                        },
+                        })
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" id="resubmissionDis">
+        <div class="card-header"><strong>Resubmission Discussion</strong></div>
+        <div class="card-body">
+            <div class="row" id="reSubmissionCmts">
+                <label class="col-form-label col-md-4 mandatory">I have discussed the Re-submission Comments with PI:</label>
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_reSubmissionCmts")
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.RESUBMISSIONCOMMENTS });
+                    });
+                    })
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" id="resubGlobalMRC">
+        <div class="card-header"><strong>Resubmission Discussion</strong></div>
+        <div class="card-body row">
+            <label class="col-form-label mandatory">I have discussed with PI Resubmission comments:</label>
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownList()
+                .Name("ui_ddl_PISubmissionCmts")
+                .DataTextField("Code")
+                .DataValueField("Code")
+                .OptionLabel("Select")
+                .DataSource(source =>
+                {
+                source.Read(read =>
+                {
+                //read.Action("GetSysCodeValues");
+                });
+                })
+                )
+            </div>
+        </div>
+    </div>
+    <div id="approvalComments">
+        <div class="card">
+            <div class="card-header"><strong>Approval Comments</strong></div>
+            <div class="card-body">
+                <div class="row" id="approvalCommentsDecision">
+                    <label class="ui_label mandatory col-form-label col-md-2">Decision</label>
+                    <div class="ml-md-1">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_approvalCommentsDecision")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.REVIEWDECISION });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+                <div class="row" id="approvalTextComments">
+                    <label class="mandatory col-form-label col-md-2">Comments</label>
+                    <textarea rows="4" class="k-textbox wid_80" id="ui_txt_approvalComments" maxlength="300"></textarea>
+                    <span class="text-right generic_text_small count col-md-12">300 Characters left to enter</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</form>
+<script>
+    var TRIALLEADER= "@Messages.TRIALLEADER";
+</script>
+<script src="~/scripts/ProposalAndReview.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

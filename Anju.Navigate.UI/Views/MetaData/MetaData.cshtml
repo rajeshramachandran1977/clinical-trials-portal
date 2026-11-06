@@ -1,0 +1,395 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+
+@{
+    ViewData["Title"] = "MetaData";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form id="frmMetaData" class="col-md-12" action="" method="post">
+    <span id="popupNotification"></span>
+    <div class="row">
+        <div>
+            <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+            <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+            <input type="hidden" id="LogedinUserName" value=@ViewBag.LoginUsername>
+            <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        </div>
+        <div class="k-height col-md-3 mt-md-3 card border p-0">
+            <div class="mt-md-3 pl-1">
+                <img src="~/Images/ListIcon.png" />
+                <label class="sub_task_heading">Entity Meta Data</label>
+            </div>
+            <div class="k-treeview mt-md-1 p-0">
+                @(Html.Kendo().TreeView()
+                .Name("treeview")
+                .DataTextField("Name")
+                .DataSource(dataSource => dataSource
+                .Read((read => read.Action("GetMetaData", "MetaData"))))
+                )
+            </div>
+        </div>
+        <div class="mt-md-3 col-md-9" id="attribute_display">
+            <div class="card border">
+                <div class="card-header">Edit Attribute</div>
+                <div class="card-body">
+                    <div class="card">
+                        <div class="card-header k-colorpalette">Attribute Details</div>
+                        <div class="card-body">
+                            <div class="row" id="div_Name">
+                                <label class="ui_label mt-md-1 col-md-2 mandatory">Name</label>
+                                <div class="col-md-9">
+                                    @(Html.Kendo().TextBox()
+                                   .Name("ui_txt_name")
+                                   .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="row mt-md-2" id="div_Description">
+                                <label class="ui_label mt-md-1 col-md-2 mandatory">Description</label>
+                                <div class="col-md-9">
+                                    @(Html.Kendo().TextBox()
+                                    .Name("ui_txt_description")
+                                    .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="row mt-md-2">
+                                <label class="ui_label mt-md-1 col-md-2">Type</label>
+                                <div class="col-md-9">
+                                    @(Html.Kendo().TextBox()
+                                  .Name("ui_txt_type")
+                                  .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                    <div id="uiTypeDropdown">
+                                        @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_type")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .BindTo(new List<SelectListItem>()
+                                {
+                                    new SelectListItem() {
+                                        Text = "Number", Value = "1"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Currency", Value = "2"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Dropdown", Value = "3"
+                                    },
+                                     new SelectListItem() {
+                                        Text = "Text Area (Rich)", Value = "4"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Text", Value = "5"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Yes/No", Value = "6"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Multi-Select", Value = "7"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Binary", Value = "8"
+                                    },
+                                    new SelectListItem() {
+                                        Text = "Date", Value = "9"
+                                    },
+                                     new SelectListItem() {
+                                        Text = "Checkbox", Value = "10"
+                                    },
+                                     new SelectListItem() {
+                                        Text = "Label", Value = "11"
+                                    }
+
+                                })
+                               .HtmlAttributes(new { @class = "wid_100" })
+                               .OptionLabel("Select")
+
+                                        )
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-md-2" id="div_FieldName">
+                                <label class="ui_label mt-md-1 col-md-2 mandatory"> Field Type</label>
+                                <div class="col-md-9">
+                                    @(Html.Kendo().TextBox()
+                                   .Name("ui_txt_fieldType")
+                                   .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="row mt-md-2" id="helpDiv">
+                                <label class="ui_label mt-md-1 col-md-2">Help Text</label>
+                                <div class="col-md-9">
+                                    <textarea id="ui_txtArea_help_txt" class="wid_100 k-textbox" rows="4" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-md-3" id="displayOptionDiv">
+                        <div class="card-header k-colorpalette">Display Options</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="ui_label mt-md-1 col-md-2" id="ui_lbl_textsize">Text Size</label>
+                                <div class="col-md-3" id="ui_textsize">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_textsize")
+                                    .BindTo(new List<SelectListItem>() {
+                                          new SelectListItem() {
+                                              Text = "Small",
+                                              Value = "1"
+                                          },
+                                          new SelectListItem() {
+                                              Text = "Large",
+                                              Value = "2"
+                                          }
+                                      })
+                                    .Value("1")
+                                    .HtmlAttributes(new { @class = "border_clr wid_100 height_30px" })
+                                    )
+                                </div>
+                                <label class="ui_label mt-md-1 col-md-2" id="mandatoryLabel">Mandatory?</label>
+                                <div class="col-md-3" id="mandatoryCheckBox">
+                                    @(Html.Kendo().CheckBox()
+                                    .Name("ui_chk_box_mandatory")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2">
+                                <label class="ui_label mt-md-1 col-md-2">Viewable?</label>
+                                <div class="col-md-3">
+                                    @(Html.Kendo().CheckBox()
+                                 .Name("ui_chk_box_viewable")
+                                 .HtmlAttributes(new { @class = "wid_100" })
+                                    )
+                                </div>
+                                <label class="ui_label mt-md-1 col-md-2">Searchable?</label>
+                                <div class="col-md-3">
+                                    @(Html.Kendo().CheckBox()
+                                 .Name("ui_chk_box_searchable")
+                                 .HtmlAttributes(new { @class = "wid_100" })
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2">
+                                <label class="ui_label mt-md-1 col-md-2">Display Order</label>
+                                <div class="col-md-3">
+                                    <input type="number" id="ui_num_txt_display_order" data-bind="value:ui_num_txt_display_order" />
+                                </div>
+                                <div id="div_Col_Width">
+                                    <label class="ui_label mt-md-1 col-md-3" id="lbl_col_wid">Column Width</label>
+                                    <input type="number" class="col-md-5 ml-md-5 pl-md-1" id="ui_num_txt_column_width" data-bind="value:ui_num_txt_column_width" required="required">
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2" id="regex_validation">
+                                <label class="ui_label mt-md-1 col-md-2">Regex Expression</label>
+                                <div class="col-md-9">
+                                    @(Html.Kendo().TextBox()
+                                    .Name("ui_txt_regex_exp")
+                                    .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2" id="div_validation_message">
+                                <label class="ui_label mt-md-1 col-md-2" id="messageValidate">Validation Message</label>
+                                <div class="col-md-9" id="validateText">
+                                    @(Html.Kendo().TextBox()
+                                 .Name("ui_txt_validation_message")
+                                 .HtmlAttributes(new { @class = "wid_100 height_30px" })
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-md-3" id="groupPermissionDiv">
+                        <div class="card-header k-colorpalette">Group Permissions</div>
+                        <div class="card-body">
+                            <div class="row" id="restrictCreateLabel">
+                                <label class="ui_label padding col-md-11">Restrict User Types Allowed to Create</label>
+                            </div>
+
+                            <div class="row mt-md-2" id="restrictCreateListboxes">
+                                <div class="col-md-6 wid_100">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_provideCreate")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .Toolbar(toolbar =>
+                                        {
+                                            toolbar.Position(ListBoxToolbarPosition.Right);
+                                            toolbar.Tools(tools => tools
+                                                .TransferTo()
+                                                .TransferFrom()
+                                                .TransferAllTo()
+                                                .TransferAllFrom()
+                                            );
+                                        })
+                                       .DataSource(source => source
+                                            .Custom()
+                                            .Type("aspnetmvc-ajax")
+                                            .Transport(transport => transport
+                                                .Read(read => read.Action("GetSysCodeValues", "MetaData", new { type = @ConstDefaultValue.USERTYPE }))
+                                            )
+                                        )
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                        .ConnectWith("ui_lstBox_addCreate")
+                                    )
+                                </div>
+                                <div class="col-md-5">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_addCreate")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .BindTo(new List<string>())
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                    )
+                                </div>
+                            </div>
+
+
+                            <div class="row mt-md-2" id="restrictViewLabel">
+                                <label class="ui_label col-md-11">Restrict User Types Allowed to View</label>
+                            </div>
+
+                            <div class="row" id="restrictViewListBox">
+                                <div class="col-md-6 wid_100">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_provideView")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .Toolbar(toolbar =>
+                                        {
+                                            toolbar.Position(ListBoxToolbarPosition.Right);
+                                            toolbar.Tools(tools => tools
+                                                .TransferTo()
+                                                .TransferFrom()
+                                                .TransferAllTo()
+                                                .TransferAllFrom()
+                                            );
+                                        })
+                                       .DataSource(source => source
+                                            .Custom()
+                                            .Type("aspnetmvc-ajax")
+                                            .Transport(transport => transport
+                                                .Read(read => read.Action("GetSysCodeValues", "MetaData", new { type = @ConstDefaultValue.USERTYPE }))
+                                            )
+                                        )
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                        .ConnectWith("ui_lstBox_addView")
+                                    )
+                                </div>
+                                <div class="col-md-5">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_addView")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .BindTo(new List<string>())
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2" id="restrictEditLabel">
+                                <label class="ui_label col-md-11">Restrict User Types Allowed to Edit</label>
+                            </div>
+
+                            <div class="row" id="restrictEditListbox">
+                                <div class="col-md-6 wid_100">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_provideEdit")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .Toolbar(toolbar =>
+                                        {
+                                            toolbar.Position(ListBoxToolbarPosition.Right);
+                                            toolbar.Tools(tools => tools
+                                                .TransferTo()
+                                                .TransferFrom()
+                                                .TransferAllTo()
+                                                .TransferAllFrom()
+                                            );
+                                        })
+                                       .DataSource(source => source
+                                            .Custom()
+                                            .Type("aspnetmvc-ajax")
+                                            .Transport(transport => transport
+                                                .Read(read => read.Action("GetSysCodeValues", "MetaData", new { type = @ConstDefaultValue.USERTYPE }))
+                                            )
+                                        )
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                        .ConnectWith("ui_lstBox_addEdit")
+                                    )
+                                </div>
+                                <div class="col-md-5">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_addEdit")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .BindTo(new List<string>())
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                    )
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-2" id="restrictDeleteLabel">
+                                <label class="ui_label col-md-11">Restrict User Types Allowed to Delete</label>
+                            </div>
+
+                            <div class="row" id="restrictDeleteListbox">
+                                <div class="col-md-6 wid_100">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_provideDelete")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .Toolbar(toolbar =>
+                                        {
+                                            toolbar.Position(ListBoxToolbarPosition.Right);
+                                            toolbar.Tools(tools => tools
+                                                .TransferTo()
+                                                .TransferFrom()
+                                                .TransferAllTo()
+                                                .TransferAllFrom()
+                                            );
+                                        })
+                                       .DataSource(source => source
+                                            .Custom()
+                                            .Type("aspnetmvc-ajax")
+                                            .Transport(transport => transport
+                                                .Read(read => read.Action("GetSysCodeValues", "MetaData", new { type = @ConstDefaultValue.USERTYPE }))
+                                            )
+                                        )
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                        .ConnectWith("ui_lstBox_addDelete")
+                                    )
+                                </div>
+                                <div class="col-md-5">
+                                    @(Html.Kendo().ListBox()
+                                        .Name("ui_lstBox_addDelete")
+                                        .HtmlAttributes(new { @class = "border_clr wid_100 list_item_group" })
+                                        .BindTo(new List<string>())
+                                        .Selectable(ListBoxSelectable.Multiple)
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body p-2 mr-3">
+                            <div class="row float-right">
+                                <button id="btn_save_attribute" type="button" class="btn btn-primary ml-md-3">Save Attribute</button>
+                                <button id="btn_delete_attribute" type="button" class="btn btn-primary ml-md-1">Delete Attribute</button>
+                                <button id="btn_add_attribute" type="button" class="btn btn-primary ml-md-1">Add Attribute</button>
+                                <input type="hidden" id="editStudyId" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="~/scripts/MetaData.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

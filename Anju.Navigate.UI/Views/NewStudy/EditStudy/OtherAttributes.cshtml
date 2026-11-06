@@ -1,0 +1,384 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+    <head>
+        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+    </head>
+    <div class="editcard" id="otherattributes">
+        <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+        <div class="row">
+            <div class="wid_100">
+                <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+            </div>
+        </div>
+        <div id="flex">
+            <div id="displayAmendmentrequestincludesachangeintheprimaryinvestigator">
+                <div id="amendmentrequestincludesachangeintheprimaryinvestigatordiv">
+                    <input type="checkbox" id="ui_chkbox_amendmentrequestincludesachangeintheprimaryinvestigator">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_amendmentrequestincludesachangeintheprimaryinvestigator"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforamendmentrequestincludesachangeintheprimaryinvestigator" data-toggle="tooltip" />
+                </div>
+            </div>
+            <div id="displayAutoproxyenabled">
+                <div id="autoproxyenabled">
+                    <input type="checkbox" id="ui_chkbox_autoproxyenabled">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_autoproxyenabled">Autoproxy enabled</label>
+                    <img src="/Images/helppic.gif" id="ui_img_helpTextforautoproxyenabled" data-toggle="tooltip" title="testtest" class="">
+                </div>
+            </div>
+            <div id="displayLeadorganization">
+                <div id="leadorganization" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_leadorganization"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforleadorganization" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_leadorganization")
+                        .DataTextField("GlobalValue")
+                        .DataValueField("GlobalValue")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetGlobalSettingByKey", "Administration", new { globalKey = @ConstDefaultValue.GLOBALKEY });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayConditionalapproval">
+                <div id="conditionalapproval" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_conditionalapproval"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforconditionalapproval" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_conditionalapproval")
+                        .OptionLabel("Select")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .BindTo(new List<SelectListItem>
+                            () {
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.YES,
+                            Value = @ConstDefaultValue.YES
+                            },
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.NO,
+                            Value = @ConstDefaultValue.NO
+                            },
+                            })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayConditionsofapproval">
+                <div id="conditionsofapproval">
+                    <label class="col-formEditStudy-labels" id="ui_lbl_conditionsofapproval"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforconditionsofapproval" data-toggle="tooltip" />
+                    <div class="col-md-12 p-md-0">
+                        <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_conditionsofapproval" maxlength="1"></textarea>
+                        <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_conditionsofapproval" maxlength="1">
+                        <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforconditionsofapproval"></label></span>
+                        <input type="hidden" id="regexforconditionsofapproval" />
+                        <input type="hidden" id="validationmsgforconditionsofapproval" />
+                    </div>
+                </div>
+            </div>
+            <div id="displayICFReview">
+                <div id="ICFReview" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_ICFReview"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforICFReview" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_ICFReview")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.ICFREVIEW });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayAmendmentstatus">
+                <div id="amendmentstatus" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_amendmentstatus"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforamendmentstatus" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_amendmentstatus")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.AMENDMENTSTATUS });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayAmendmenttype">
+                <div id="amendmenttype" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_amendmenttype"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforamendmenttype" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_amendmenttype")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.AMENDMENTTYPE });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayContractamendmentrequired">
+                <div id="contractamendmentrequired" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_contractamendmentrequired"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforcontractamendmentrequired" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_contractamendmentrequired")
+                        .OptionLabel("Select")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .BindTo(new List<SelectListItem>
+                            () {
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.NOTAPPLICABLE,
+                            Value = @ConstDefaultValue.NOTAPPLICABLE
+                            },
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.YES,
+                            Value = @ConstDefaultValue.YES
+                            },
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.NO,
+                            Value = @ConstDefaultValue.NO
+                            },
+                            })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayIsPIstudysponsor">
+                <div id="isPIstudyssponsor" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_isPIstudyssponsor"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforisPIstudyssponsor" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_isPIstudyssponsor")
+                        .OptionLabel("Select")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .BindTo(new List<SelectListItem>
+                            () {
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.YES,
+                            Value = @ConstDefaultValue.YES
+                            },
+                            new SelectListItem() {
+                            Text = @ConstDefaultValue.NO,
+                            Value = @ConstDefaultValue.NO
+                            },
+                            })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayContractexecutiondate">
+                <div id="contractexecutiondate" class="row mt-1 mb-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_contractexecutiondate"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforiscontractexecutiondate" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DatePicker()
+                        .Name("ui_dt_contractexecutiondate")
+                        .Start(CalendarView.Month)
+                        .Depth(CalendarView.Month)
+                        .Format("MMM dd, yyyy")
+                        .DateInput()
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayMigrationdate">
+                <div id="migrationdate" class="row mb-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_migrationdate"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextformigrationdate" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DatePicker()
+                        .Name("ui_dt_migrationdate")
+                        .Start(CalendarView.Month)
+                        .Depth(CalendarView.Month)
+                        .Format("MMM dd, yyyy")
+                        .DateInput()
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayConversionstatus">
+                <div id="conversionstatus" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_conversionstatus"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforconversionstatus" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_conversionstatus")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.CONVERSIONSTATUS });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayMilestoneupdatefrequencydays">
+                <div id="milestoneupdatefrequencydays" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_milestoneupdatefrequencydays"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextformilestoneupdatefrequencydays" data-toggle="tooltip" />
+                    </div>
+                    <div>
+                        <input type="number" class="floatNumberField ml-3 wid_100 numberFieldWidth" step="0.01" id="ui_num_milestoneupdatefrequencydays" data-bind="value:ui_num_milestoneupdatefrequencydays" />
+                    </div>
+                </div>
+            </div>
+            <div id="displayAccrualmilestoneupdatefrequencydays">
+                <div id="accrualmilestoneupdatefrequencydays" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_accrualmilestoneupdatefrequencydays"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforaccrualmilestoneupdatefrequencydays" data-toggle="tooltip" />
+                    </div>
+                    <div>
+                        <input type="number" class="floatNumberField ml-3 wid_100 numberFieldWidth" step="0.01" id="ui_num_accrualmilestoneupdatefrequencydays" data-bind="value:ui_num_accrualmilestoneupdatefrequencydays" />
+                    </div>
+                </div>
+            </div>
+            <div id="displayLastsendemail">
+                <div id="lastsendemail" class="row mt-1 mb-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_lastsendemail"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforlastsendemail" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DatePicker()
+                        .Name("ui_dt_lastsendemail")
+                        .Start(CalendarView.Month)
+                        .Depth(CalendarView.Month)
+                        .Format("MMM dd, yyyy")
+                        .DateInput()
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displaySAEFrequency">
+                <div id="SAEFrequency" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_SAEFrequency"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_helpTextforSAEFrequency" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_saefrequency")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.SAEFREQUENCY });
+                        });
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row float-right">
+            <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveOtherAttributes">Save</button>
+            <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+        </div>
+    </div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+    var na = '@ConstDefaultValue.NOTAPPLICABLE';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+
+    var otherattributesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.OtherAttributes)';
+    var amendmentrequestincludesachangeintheprimaryinvestigator = '@ConstDefaultValue.AMENDMENTREQUESTINCLUDESACHANGEINTHEPRIMARYINVESTIGATOR';
+    var autoproxyenabled = '@ConstDefaultValue.AUTOPROXYENABLED';
+    var leadorganization = '@ConstDefaultValue.LEADORGANIZATION';
+    var conditionalapproval = '@ConstDefaultValue.CONDITIONALAPPROVAL';
+    var conditionsofapproval = '@ConstDefaultValue.CONDITIONSOFAPPROVAL';
+    var icfreview = '@ConstDefaultValue.ICFREVIEW';
+    var amendmentstatus = '@ConstDefaultValue.AMENDMENTSTATUS';
+    var amendmenttype = '@ConstDefaultValue.AMENDMENTTYPE';
+    var contractamendmentrequired = '@ConstDefaultValue.CONTRACTAMENDMENTREQUIRED';
+    var ispistudysponsor = '@ConstDefaultValue.ISPISTUDYSPONSOR';
+    var contractexecutiondate = '@ConstDefaultValue.CONTRACTEXECUTIONDATE';
+    var migrationdate = '@ConstDefaultValue.MIGRATIONDATE';
+    var conversionstatus = '@ConstDefaultValue.CONVERSIONSTATUS';
+    var milestoneupdatefrequencydays = '@ConstDefaultValue.MILESTONEUPDATEFREQUENCYDAYS';
+    var accrualmilestoneupdatefrequencydays = '@ConstDefaultValue.ACCRUALMILESTONEUPDATEFREQUENCYDAYS';
+    var lastsendemail = '@ConstDefaultValue.LASTSENDEMAIL';
+    var saefrequency = '@ConstDefaultValue.SAEFREQUENCY';
+
+</script>
+<script src="~/scripts/EditStudy/OtherAttributes.js"></script>

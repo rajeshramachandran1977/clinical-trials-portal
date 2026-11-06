@@ -1,0 +1,589 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "CreateDeliverLetter";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<div class="shadow-lg p-md-4 newWindowMargin">
+    <span id="popupNotification"></span>
+    <label class="task_heading" id="taskHeading">Create/Deliver Withdrawal Letter</label>
+    <hr />
+    <div class="panel withdrawalLetter">
+        <div class="panel-body ui_panel study_panel">Please select the signatory from the drop-down, download the letter template, and modify it for review and approval by the signatory. Upload the final, signed letter and submit.</div>
+    </div>
+    <div class="panel approvalLetter">
+        <div class="panel-body ui_panel study_panel">
+            <div> Upload the final, signed letter and submit.</div>
+            <div>Ensure the Investigator's Brochure is sent.</div>
+        </div>
+    </div>
+    <div class="pt-3">
+        <div>
+            <input type="hidden" id="StudyId" value=@ViewBag.StudyId />
+            <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+            <input type="hidden" id="txtUserName" value="@ViewBag.AssignedUsername">
+            <input type="hidden" id="LogedinUserName" value="@ViewBag.LogedinUserName">
+            <input type="hidden" id="recordType" value="@ViewBag.recordType">
+            <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+            <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+            <input type="hidden" id="Institution" value="@ViewBag.Institution" />
+        </div>
+        <ul>
+            <li class="list_item" id="studyIdOrStudyNumber"></li>
+            <li class="list_item" id="instituteSubmitted">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="withdrawalLetter">
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">Select a Signatory</label>
+            <div class="col-md-3">
+                @(Html.Kendo().DropDownList()
+                .Name("ui_ddl_signatory")
+                .HtmlAttributes(new { @class = "wid_100" })
+                .DataTextField("UserName")
+                .DataValueField("UserName")
+                .OptionLabel("Select")
+                .DataSource(source =>
+                {
+                source.Read(read =>
+                {
+                read.Action("GetUserDetailsByUserType", "TaskWorkFlow", new { userType = @ConstDefaultValue.MD });
+                })
+                .ServerFiltering(true);
+                })
+                )
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">Download a notification letter</label>
+            <div id="notificationLetter">
+                @if (@ViewBag.TaskName == @Messages.LMRCDECISIONWITHDRAWNTASKNAME)
+                {
+                    <div class="col-md-3 pl-md-2" id="downloadWithdrawalLetter">
+                        <a class="btn btn-link ui_link" asp-action="DownloadFiles"
+                           asp-controller="NewStudy"
+                           asp-route-filename="Withdrawal_Letter.docx"
+                           asp-route-subModuleFolderName="CommonDocuments">
+                            DOWNLOAD WITHDRAWAL LETTER
+                        </a>
+                    </div>
+                }
+                else if (ViewBag.TaskName == Messages.LMRCDECISIONREJECTEDCONFIRMEDTASKNAME)
+                {
+                    <div class="col-md-3 pl-md-2" id="downloadRejectionLetter">
+                        <a class="btn btn-link ui_link" asp-action="DownloadFiles"
+                           asp-controller="NewStudy"
+                           asp-route-filename="Denial_Letter.docx"
+                           asp-route-subModuleFolderName="CommonDocuments">
+                            DOWNLOAD DENIAL LETTER
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="form-group row" id="finalNotificationLetter">
+        <label class="col-md-4 col-form-label mandatory">Upload the final notification letter</label>
+        <div class="col-md-8 mt-md-1">
+            <button type="button" id="ui_modal_notificationLetter" data-target="#addNotificationDocModal" data-toggle="modal"><span class="k-icon k-i-plus"></span>Add Document</button>
+            <a href="javascript:void(0);" class="ui_link col-md-7" id="finalNotificationDownload">DOWNLOAD</a>
+            <button type="button" id="btn_RemoveDocument"><span class="k-icon k-i-delete"></span>Remove</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addNotificationDocModal">
+        <div class="modal-dialog" id="modal_dialog">
+            <div class="modal-content">
+                <form method="post" id="frm_finalDocumentDetails">
+                    <div class="modal-header modal_header">Upload Final notification letter</div>
+                    <div class="modal-body">
+                        <div class="row ml-md-2 mr-0" id="finalFileUpload">
+                            @(Html.Kendo().Upload()
+                            .Name("finaluploadfile")
+                            .Multiple(false)
+                            .Async(a => a
+                            .Save("SaveLMRCFinalRejectedOrWithdrawalDocuments", "TaskWorkFlow")
+                            .Remove("RemoveLMRCFinalRejectedOrWithdrawalDocuments", "TaskWorkFlow")
+                            .AutoUpload(false)
+                            )
+                            .Events(events => events
+                            .Select("onSelectfinalupload")
+                            .Upload("onUploadfinalupload")
+                            .Remove("onremovefinalupload")
+                            .Success("onsuccessfinalupload")
+
+                            )
+                            .HtmlAttributes(new { aria_label = "files" })
+
+                            )
+                        </div>
+                        <hr />
+                        <div class="form-group row" id="documentNameFinal">
+                            <label class="col-md-4 col-form-label mandatory">Document Name</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_documentNameFinal")
+                                .HtmlAttributes(new { @class = "wid_100" })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="documentStatusFinal">
+                            <label class="col-md-4 col-form-label mandatory">Document Status</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_documentStatusFinal")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Document Type</label>
+                            <div class="col-md-8">
+                                <label class="ui_label font-weight-light">Notification Letter</label>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="versionFinal">
+                            <label class="col-md-4 col-form-label mandatory">Original / Amendment Version</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_versionFinal")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Original Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_originalDateFinal")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Expiration Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_expiryDateFinal")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-1">
+                        <button type="button" id="btn-FinalDocumentSubmit" class="btn btn-primary">Submit</button>
+                        <input type="button" id="btn-FinalDocumentCancel" value="Cancel" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-md-4 col-form-label">Additional attachments</label>
+        <div class="col-md-3 mt-md-1">
+            <button type="button" id="ui_modal_additionalDoc" data-target="#addDocModal" data-toggle="modal"><span class="k-icon k-i-plus"></span>Add Document</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addDocModal">
+        <div class="modal-dialog" id="modal_dialog">
+            <div class="modal-content">
+                <form method="post" id="frm_documentDetails">
+                    <div class="modal-header modal_header">Upload Additional Attachment</div>
+                    <div class="modal-body">
+                        <div class="row ml-md-2 mr-0" id="uploadAdditionalFiles">
+                            @(Html.Kendo().Upload()
+                            .Name("uploadfiles")
+                            .Multiple(false)
+                            .Async(a => a
+                            .Save("SaveLMRCRejectedOrWithdrawalSupportDocuments", "TaskWorkFlow")
+                            .Remove("RemoveLMRCRejectedOrWithdrawalSupportDocuments", "TaskWorkFlow")
+                            .AutoUpload(false)
+                            )
+                            .Events(events => events
+                            .Select("onSelect")
+                            .Upload("onUpload")
+                            .Remove("onremove")
+
+                            )
+                            .HtmlAttributes(new { aria_label = "files" })
+
+                            )
+                        </div>
+                        <hr />
+                        <div class="form-group row" id="documentName">
+                            <label class="col-md-4 col-form-label mandatory">Document Name</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().TextBox()
+                                .Name("ui_txt_documentName")
+                                .HtmlAttributes(new { @class = "wid_100" })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="documentStatus">
+                            <label class="col-md-4 col-form-label mandatory">Document Status</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_documentStatus")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="documentType">
+                            <label class="col-md-4 col-form-label mandatory">Document Type</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_documentType")
+                                .HtmlAttributes(new { @class = "wid_60" }).DataTextField("Code")
+                                .DataValueField("CodeId")
+                                .OptionLabel("Select")
+                                .Events(events => events.Change("onDocumentTypeChange"))
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="documentSubType">
+                            <label class="col-md-4 col-form-label" id="documentSubTypeLabel">Document Sub-Type</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_documentSubType")
+                                .HtmlAttributes(new { @class = "wid_60" }).DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .Events(events => events.DataBound("onSubTypeDataBound"))
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterDocumentSubType");
+                                })
+                                .ServerFiltering(true);
+                                })
+                                .CascadeFrom("ui_ddl_documentType")
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row" id="version">
+                            <label class="col-md-4 col-form-label mandatory">Original / Amendment Version</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_version")
+                                .HtmlAttributes(new { @class = "wid_60" })
+                                .DataTextField("Code")
+                                .DataValueField("Code")
+                                .OptionLabel("Select")
+                                .DataSource(source =>
+                                {
+                                source.Read(read =>
+                                {
+                                read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                                })
+                                .ServerFiltering(true);
+                                })
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Original Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_originalDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label">Expiration Date</label>
+                            <div class="col-md-8">
+                                @(Html.Kendo().DatePicker()
+                                .Name("ui_dt_expiryDate")
+                                .HtmlAttributes(new { })
+                                .Format("MMM dd, yyyy")
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-1">
+                        <button type="button" id="btn-DocumentSubmit" value="Submit" class="btn btn-primary">Submit</button>
+                        <input type="button" id="btn-DocumentCancel" value="Cancel" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mt-md-2">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+            ()
+            .Name("ui_dtg_withdrawalLetter")
+            .Columns(columns =>
+            {
+            columns.Bound(c => c.DocumentId).Hidden(true);
+                    columns.Command(command => command.Custom("Tag").Text("Tag").Click("showDetails")).Width("8%");
+
+                    columns.Bound(c => c.DocumentName).Width("19%").Title("Document Name").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= DocumentName#</a> ");
+                    columns.Bound(c => c.DocumentStatus).Width("15%").Title("Document Status");
+                    columns.Bound(c => c.DocumentType).Width("15%").Title("Document Type");
+                    columns.Bound(c => c.DocumentSubType).Width("15%").Title("Document Sub-Type");
+                    columns.Bound(c => c.DocumentVersion).Width("20%").Title("Original / Amendment Version");
+                    columns.Bound(c => c.SubModuleName).Hidden(true);
+                    columns.Bound(c => c.StudyId).Hidden(true);
+                    columns.Bound(c => c.OriginalDate).Hidden(true);
+                    columns.Bound(c => c.ExpirationDate).Hidden(true);
+                    columns.Bound(c => c.DocumentName).Hidden(true);
+                    columns.Command(command => { command.Destroy(); }).Width("8%");
+            })
+            .HtmlAttributes(new { style = "height:200px", @class = "ui_label wid_100" })
+            .Scrollable()
+            .AutoBind(false)
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.DocumentId))
+            .Read(read => read.Action("GetDocumentsByStudyID", "NewStudy").Data("additionalInfo"))
+            .Destroy(update => update.Action("DeleteDocuments", "NewStudy"))
+            )
+        )
+        @(Html.Kendo().Window()
+            .Name("Details")
+            .Title("Review Document")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(800)
+        )
+    </div>
+
+    <div class="form-group row" id="deliveryMethod">
+        <label class="col-md-4 col-form-label mandatory">Delivery Method</label>
+        <div class="col-md-5">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_deliveryMethod")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+                source.Read(read =>
+                {
+                    read.Action("GetSysCodeValues", "Newstudy", new { type = @ConstDefaultValue.DELIVERYMETHOD });
+                })
+                .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="text-right col-md-12">
+        <input type="submit" value="Submit" id="btn-Submit" class="btn btn-primary" />
+        <input type="button" value="Cancel" id="btn-Cancel" class="btn btn-primary" onclick="showDialog();" />
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</div>
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <form id="ui_frm_tagForm">
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Download</label>
+                <div class="col-md-9">
+                    <a href="javascript:void(0);" class="fileDownload" filename="#= DocumentNameWithOutExtension ##=DocumentExtension#" subModuleFolderName="#= SubModuleName #" studyId="#=StudyId #">#=DocumentNameWithOutExtension##=DocumentExtension#</a>
+                </div>
+            </div>
+
+            <div class="form-group row" id="editDocumentName">
+                <label class="col-form-label col-md-3 mandatory">Document Name</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_editdocumentName")
+                    .HtmlAttributes(new { @class = "wid_100" })
+                    .Value("#= DocumentName #")
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="editDocumentStatus">
+                <label class="col-form-label col-md-3 mandatory">Document Status</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_editdocumentStatus")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="editDocumentType">
+                <label class="col-form-label col-md-3 mandatory">Document Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_editdocumentType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("CodeId")
+                    .OptionLabel("Select")
+                    .Events(events => events.Change("onEditdocumentTypeChange"))
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="editDocumentSubType">
+                <label class="col-form-label col-md-3" id="editDocumentSubTypeLabel">Document Sub-Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_editdocumentSubType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .Events(events => events.DataBound("onEditSubTypeDataBound"))
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterEditDocumentSubType");
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .CascadeFrom("ui_ddl_editdocumentType")
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="amendmentVersion">
+                <label class="col-form-label col-md-3 mandatory">Original / Amendment Version</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_amendmentVersion")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Original Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_editoriginalDate")
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .ToClientTemplate()
+                    )
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Expiration Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_editexpirationDate")
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-primary" id="btn-editDocumentSubmit">Submit</button>
+                    <button type="button" class="btn btn-primary" id="btn-editDocumentCancel">Cancel</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</script>
+<script src="~/scripts/CreateDeliverLetter.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

@@ -1,0 +1,221 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@model Anju.Navigate.Data.ListOfDocuments
+@{
+    ViewData["Title"] = "PatientAccrual";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form role="form" id="ui_frmResubmission" class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <label class="task_heading m-md-0">Patient Accrual Update</label>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel" id="piPatientAccuralPanel">Please enter the current patient accrual information in the table below and upload your current enrollment log.</div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername />
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName />
+        <input type="hidden" id="TaskName" value="@ViewBag.TaskName" />
+        <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+        <input type="hidden" id="TitleofTrial" value="@ViewBag.TitleofTrial" />
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+    </div>
+    <div class="pt-3">
+        <ul>
+            <li class="list_item">@ViewBag.StudyNumber: @ViewBag.TitleofTrial</li>
+            <li class="list_item">Submitted By @ViewBag.StudyType: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="col-md-12 pl-md-2">
+        <div class="panel">
+            <div class="panel-body study_panel ui_panel" id="piTotalCumulativePanel">Total cumulative Enrollment equals the  sum of Total no. of patients currently on treatment, and Total no.of patients withdrawn from treatment.</div>
+        </div>
+        <div>
+            @(Html.Kendo().Grid<Anju.Navigate.Data.PatientAccrual>
+                  ()
+                  .Name("ui_dtg_gridPatientAccrual")
+                 .Columns(columns =>
+                 {
+                     columns.Bound(c => c.PatientaccrualId).Hidden(true);
+                     columns.Bound(c => c.MonthYear).Width("20%").Title("Month Year").ClientFooterTemplate("Total Cumulative Enrollment:");
+                     columns.Bound(c => c.Year).Hidden(true);
+                     columns.Bound(c => c.TreatedPatients).Width("20%").Title("Number of patients treated this month").ClientGroupHeaderColumnTemplate("#=sum#").ClientFooterTemplate(" #=sum#"); ;
+                     columns.Bound(c => c.CurrentPatients).Width("20%").Title("Total no. of patients currently on treatment").ClientGroupHeaderColumnTemplate("#=sum#");
+                     columns.Bound(c => c.WithdrawnPatients).Width("20%").Title("Total no. of patients withdrawn from treatment").ClientGroupHeaderColumnTemplate("#=sum#");
+                     columns.Bound(c => c.CompletedPatients).Width("20%").Title("Total no. of patients completed treatment").ClientGroupHeaderColumnTemplate("#=sum#");
+                     columns.Bound(c => c.StudyId).Hidden(true);
+                 })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Save();
+                  })
+                  .Events(events =>
+                  {
+                      events.Save("OnCreateUpdateModal");                     
+                      events.Edit("onEdit");
+                  })
+                  .Scrollable()
+                  .HtmlAttributes(new { style = "height: 300px;" })
+                  .Groupable(false)
+                  .Sortable()
+                  .Editable(editable => editable.Mode(GridEditMode.InCell))
+                  .Pageable(pageable => pageable
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(e =>
+                  e.RequestEnd("OnPatientAccrualsaveChanges")
+                  )
+                  .Aggregates(aggregates =>
+                  {
+                      aggregates.Add(p => p.TreatedPatients).Sum();
+                      aggregates.Add(p => p.CurrentPatients).Sum();
+                      aggregates.Add(p => p.WithdrawnPatients).Sum();
+                      aggregates.Add(p => p.CompletedPatients).Sum();
+                  })
+                  .Group(groups => groups.Add(p => p.Year))
+                  .Model(model =>
+                  {
+                      model.Id(p => p.PatientaccrualId);
+                      model.Field(p => p.MonthYear).Editable(false);
+                  })
+                  .Read(read => read.Action("GetPatientEnrollmentDetails", "MaintainanceAndMonitoring", new { studyId = @ViewBag.StudyId }))
+                  .Update(update => update.Action("UpdatePatientEnrollmentDetails", "MaintainanceAndMonitoring", new { studyId = @ViewBag.StudyId }))
+                  )
+            )
+
+        </div>
+    </div>
+    <div class="form-group row mt-md-3">
+        <label class="col-form-label col-md-4">Upload current enrolment log</label>
+        <div class="col-md-6">
+            @(Html.Kendo().Upload()
+                      .Name("filePatientEnrollment")
+                      .Files(
+                      files =>
+                      {
+                          //foreach (var f in Model.TrialBudgetDocuments)
+                          //{
+                          //    files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                          //}
+                      })
+                      .Multiple(false)
+                      .Async(a => a
+                      .Save("SaveAsyncPatientAccrualDocuments", "NewStudy")
+                      .Remove("RemovePatientAccrualDocuments", "NewStudy")
+                      .AutoUpload(true)
+                      )
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="firstPatientFirstVisit">
+        <label class="col-form-label col-md-4 mandatory pl-0" id="ui_lbl_firstPatientFirstVisit">
+            First Patient First Visit (FPFV) Date (Date the first patient is treated with study drug)
+        </label>
+        <div class="col-md-6 mt-md-1">
+            @(Html.Kendo().DatePicker()
+                               .Name("ui_dt_dateofFirstPatientFirstVisit")
+                               .Start(CalendarView.Month)
+                               .Depth(CalendarView.Month)
+                               .Format("MMM dd, yyyy")
+                               .DateInput()
+                               .HtmlAttributes(new { title = "monthpicker" })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="CheckEnrolment">
+        <label class="col-form-label col-md-4 mandatory" id="ui_lbl_EnablePatientEnrollment">
+            Patient Enrollment is complete
+        </label>
+        <div class="col-md-6 mt-md-2">
+            @(Html.Kendo().CheckBox()
+             .Name("ui_checkBox_EnablePatientEnrollment")
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="LastPatientFirstVisit">
+        <label class="col-form-label col-md-4 mandatory" id="ui_lbl_LastPatientFirstVisit">
+            Last Patient First Visit (LPFV) Date
+        </label>
+        <div class="col-md-6 mt-md-1">
+            @(Html.Kendo().DatePicker()
+                               .Name("ui_dt_dateofLastPatientFirstVisit")
+                               .Start(CalendarView.Month)
+                               .Depth(CalendarView.Month)
+                               .Format("MMM dd, yyyy")
+                               .DateInput()
+                               .HtmlAttributes(new { title = "monthpicker" })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="LastPatientLastTreatment">
+        <label class="col-form-label col-md-4 col-md-4">
+            Last Patient Last Treatment Visit (LPLT) Date
+        </label>
+        <div class="col-md-6 mt-md-1">
+            @(Html.Kendo().DatePicker()
+                               .Name("ui_dt_dateofLastPatientLastTreatment")
+                               .Start(CalendarView.Month)
+                               .Depth(CalendarView.Month)
+                               .Format("MMM dd, yyyy")
+                               .DateInput()
+                               .HtmlAttributes(new { title = "monthpicker" })
+            )
+        </div>
+    </div>
+    <div class="form-group row" id="LastPatientLastVisit">
+        <label class="col-form-label col-md-4 mandatory">
+            Last Patient Last Visit (LPLV) Date
+        </label>
+        <div class="col-md-6 mt-md-1">
+            @(Html.Kendo().DatePicker()
+                               .Name("ui_dt_dateofLastPatientLastVisit")
+                               .Start(CalendarView.Month)
+                               .Depth(CalendarView.Month)
+                               .Format("MMM dd, yyyy")
+                               //.Value()
+                               .DateInput()
+                               .HtmlAttributes(new { title = "monthpicker" })
+            )
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+        @Html.Partial("~/Views/Common/CancelNewStudy.cshtml")
+    </div>
+    <div class="modal fade" id="enrollmentCompleteModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal_header height_40px backgnd_color">
+                    <h4 class="modal-title ui_modal_header pt-md-1">Warning</h4>
+                    <a href="javascript:void[0]" class="close pt-md-4" data-dismiss="modal"><img class="window_close" src="~/Images/WindowClose.jpg"></a>
+                </div>
+                <div class="modal-body ui_modal">
+                    <div class="row">
+                        <div class="col-md-1"><img src="/Images/AlertOutlineIcon.jpg "></div>
+                        <div class="col-md-11">Please note that by checking this box, you are confirming that there will be no more new enrollments for this study</div>
+                    </div>
+                </div>
+                <div class="modal-footer p-1">
+                    <button type="button" class="btn btn-primary" id="ui_btn_ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<script src="~/scripts/PatientAccrual.js"></script>

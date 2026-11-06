@@ -1,0 +1,519 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Anju.Navigate.Utilities;
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "ProgramLeaderReview";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<form role="form" id="ui_frmProgramLeadreview" class="p-md-4 shadow-lg newWindowMargin" method="post">
+    <label class="task_heading m-md-0">Program Leader Review</label>
+    <span id="popupNotification"></span>
+    <hr />
+    <div class="panel">
+        <div class="panel-body study_panel ui_panel">
+            <p> Review this submission for completeness and quality. If the submission requires re-work, you have the option of returning it to the investigator.</p>
+        </div>
+    </div>
+    <div>
+        <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+        <input type="hidden" id="txtUserName" value=@ViewBag.AssignedUsername>
+        <input type="hidden" id="LogedinUserName" value=@ViewBag.LogedinUserName>
+        <input type="hidden" id="Institution" value=@ViewBag.Institution />
+        <input type="hidden" id="TitleofTrial" value=@ViewBag.TitleofTrial />
+    </div>
+    <div class="pt-md-3">
+        <ul>
+            <li class="list_item" id="studyIdAndTitleOfTrial">@ViewBag.StudyId: @ViewBag.TitleofTrial</li>
+            <li class="list_item" id="instituteSubmitted">Submitted By @ViewBag.AssignedUsername: @ViewBag.Institution</li>
+            <li class="list_item"><a href="" class="ui_link">Submission Summary</a></li>
+            <li class="list_item"><a href='@Url.Action("EditStudy", "NewStudy")' class="ui_link" target="_blank">Study Profile</a></li>
+        </ul>
+    </div>
+    <hr />
+    <div class="col-md-12 pl-md-2">
+        @(Html.Kendo().Grid<Anju.Navigate.Data.Documents>
+            ()
+            .Name("ui_dtg_PLDocuments")
+            .Columns(columns =>
+            {
+            columns.Bound(c => c.DocumentId).Hidden(true);
+            columns.Command(command => command.Custom("Tag").Text("Tag").Click("showDetails")).Width("8%");
+            columns.Bound(c => c.DocumentNameWithOutExtension).Width("20%").Title("Document Name").ClientTemplate(" <a onclick='Show(this);' href=\\#>#= DocumentName#</a> ");
+            columns.Bound(c => c.DocumentStatus).Width("20%").Title("Document Status");
+            columns.Bound(c => c.DocumentType).Width("15%").Title("Document Type");
+            columns.Bound(c => c.DocumentSubType).Width("15%").Title("Document Sub-Type");
+            columns.Bound(c => c.DocumentVersion).Width("22%").Title("Original / Amendment Version");
+            columns.Bound(c => c.SubModuleName).Hidden(true);
+            columns.Bound(c => c.StudyId).Hidden(true);
+            columns.Bound(c => c.OriginalDate).Hidden(true);
+            columns.Bound(c => c.ExpirationDate).Hidden(true);
+            columns.Bound(c => c.DocumentName).Hidden(true);
+            })
+
+            .HtmlAttributes(new { style = "height:250px;", @class = "ui_label" })
+            .Scrollable()
+            .Groupable(false)
+            .Sortable()
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.DocumentId))
+            .Read(read => read.Action("GetPIDocuments", "NewStudy").Data("StudyDetailsID"))
+            )
+        )
+        @(Html.Kendo().Window()
+        .Name("Details")
+        .Title("Review Document")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(800)
+        )
+    </div>
+    <div>
+        <table class="table table-bordered table-sm mt-md-2" id="ui_tbl_CompoundDetails">
+            <thead>
+                <tr>
+                    <th colspan="2" class="table_header">Original Submission</th>
+                    <th colspan="2" class="table_header">Normalized Data</th>
+                </tr>
+                <tr>
+                    <th class="table_header">@ConfigValues.appName Compound</th>
+                    <th class="table_header">Non-@ConfigValues.appName Compound</th>
+                    <th class="table_header">Compound Category</th>
+                    <th class="table_header">Compound Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="compoundOne">
+                    <td class="row_description"><label id="ui_lbl_CompoundCategory1">Afinitor</label></td>
+                    <td class="row_description"></td>
+                    <td class="row_description">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_CompoundCategory1")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .HtmlAttributes(new { @class = "wid_100" })
+                        .Events(e =>
+                        {
+                        e.Select("onChangeofCompoundCategory1");
+                        })
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDCATEGORY, @class = "wid_100" });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </td>
+                    <td class="row_description">
+                        <div id="compoundType1">
+                            @(Html.Kendo().DropDownList()
+                            .Name("ui_ddl_compoundTypeForCategory1")
+                            .HtmlAttributes(new { @class = "wid_100" })
+                            .DataTextField("Code")
+                            .DataValueField("Code")
+                            .OptionLabel("Select")
+                            .DataSource(source =>
+                            {
+                            source.Read(read =>
+                            {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDTYPE });
+                            })
+                            .ServerFiltering(true);
+                            })
+                            )
+                        </div>
+                    </td>
+                </tr>
+                <tr id="compoundTwo">
+                    <td class="row_description"><label id="ui_lbl_CompoundCategory2">Tykerb</label></td>
+                    <td class="row_description"></td>
+                    <td class="row_description">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_CompoundCategory2")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .HtmlAttributes(new { @class = "wid_100" })
+                        .Events(e =>
+                        {
+                        e.Select("onChangeofCompoundCategory2");
+                        })
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDCATEGORY });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </td>
+                    <td class="row_description">
+                        <div id="compoundType2">
+                            @(Html.Kendo().DropDownList()
+                            .Name("ui_ddl_compoundTypeForCompoundCategory2")
+                            .HtmlAttributes(new { @class = "wid_100" })
+                            .DataTextField("Code")
+                            .DataValueField("Code")
+                            .OptionLabel("Select")
+                            .DataSource(source =>
+                            {
+                            source.Read(read =>
+                            {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDTYPE });
+                            })
+                            .ServerFiltering(true);
+
+                            })
+                            )
+                        </div>
+                    </td>
+                </tr>
+                <tr id="compoundThree">
+                    <td class="row_description"><label id="ui_lbl_CompoundCategory3">Tykerb</label></td>
+                    <td class="row_description"></td>
+                    <td class="row_description">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_CompoundCategory3")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .HtmlAttributes(new { @class = "wid_100" })
+                        .Events(e =>
+                        {
+                        e.Select("onChangeofCompoundCategory3");
+                        })
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDCATEGORY });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </td>
+                    <td class="row_description">
+                        <div id="compoundType3">
+                            @(Html.Kendo().DropDownList()
+                            .Name("ui_ddl_compoundTypeForCompoundCategory3")
+                            .HtmlAttributes(new { @class = "wid_100" })
+                            .DataTextField("Code")
+                            .DataValueField("Code")
+                            .OptionLabel("Select")
+                            .DataSource(source =>
+                            {
+                            source.Read(read =>
+                            {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DRUGORCOMPOUNDTYPE });
+                            })
+                            .ServerFiltering(true);
+                            })
+                            )
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row pt-md-2" id="multiselectStudyDescriptors">
+        <label for="ui_lbl_studyDescriptors" class="mandatory col-md-3 col-form-label">Study Descriptors</label>
+        <div class="col-md-7">
+            @(Html.Kendo().MultiSelect()
+            .Name("ui_multiselect_studyDescriptors")
+            .DataTextField("Code")
+            .DataValueField("CodeId")
+            .AutoBind(false)
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.STUDYDESCRIPTORS });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+
+    <div class="row pt-md-2" id="trialCategorization">
+        <div class="col-md-3 col-form-label">
+            <label for="ui_lbl_trialCategorization" class="mandatory">Pandemic Preparedness Trial Categorization</label>
+            <div class="label_description pl-md-2 text-left font-weight-normal">
+                <div>Trial Category Definitions</div>
+                <div>A Trial in an indication where interruption of study drug can be life-threatening and benefits of extended drug supply overweigh risks</div>
+                <div>B Trial in an indication where interruption of study drug can result in significant disability and benefits of extended drug supply overweigh risks</div>
+                <div>C All other trials</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_trialCategorization")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .Events(e =>
+            {
+            e.Select("onChangeofCategorization");
+            })
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.PANADEMICPREPAREDNESSTRIALCATEGORIZATION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row pt-md-2" id="visitDesignError">
+        <label id="ui_lbl_safetyMonitoringInterval" class="col-md-3 col-form-label">Safety Monitoring Interval</label>
+        <div class="col-md-8 ml-md-4">
+            <input type="checkbox" class="custom-control-input" id="visitDesign">
+            <label class="custom-control-label ui_label pt-md-1" for="visitDesign">follows Visit Design</label>
+        </div>
+    </div>
+    <div id="monitoring" class="row pt-md-2">
+        <div class="col-md-3 pr-md-0">
+            <label id="ui_lbl_maxTimeAllowed" class="col-form-label wid_100  ">Maximum allowable time between visits (in weeks)</label>
+            <div class="label_description pl-md-4">
+                Safety monitoring interval is required when Pandemic Preparedness Trial Categorization is A or B
+            </div>
+        </div>
+        <div class="col-md-9">
+            @(Html.Kendo().TextBox()
+           .Name("ui_txt_maxTimeAllowed")
+           .HtmlAttributes(new { @class = "wid_40" })
+            )
+        </div>
+    </div>
+    <div class="row pt-md-2" id="trialLeader">
+        <label for="ui_lbl_trialLeader" class="mandatory col-md-3 col-form-label">Trial Leader</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_trialLeader")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("UserName")
+            .DataValueField("UserId")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetUserDetailsByUserType", "TaskWorkFlow", new { userType = @ConstDefaultValue.TRIALLEADER });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row pt-md-2" id="decision">
+        <label for="ui_lbl-decision" class="mandatory col-md-3 col-form-label">Decision</label>
+        <div class="col-md-4">
+            @(Html.Kendo().DropDownList()
+            .Name("ui_ddl_Decision")
+            .HtmlAttributes(new { @class = "wid_100" })
+            .DataTextField("Code")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .DataSource(source =>
+            {
+            source.Read(read =>
+            {
+            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DECISION });
+            })
+            .ServerFiltering(true);
+            })
+            )
+        </div>
+    </div>
+    <div class="row pt-md-2">
+        <label for="ui_lbl_comments" class="col-md-3 col-form-label ">Comments </label>
+        <textarea rows="4" class="k-textbox col-md-8 wid_100 ml-md-3" id="ui_txt_comments" maxlength="300"></textarea>
+        <span class="generic_text_small col-md-11 ml-md-4 text-right count">300 Characters left to enter</span>
+    </div>
+
+    <div class="row pt-md-3">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-primary" id="btn-Submit">Submit</button>
+            <button type="button" class="btn btn-primary" id="btn-Cancel" onclick="showDialog();">Cancel</button>
+        </div>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+    </div>
+</form>
+
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <form id="ui_frm_tagForm">
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Download</label>
+                <div class="col-md-9">
+                    <a href="javascript:void(0);" class="fileDownload" filename="#= DocumentName #" subModuleFolderName="#= SubModuleName #" studyId="#=StudyId #">#= DocumentName #</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Uploaded By</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_uploadedBy")
+                    .HtmlAttributes(new { @class = "wid_100", disabled = "disabled" })
+                    )
+                </div>
+            </div>
+
+            <div class="form-group row" id="documentName">
+                <label class="col-form-label col-md-3 mandatory">Document Name</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().TextBox()
+                    .Name("ui_txt_documentName")
+                    .HtmlAttributes(new { @class = "wid_100" })
+                    .Value("#= DocumentName #")
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentStatus">
+                <label class="col-form-label col-md-3 mandatory">Document Status</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentStatus")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTSTATUS });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentType">
+                <label class="col-form-label col-md-3 mandatory">Document Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("CodeId")
+                    .OptionLabel("Select")
+                    .Events(events=>events.Change("onDocumentTypeChange"))
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTTYPE });
+                        })
+                        .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="documentSubType">
+                <label class="col-form-label col-md-3" id="documentSubTypeLabel">Document Sub-Type</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_documentSubType")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .Events(events => events.DataBound("onSubTypeDataBound"))
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetDocumentSubTypeByDocumentTypeID", "TaskWorkFlow").Data("filterDocumentSubType");
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .CascadeFrom("ui_ddl_documentType")
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row" id="amendmentVersion">
+                <label class="col-form-label col-md-3 mandatory">Original / Amendment Version</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_amendmentVersion")
+                    .HtmlAttributes(new { @class = "wid_50" })
+                    .DataTextField("Code")
+                    .DataValueField("Code")
+                    .OptionLabel("Select")
+                    .DataSource(source =>
+                    {
+                    source.Read(read =>
+                    {
+                    read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.DOCUMENTVERSION });
+                    })
+                    .ServerFiltering(true);
+                    })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Original Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_originalDate")
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .ToClientTemplate()
+                    )
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-form-label col-md-3">Expiration Date</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DatePicker()
+                    .Name("ui_dt_expirationDate")
+                    .Start(CalendarView.Month)
+                    .Depth(CalendarView.Month)
+                    .Format("MMM dd, yyyy")
+                    .DateInput()
+                    .HtmlAttributes(new { title = "monthpicker" })
+                    .ToClientTemplate()
+                    )
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-primary" id="btn-DocumentSubmit">Submit</button>
+                    <button type="button" class="btn btn-primary" id="btn-DocumentCancel">Cancel</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</script>
+<script>
+    var appName = '@ConfigValues.appName';
+</script>
+<script src="~/scripts/ProgramLeaderReview.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

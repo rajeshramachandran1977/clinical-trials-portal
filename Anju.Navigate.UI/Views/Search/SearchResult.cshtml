@@ -1,0 +1,115 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model List<Anju.Navigate.Data.Attribute>
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+@{
+    ViewData["Title"] = "SearchResult";
+}
+
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+<script src="~/scripts/Search.js"></script>
+<script src="~/scripts/Common/Common.js"></script>
+<div class="row">
+    <span id="popupNotification"></span>
+    <div class="col-md-3">
+        <form id="ui_frmQuickSearch" class="col-md-12">
+            <div class="row">
+                <span class="ui_label text-left col-md-12 searchtag pt-md-1 pb-md-1">Quick Start</span>
+            </div>
+            <div class="row">
+                <input type="text" class="form-control" id="searchText" placeholder="<Enter Keyword>">
+            </div>
+            <div class="row mb-md-2 pl-md-1">
+                <button type="button" id="quickdserch" class="btn btn-primary btn-sm"><i class="fa fa-search"> Search</i></button>
+                <button type="button" id="resetQuickSearchButton" class="btn btn-primary btn-sm ml-1"><i class="fa fa-reply"> Reset</i></button>
+            </div>
+        </form>
+
+        <form id="ui_frmAdvanceSearch" class="col-md-12">
+            <div class="row">
+                <span class="ui_label col-md-12 text-left searchtag pt-md-1 pb-md-1">IIS Search Area</span>
+            </div>
+            <div>
+                <div class="row">
+                    <label class="radio-inline ui_modal col-md-12 ml-md-1"><input type="radio" name="trialType" checked="checked" value="All-Selected-Attributes">Match all selected Attributes </label>
+                    <label class="radio-inline ui_modal ml-md-1"><input type="radio" name="trialType" value="Any-Selected-Attributes">Match any selected Attributes</label>
+
+                </div>
+                <div class="row">
+                    <table class="table table-borderless" id="attributetable">
+                        <tbody>
+                            <tr>
+                                <td><span class="ui_label count pl-md-2">Attribute</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.Kendo().DropDownList().Name("attribute1").HtmlAttributes(new { @class = "wid_100 " }).OptionLabel("Select").DataTextField("Name").DataValueField("Name").BindTo(Model)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="ui_label pl-md-2">Value:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control wid_99" id="attributevalue1">
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="ui_label count pl-md-2">Attribute</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.Kendo().DropDownList().Name("attribute2").HtmlAttributes(new { @class = "wid_100 " }).OptionLabel("Select").DataTextField("Name").DataValueField("Name").BindTo(Model)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="ui_label pl-md-2">Value:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control wid_99" id="attributevalue2">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row pl-md-1">
+                    <button type="button" class="btn btn-primary" id="addAttribute"> Add..</button>
+                </div>
+                <div class="row pt-md-1 pl-md-1 mb-md-2">
+                    <button type="button" id="advancedserch" class="btn btn-primary btn-sm"><i class="fa fa-search"> Search</i></button>
+                    <button type="button" id="resetSearchBuilderButton" class="btn btn-primary btn-sm ml-1"><i class="fa fa-reply"> Reset</i></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="col-md-9 rightPane">
+        <div>
+            <i id="searching" class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+        </div>
+        <div id="searchResults" class="col-md-12 p-0">
+            <div class="col-md-12 mb-1 backgnd_color">
+                <span class="ui_label">Study Information</span>
+            </div>
+            <div class="col-md-12 ml-0" id="noResult">
+                <span class="ui_label">No Result</span>
+            </div>
+            <div id="colToolbar">
+                <div class="col-md-12  backgnd_color">
+                    <span class="ui_label">Filter <a href="#" id="attributeshow"><i class="fa fa-caret-square-o-down"></i></a></span>
+                </div>
+                <div class="collapse" id="attributelist">
+                </div>
+            </div>
+            <div class="searchData" id="searchlist">
+            </div>
+        </div>
+    </div>
+</div>

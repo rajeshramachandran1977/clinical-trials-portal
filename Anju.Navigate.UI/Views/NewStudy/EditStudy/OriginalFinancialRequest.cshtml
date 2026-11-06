@@ -1,0 +1,237 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="originalfinancialrequestdetailscontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row">
+        <div class="wid_100">
+            <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+    <div id="flex">
+        <div id="displayAreyourequestingacompanystudycompound">
+            <div id="areyourequestingacompanystudycompound" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_areyourequestingacompanystudycompound"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforareyourequestingacompanystudycompound" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_areyourequestingacompanystudycompound")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayAreyourequestingstudyfunding">
+            <div id="areyourequestingstudyfunding" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_areyourequestingstudyfunding"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforareyourequestingstudyfunding" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_areyourequestingstudyfunding")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayWillsupportbeprovidedfromothersources">
+            <div id="willsupportbeprovidedfromothersources" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_willsupportbeprovidedfromothersources"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforwillsupportbeprovidedfromothersources" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_willsupportbeprovidedfromothersources")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayOthersupportdescription">
+            <div id="othersupportdescription">
+                <label class="col-formEditStudy-labels" id="ui_lbl_othersupportdescription"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_helpTextforothersupportdescription" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_othersupportdescription" maxlength='1'></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_othersupportdescription" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforothersupportdescription"></label></span>
+                    <input type="hidden" id="regexexprforothersupportdescription" />
+                    <input type="hidden" id="validationmsgforothersupportdescription" />
+                </div>
+            </div>
+        </div>
+        <div id="displayWillgovernmentsupportbeprovided">
+            <div id="willgovernmentsupportbeprovided" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_willgovernmentsupportbeprovided"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforwillgovernmentsupportbeprovided" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_willgovernmentsupportbeprovided")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayOriginalrequestedstudyamount">
+            <div id="originalrequestedstudyamount" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_originalrequestedstudyamount"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextfororiginalrequestedstudyamount" data-toggle="tooltip" />
+                </div>
+                <div>
+                    <input type="number" class="ml-3 wid_100 numberFieldWidth" id="ui_num_originalrequestedstudyamount" onkeypress="return event.charCode >= 48" min="1" data-bind="value:ui_num_originalrequestedstudyamount" />
+                </div>
+            </div>
+        </div>
+        <div id="displayGovernmentsupportdescription">
+            <div id="governmentsupportdescription">
+                <label class="col-formEditStudy-labels" id="ui_lbl_governmentsupportdescription"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_governmentsupportdescription" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_governmentsupportdescription" maxlength='1'></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_governmentsupportdescription" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforgovernmentsupportdescription"></label></span>
+                    <input type="hidden" id="regexexprforgovernmentsupportdescription" />
+                    <input type="hidden" id="validationmsgforgovernmentsupportdescription" />
+                </div>
+            </div>
+        </div>
+        <div id="displayAreyourequestingsupportfromcompanyotherthandrugorfunding">
+            <div id="areyourequestingsupportfromcompanyotherthandrugorfunding" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_areyourequestingsupportfromcompanyotherthandrugorfunding"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforareyourequestingsupportfromcompanyotherthandrugorfunding" data-toggle="tooltip" />
+                </div>
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownList()
+                    .Name("ui_ddl_areyourequestingsupportfromcompanyotherthandrugorfunding")
+                    .OptionLabel("Select")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(new List<SelectListItem>
+                        () {
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.YES,
+                        Value = @ConstDefaultValue.YES
+                        },
+                        new SelectListItem() {
+                        Text = @ConstDefaultValue.NO,
+                        Value = @ConstDefaultValue.NO
+                        },
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="displayNoncompanysupportsources">
+            <div id="noncompanysupportsources">
+                <label class="col-formEditStudy-labels" id="ui_lbl_noncompanysupportsources"></label>
+                <img src="~/Images/helppic.gif" id="ui_img_noncompanysupportsources" data-toggle="tooltip" />
+                <div class="col-md-12 p-md-0">
+                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_noncompanysupportsources" maxlength='1'></textarea>
+                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_noncompanysupportsources" maxlength="1">
+                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfornoncompanysupportsources"></label></span>
+                    <input type="hidden" id="regexexprfornoncompanysupportsources" />
+                    <input type="hidden" id="validationmsgfornoncompanysupportsources" />
+                </div>
+            </div>
+        </div>
+        <div id="displayGlobalfundingrequested">
+            <div id="globalfundingrequested" class="row">
+                <div class="col-md-4">
+                    <label class="col-formEditStudy-labels " id="ui_lbl_Globalfundingrequested"></label>
+                    <img src="~/Images/helppic.gif" id="ui_img_helpTextforglobalfundingrequested" data-toggle="tooltip" />
+                </div>
+                <div>
+                    <input type="number" class="ml-3 wid_100 numberFieldWidth" id="ui_num_globalfundingrequested" onkeypress="return event.charCode >= 48" min="1" data-bind="value:ui_num_globalfundingrequested" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row float-right">
+        <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveoriginalfinancialrequestdetails">Save</button>
+        <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+    </div>
+</div>
+<script src="~/scripts/Common/Common.js"></script>
+<script>
+    var originalfinancialrequestattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.OriginalFinancialRequest)';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+    var yes = '@ConstDefaultValue.YES';
+    var no = '@ConstDefaultValue.NO';
+
+    var isrequestingacompanystudycompound = '@ConstDefaultValue.ISREQUESTINGACOMPANYSTUDYCOMPOUND';
+    var isrequestingstudyfunding = '@ConstDefaultValue.ISREQUESTINGSTUDYFUNDING';
+    var issupportbeprovidedfromothersources = '@ConstDefaultValue.ISSUPPORTBEPROVIDEDFROMOTHERSOURCES';
+    var othersupportdescription = '@ConstDefaultValue.OTHERSUPPORTDESCRIPTION';
+    var isgovernmentsupportbeprovided = '@ConstDefaultValue.ISGOVERNMENTSUPPORTBEPROVIDED';
+    var originalrequestedstudyamount = '@ConstDefaultValue.ORIGINALREQUESTEDSTUDYAMOUNT';
+    var governmentsupportdescription = '@ConstDefaultValue.GOVERNMENTSUPPORTDESCRIPTION';
+    var isrequestingsupportfromcompanyotherthandrugorfunding = '@ConstDefaultValue.ISREQUESTINGSUPPORTFROMCOMPANYOTHERTHANDRUGORFUNDING';
+    var noncompanysupportsources = '@ConstDefaultValue.NONCOMPANYSUPPORTSOURCES';
+    var globalfundingrequested = '@ConstDefaultValue.GLOBALFUNDINGREQUESTED';
+</script>
+<script src="~/scripts/EditStudy/OriginalFinancialRequest.js"></script>

@@ -1,0 +1,290 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model Anju.Navigate.Data.ListOfDocuments
+@using Kendo.Mvc.Extensions
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "Administration";
+}
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<form id="ui_frmAdministration">
+    <div class="row">
+        <div class="col-md-2 card border mt-md-1">
+            @(Html.Kendo().TreeView()
+            .Name("treeview_userRoles")
+            .HtmlAttributes(new { @class = "treeViewListOfValues" })
+            .Items(treeview_userRoles =>
+                    {
+            treeview_userRoles.Add().Text("UserRoles");
+            })
+            .Events(events => events.
+            Select("tree_select_userRoles"))
+            )
+
+            @(Html.Kendo().TreeView()
+           .Name("treeview_sysCodeValues")
+           .HtmlAttributes(new { @class = "treeViewListOfValues" })
+           .Items(treeview_sysCodeValues =>
+           {
+               treeview_sysCodeValues.Add().Text("Sys Code Values");
+           })
+           .Events(events => events.
+            Select("tree_select_sysCodeValues"))
+            )
+
+
+            @(Html.Kendo().TreeView()
+            .Name("treeview_country")
+            .HtmlAttributes(new { @class = "treeViewListOfValues" })
+            .Items(treeview_country =>
+                    {
+            treeview_country.Add().Text("Country");
+            })
+            .Events(events => events.
+            Select("tree_select_country"))
+            )
+
+            @(Html.Kendo().TreeView()
+            .Name("treeview_state")
+            .HtmlAttributes(new { @class = "treeViewListOfValues" })
+            .Items(treeview_state =>
+                    {
+            treeview_state.Add().Text("State");
+            })
+            .Events(events => events.
+            Select("tree_select_state"))
+            )
+
+            @(Html.Kendo().TreeView()
+           .Name("treeview_city")
+           .HtmlAttributes(new { @class = "treeViewListOfValues" })
+           .Items(treeview_city =>
+                   {
+           treeview_city.Add().Text("City");
+           })
+           .Events(events => events.
+            Select("tree_select_city"))
+            )
+        </div>
+
+        <div class="col-md-10">
+            <div id="div_userRoles">
+                @(Html.Kendo().Grid<Anju.Navigate.Data.UserRoles>()
+                .Name("UserRolesgridId")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Name).Width("30%");
+                    columns.Bound(c => c.Description).Width("40%");
+                    columns.Bound(c => c.IsActive).Title("IsActive").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />")
+                    .HtmlAttributes(new { style = "text-align: center" }).Width("10%");
+                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width("20%");
+                })
+              .ToolBar(tools =>
+              {
+                  tools.Create();
+              })
+              .Events(events => { events.Save("OnCreateUpdateModal"); })
+              .HtmlAttributes(new { style = "height: 60vh;" })
+              .Scrollable()
+              .Groupable()
+              .Filterable()
+              .Sortable()
+              .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+              .Pageable(pageable => pageable
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(e => e.RequestEnd("OnUserRolessaveChanges"))
+              .Model(model => model.Id(p => p.UserRoleId))
+              .Create(update => update.Action("CreateUserRoles", "Administration"))
+              .Update(update => update.Action("UpdateUserRoles", "Administration"))
+              .Read(read => read.Action("GetUserRoles", "Administration"))
+              .Destroy(update => update.Action("DeleteUserRoles", "Administration"))
+              )
+                )
+            </div>
+
+            <div id="div_sysCodeValues">
+                <label class="ui_label yellow">Please use "Tab" to move to the next cell, While adding/editing a value</label>
+                @(Html.Kendo().Grid<Anju.Navigate.Data.SysCodeValues>()
+                .Name("SysCodegrid")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.CodeId).Hidden(true);
+                    columns.Bound(c => c.TableName).Width("20%");
+                    columns.Bound(c => c.ColumnName).Filterable(filterable => filterable.UI("sysCodeColumnFilter")).Width("20%");
+                    columns.Bound(c => c.Code).Width("20%").HeaderHtmlAttributes(new { id = "clickCode" }); ;
+                    columns.Bound(c => c.Description).Width("20%").HeaderHtmlAttributes(new { id = "clickDescription" });
+                    columns.Bound(c => c.SortOrder).Hidden(true);
+                    columns.Bound(c => c.IsDefault).Width("10%").Title("IsDefault").ClientTemplate("<input type='radio'  # if (IsDefault) { # checked='checked' # } # />").Hidden(true);
+                    columns.Bound(c => c.IsDisplay).Hidden(true);
+                    columns.Bound(c => c.IsActive).Title("IsActive").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />").Width("10%");
+                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width("20%");
+                })
+                .ToolBar(tools =>
+                {
+                    tools.Create();
+                    //tools.Save();
+                })
+                .Events(events => { events.Save("OnCreateUpdateModal"); })
+                .HtmlAttributes(new { style = "height: 60vh;" })
+                .Scrollable()
+                .Groupable()
+                .Filterable(filterable => filterable
+                 .Extra(false)
+                 .Operators(operators => operators
+                     .ForString(str => str.Clear()
+                         .StartsWith("Starts with")
+                         .IsEqualTo("Is equal to")
+                         .IsNotEqualTo("Is not equal to")
+                     ))
+                 )
+                .Sortable(sortable => sortable.AllowUnsort(false))
+                .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+                .Pageable(pageable => pageable
+                 .Refresh(true)
+                 .PageSizes(true)
+                 .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Events(e => e.RequestEnd("OnSysCodesaveChanges"))
+                 .Model(model => model.Id(p => p.CodeId))
+                 .Create(update => update.Action("CreateSysCodeValues", "Administration").Data("filterDocumentMACSSubType"))
+                 .Update(update => update.Action("UpdateSysCodeValues", "Administration"))
+                 .Read(read => read.Action("GetSysCodeValues", "Administration"))
+                 .Destroy(update => update.Action("DeleteSysCodeValues", "Administration"))
+                )
+                )
+                @(Html.Kendo().Sortable()
+                .For("#SysCodegrid")
+                .Filter("table > tbody > tr")
+                .Cursor("move")
+                .ContainerSelector("#SysCodegrid tbody")
+                .Events(events => events.Change("onChange"))
+                )
+            </div>
+            <div id="div_country">
+                @(Html.Kendo().Grid<Anju.Navigate.Data.Country>()
+                 .Name("Countrygrid")
+                 .Columns(columns =>
+                 {
+                 columns.Bound(c => c.Name).Width("40%");
+                 columns.Bound(c => c.Code).Width("20%");
+                 columns.Bound(c => c.IsActive).Width("20%").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />");
+                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width("20%");
+                 })
+                 .ToolBar(tools =>
+                 {
+                 tools.Create();
+                 })
+                 .Events(events => { events.Save("OnCreateUpdateModal"); })
+                 .HtmlAttributes(new { style = "height: 60vh;" })
+                 .Scrollable()
+                 .Groupable()
+                 .Sortable()
+                 .Filterable()
+                 .Editable(editable => editable.Mode(GridEditMode.InLine).ConfirmDelete("test").DisplayDeleteConfirmation("Are you sure you would like to delete"))
+                 .Pageable(pageable => pageable
+                 .Refresh(true)
+                 .PageSizes(true)
+                 .ButtonCount(5))
+                 .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Events(e => e.RequestEnd("OnCountrysaveChanges"))
+                 .Model(model => model.Id(p => p.CountryId))
+                 .Create(update => update.Action("CreateCountry", "Administration"))
+                 .Update(update => update.Action("UpdateCountry", "Administration"))
+                 .Read(read => read.Action("GetCountries", "Administration"))
+                 .Destroy(update => update.Action("DeleteCountry", "Administration"))
+                 )
+                )
+            </div>
+            <div id="div_State">
+                @(Html.Kendo().Grid<Anju.Navigate.Data.State>()
+                .Name("Stategrid")
+                .Columns(columns =>
+                {
+                columns.Bound(c => c.CountryId).EditorTemplateName("Countries").ClientTemplate("#=CountryName#").Width("25%").Title("Country");
+                columns.Bound(c => c.Name).Width("25%");
+                columns.Bound(c => c.Code).Width("15%");
+                columns.Bound(c => c.IsActive).Width("15%").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width("20%");
+                })
+                .ToolBar(tools =>
+                {
+                 tools.Create();
+                })
+                .Events(events => { events.Save("OnCreateUpdateModal"); })
+                .HtmlAttributes(new { style = "height: 60vh;" })
+                .Scrollable()
+                .Groupable()
+                .Sortable()
+                .Filterable()
+                .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(e => e.RequestEnd("OnStatesaveChanges"))
+                .Model(model =>
+                {
+                     model.Id(p => p.StateId);
+                     model.Field(p => p.CountryId).DefaultValue(1);
+
+                })
+                .Read(read => read.Action("GetStates", "Administration"))
+                .Create(update => update.Action("CreateState", "Administration"))
+                .Update(update => update.Action("UpdateState", "Administration"))
+                .Destroy(update => update.Action("DeleteState", "Administration"))
+                )
+                )
+            </div>
+
+            <div id="div_city">
+                @(Html.Kendo().Grid<Anju.Navigate.Data.City>()
+                .Name("Citygrid")
+                .Columns(columns =>
+                {
+                columns.Bound(c => c.StateId).EditorTemplateName("States").ClientTemplate("#=StateName#").Width("40%");
+                columns.Bound(c => c.Name).Width("20%");
+                columns.Bound(c => c.IsActive).Width("20%").ClientTemplate("<input type='checkbox' disabled='disabled' #= IsActive ? checked='checked' :'' # class='chkbxInactive' />");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width("20%");
+                })
+                .ToolBar(tools =>
+                {
+                tools.Create();
+                })
+                .Events(events => { events.Save("OnCreateUpdateModal"); })
+                .HtmlAttributes(new { style = "height: 60vh;" })
+                .Scrollable()
+                .Groupable()
+                .Sortable()
+                .Filterable()
+                .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(e => e.RequestEnd("OnCitysaveChanges"))
+                .Model(model =>
+                {
+                model.Id(p => p.CityId);
+                model.Field(p => p.StateId).DefaultValue(1);
+
+                })
+                .Read(read => read.Action("GetCities", "Administration"))
+                .Create(update => update.Action("CreateCity", "Administration"))
+                .Update(update => update.Action("UpdateCity", "Administration"))
+                .Destroy(update => update.Action("DeleteCity", "Administration"))
+                )
+                )
+            </div>
+        </div>
+    </div>
+</form>
+<script src="~/scripts/Administration.js"></script>

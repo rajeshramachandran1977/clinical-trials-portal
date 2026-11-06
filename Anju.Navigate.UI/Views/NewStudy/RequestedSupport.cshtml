@@ -1,0 +1,313 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@model Anju.Navigate.Data.ListOfDocuments
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Site.cshtml";
+    ViewData["Title"] = "Requested Support";
+}
+@using Anju.Navigate.Utilities;
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+    
+<form id="ui_frmRequestedSupport" class="newWindowMargin p-md-4 shadow-lg" method="post">
+    <div class="row">
+        <div class="col-md-4 pb-2">
+            <img src="~/Images/Research_ICON2.png" class="register_img" />
+            @if (@ViewBag.pITaskStatus?.ToUpper() == @ConstDefaultValue.SUBMITPROTOCOL.ToUpper())
+            {
+                <label class="task_heading" id="taskHeading">Submit Protocol</label>
+            }
+            else if (@ViewBag.TaskName?.ToUpper() == @ConstDefaultValue.RESUBMITPROTOCOL.ToUpper())
+            {
+                <label class="task_heading" id="taskHeading">Resubmit Protocol</label>
+            }
+            else
+            {
+                <label class="task_heading" id="taskHeading">New Proposal Submission</label>
+            }
+        </div>
+        <div class="col-md-8 text-right">
+            <label class="ui_label">Welcome @ViewBag.Username</label>
+        </div>
+    </div>
+
+    <div class="card col-md-12 p-md-2">
+        <div class="padding_left_100px">
+            <div class="row">
+                <div>
+                    <input type="button" class="btn btn-submission no-click" id="scientificRationale" value="Scientific Rationale" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click wid_250px" id="personnelResearchSites" value="Personnel & Research Sites" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click" id="requestedSupport" value="Requested Support" />
+                    <span class=" k-icon k-i-arrow-right font_30 arrow_icon_clr"></span>
+                    <input type="button" class="btn btn-submission no-click" id="confirmation" value="Confirmation" />
+                </div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-submission no-click height_30px width_5" id="1">1</button>
+                <button type="button" class="btn btn-submission no-click height_30px width_5 ml-1" id="2">2</button>
+            </div>
+        </div>
+        <div class="row mt-md-2">
+            <div class="col-md-8 border-right">
+                <div class="btn-group">
+                    <button class="btn btn-primary ml-md-4" id="ui_btnPreviousSection" type="submit">Previous Section</button>
+                </div>
+                <div class="btn-group float-right">
+                    <button type="button" class="btn btn-primary" onclick="deleteNewStudyDialog();" id="deleteBtn">Delete Current Submission</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <input type="hidden" id="txtUserName" value=@ViewBag.Username>
+                <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+                <input type="hidden" value="@ViewBag.mode" id="mode" />
+                <input type="hidden" value="@ViewBag.studyType" id="StudyType" />
+                <input type="hidden" value="@ViewBag.pITaskStatus" id="pITaskStatus" />
+                <input type="hidden" value="@ConstDefaultValue.SUBMITPROTOCOL" id="pIsubmitprotocol" />
+                <input type="hidden" value="@ViewBag.TaskName" id="TaskName" />
+                <button type="button" class="btn btn-primary" onclick="showDialog();">Cancel</button>
+                <button type="button" class="btn btn-primary" id="ui_btnSaveandExit">Save & Exit</button>
+                <button type="button" id="ui_btnSaveandContinue" class="btn btn-primary">Save & Continue...</button>
+            </div>
+        </div>
+
+    </div>
+    <hr />
+
+    <div class="d-block" id="step-4">
+        <span id="popupNotification"></span>
+        <div class="card">
+            <div class="row pl-md-3">
+                <div class="col-md-2 editer-title align-items-center d-flex justify-content-center">
+                    Request for @ConfigValues.appName Support
+                </div>
+                <div class="col-md-10 pl-0">
+                    @if (ViewBag.StudyType == "Interventional")
+                    {
+                        <div class="col-md-12 pl-0">
+                            <label class="ui_label pl-2">If funding support is requested, a detailed budget is required. Please attach a copy of the itemized budget. @ConfigValues.appName policy will only allow consideration for financial support for the expenses specifically related to the activities for this study. Requests for financial support should be limited to direct clinical activities relating to this study.</label>
+                            <div id="reqDrugSupply" class="pl-2">
+                                <label class="mandatory col-form-label">Request for drug supply</label>
+                                @(Html.Kendo().DropDownList()
+                                .Name("ui_ddl_reqDrugSupply")
+                                .OptionLabel("Select")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .BindTo(new List<SelectListItem>
+                                    () {
+                                    new SelectListItem() {
+                                    Text = "Yes",
+                                    Value = "Yes"
+                                    },
+                                    new SelectListItem() {
+                                    Text = "No",
+                                    Value = "No"
+                                    },
+                                    })
+                                )
+                            </div>
+                        </div>
+                    }
+                    <div class="col-md-12 pl-2">
+                        <div id="reqFinancialSupport">
+                            <label class="pl-2 col-form-label mandatory">Request for financial support</label>
+                            @(Html.Kendo().DropDownList()
+                            .Name("ui_ddl_reqFinancialSupport")
+                            .OptionLabel("Select")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .BindTo(new List<SelectListItem>
+                                () {
+                                new SelectListItem() {
+                                Text = "Yes",
+                                Value = "Yes"
+                                },
+                                new SelectListItem() {
+                                Text = "No",
+                                Value = "No"
+                                },
+                                })
+                                .Events(e =>
+                                {
+                                e.Select("onChangeOfReqFinancialSupport");
+                                })
+                            )
+                        </div>
+                    </div>
+                    <div id="ifReqFinancialSupportYes" class="pl-0 ">
+                        <div class="col-md-12 pl-2">
+                            <div id="currencyError">
+                                <label class="mandatory col-form-label">Budget (USD) requested for the trial</label>
+                                <input type="number" id="currency" data-bind="value:currency" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 form-check-inline pl-2" id="uploadFile">
+                            <label class="col-form-label mandatory">Completed detailed trial budget</label>
+                            <div class="form-check-inline pl-1" id="budgetDocuments">
+                                @(Html.Kendo().Upload()
+                              .Name("files")
+                              .Files(
+                              files =>
+                              {
+                                  foreach (var f in Model.TrialBudgetDocuments)
+                                  {
+                                      files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                                  }
+                              })
+                              .Multiple(false)
+                              .Async(a => a
+                              .Save("SaveAsyncRequestedSupportDocuments", "NewStudy")
+                              .Remove("RemoveRequestedSupportDocuments", "NewStudy")
+                              .AutoUpload(true)
+                              )
+                                )
+                            </div>
+                            <button id="button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (@ViewBag.pITaskStatus?.ToUpper() == @ConstDefaultValue.SUBMITPROTOCOL.ToUpper())
+        {
+            <div class="card mt-md-2">
+                <div class="row pl-md-3">
+                    <div class="col-md-2 editer-title align-items-center mandatory submitprotocol d-flex justify-content-center">
+                        Protocol
+                    </div>
+                    <div class="col-md-10 pl-2 p-1">
+                        <div class="row pl-2" id="protocolUploadfile">
+                            <label class="col-form-label mandatory p-0">
+                                Upload Draft Protocol Document
+                            </label>
+                            <div class="col-md-4 pl-2">
+                                @(Html.Kendo().Upload()
+                                   .Name("Protocolfile")
+                                   .Files(
+                                   files =>
+                                   {
+                                       foreach (var f in Model.ProtocolDocuments)
+                                       {
+                                           files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                                       }
+                                   })
+                                   .Multiple(true)
+                                   .Async(a => a
+                                   .Save("SaveAsyncRequestedSupportProtocolDocuments", "NewStudy")
+                                   .Remove("RemoveRequestedSupportProtocollDocuments", "NewStudy")
+                                   .AutoUpload(true)
+                                   )
+                                   .Events(events => events
+                                   .Upload("onUpload"))
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        else if (@ViewBag.TaskName?.ToUpper() == @ConstDefaultValue.RESUBMITPROTOCOL.ToUpper())
+        {
+            <div class="card mt-md-2">
+                <div class="row pl-md-3">
+                    <div class="col-md-2 editer-title align-items-center mandatory submitprotocol d-flex justify-content-center">
+                        Protocol
+                    </div>
+                    <div class="col-md-10 pl-0">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="col-form-label">Download Redlined Protocol Document</label>
+                                <a href="javascript:void(0);" class="ui_link col-md-7 mt-md-2" id="downloadProtocol">Redlined Protocol Document</a>
+                            </div>
+                        </div>
+
+                        <div class="row pl-3" id="reUploadProtocolFile">
+                            <label class="col-form-label mandatory">
+                                Upload Draft Protocol Document
+                            </label>
+                            <div class="col-md-4 pl-2">
+                                @(Html.Kendo().Upload()
+                                  .Name("fileReUploadProtocolDoc")
+                                  .Files(
+                                   files =>
+                                   {
+                                       foreach (var f in Model.ProtocolDocuments)
+                                       {
+                                           files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                                       }
+                                   })
+                                  .Multiple(false)
+                                  .Async(a => a
+                                  .Save("SaveReuploadProtocolDocuments", "NewStudy")
+                                  .Remove("RemoveReuploadProtocolDocuments", "NewStudy")
+                                  .AutoUpload(true)
+                                  )
+                                 .Events(events => events
+                                 .Select("onSelectReUploadDocuments")
+                                 .Success("onSuccessReUploadDocuments")
+                                 )
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="card mt-md-2">
+            <div class="row pl-md-3">
+                <div class="col-md-2 editer-title align-items-center d-flex justify-content-center">
+                    Additional Documents
+                </div>
+                <div class="col-md-10 p-1 pr-4">
+                    @(Html.Kendo().Upload()
+                            .Name("Additionalfiles")
+                            .Files(
+                            files =>
+                            {
+                                foreach (var f in Model.AdditionalDocuments)
+                                {
+                                    files.Add().Name(f.DocumentName).Extension(f.DocumentExtension).Size(f.DocumentSize);
+                                }
+                            })
+                            .Multiple(true)
+                            .Async(a => a
+                            .Save("SaveAsyncRequestedSupportAdditionalDocuments", "NewStudy")
+                            .Remove("RemoveRequestedSupportAdditionalDocuments", "NewStudy")
+                            .AutoUpload(true)
+                            )
+                            .Events(events => events
+                            .Select("onselect"))
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-md-2 mt-md-2">
+        <div class="row ">
+            <div class="col-md-8 border-right">
+                <div class="btn-group">
+                    <button class="btn btn-primary ml-md-4" id="ui_btnPreviousSectionEnd" type="submit">Previous Section</button>
+                </div>
+                <div class="btn-group float-right">
+                    <button type="button" class="btn btn-primary" onclick="deleteNewStudyDialog();" id="deleteBtnEnd">Delete Current Submission</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary" onclick="showDialog();">Cancel</button>
+                <button type="button" class="btn btn-primary" id="ui_btnSaveandExitEnd">Save & Exit</button>
+                <button type="button" id="ui_btnSaveandContinueEnd" class="btn btn-primary">Save & Continue...</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelNewStudy.cshtml" />
+        <partial name="~/Views/Common/DeleteNewStudy.cshtml" />
+    </div>
+</form>
+<script src="~/scripts/RequestedSupport.js"></script>
+<script src="~/scripts/Common/Common.js"></script>

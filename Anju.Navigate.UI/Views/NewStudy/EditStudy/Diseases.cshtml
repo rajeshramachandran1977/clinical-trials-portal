@@ -1,0 +1,328 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+    <head>
+        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+    </head>
+    <div class="editcard" id="diseasestatescontents">
+        <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+        <div class="row">
+            <div class="wid_100">
+                <img class="float-right mr-4 noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+            </div>
+        </div>
+        <div id="flex">
+            <div id="displayFranchise">
+                <div id="franchise" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_franchise"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_franchise" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_franchise")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.FRANCHISE });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayDisease">
+                <div id="disease" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_disease"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_disease" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_disease")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.DISEASE });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displaydiseasePatientPopulation">
+                <div id="diseasePatientPopulation" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_diseasepatientpopulation"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_diseasepatientpopulation" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-9">
+                        <select id="ui_diseasepatientpopulation" name="ui_diseasepatientpopulation"></select>
+                    </div>
+                </div>
+            </div>
+            @*@if (ViewBag.StudyType == @ConstDefaultValue.INTERVENTIONAL)
+            {*@
+            <div id="displayRandomization">
+                <div id="randomization" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_randomization"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_randomization" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_randomization")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.RANDOMIZED });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            @*}*@
+            <div id="displayBlinding">
+                <div id="blinding" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_blinding"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_blinding" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_blinding")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.BLINDING });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayRiskfactors">
+                <div id="riskfactors" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_riskfactors"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_riskfactors" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-9">
+                        <select id="ui_riskfactors" name="ui_riskfactors"></select>
+                    </div>
+                </div>
+            </div>
+            <div id="displayGenomicprofile">
+                <div id="genomicprofile" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_genomicprofile"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_genomicprofile" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-9">
+                        <select id="ui_genomicprofile" name="ui_genomicprofile"></select>
+                    </div>
+                </div>
+            </div>
+            <div id="displayStructure">
+                <div id="structure" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_structure"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_structure" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_structure")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.STRUCTURE });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayLineoftherapy">
+                <div id="lineoftherapy" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_lineoftherapy"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_lineoftherapy" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-9">
+                        <select id="ui_lineoftherapy" name="ui_lineoftherapy"></select>
+                    </div>
+                </div>
+            </div>
+            <div id="displayStage">
+                <div id="stage" class="row mt-1">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_stage"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_stage" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_stage")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.STAGE });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayTreatmentSegment">
+                <div id="treatmentSegment" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_treatmentsegment"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_treatmentsegment" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_treatmentsegment")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.TREATMENTSEGMENT });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayLineofTreatment">
+                <div id="lineoftreatment" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_lineoftreatment"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_lineoftreatment" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_lineoftreatment")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.LINEOFTREATMENT });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+            <div id="displayQOL">
+                <div id="QOL" class="row">
+                    <div class="col-md-3">
+                        <label class="col-formEditStudy-labels" id="ui_lbl_qol"></label>
+                        <img src="~/Images/helppic.gif" id="ui_img_qol" data-toggle="tooltip" />
+                    </div>
+                    <div class="col-md-3">
+                        @(Html.Kendo().DropDownList()
+                        .Name("ui_ddl_qol")
+                        .DataTextField("Code")
+                        .DataValueField("Code")
+                        .OptionLabel("Select")
+                        .DataSource(source =>
+                        {
+                        source.Read(read =>
+                        {
+                        read.Action("GetSysCodeValues",
+                        "NewStudy",
+                        new { type = @ConstDefaultValue.QUALITYOFLIFE });
+                        })
+                        .ServerFiltering(true);
+                        })
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row float-right">
+            <button type="submit" class="btn btn-primary mr-1" id="ui_btnSaveDiseases">Save</button>
+            <button type="button" class="btn btn-primary mr-1" onclick="showDialogfornongrid();">Cancel</button>
+        </div>
+    </div>
+    <script src="~/scripts/Common/Common.js"></script>
+<script>
+var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+var diseasesattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.DiseaseStates)';
+var urlriskfactors = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.RISKFACTORS})';
+var urlgenomicprofile = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.GENOMICPROFILE})';
+var urllineoftherapy = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.LINEOFTHERAPY})';
+var urldiseasepatientpopulation = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.DISEASEFORPATIENTPOPULATION})';
+
+var franchise = '@ConstDefaultValue.FRANCHISE';
+var randomized = '@ConstDefaultValue.RANDOMIZED';
+var blinding = '@ConstDefaultValue.BLINDING';
+var riskfactors = '@ConstDefaultValue.RISKFACTORS';
+var genomicprofile = '@ConstDefaultValue.GENOMICPROFILE';
+var structure = '@ConstDefaultValue.STRUCTURE';
+var lineoftherapy = '@ConstDefaultValue.LINEOFTHERAPY';
+var disease = '@ConstDefaultValue.DISEASE';
+var diseaseforpatientpopulation = '@ConstDefaultValue.DISEASEFORPATIENTPOPULATION';
+var stage = '@ConstDefaultValue.STAGE';
+var treatmentsegment = '@ConstDefaultValue.TREATMENTSEGMENT';
+var lineoftreatment = '@ConstDefaultValue.LINEOFTREATMENT';
+var qualityoflife = '@ConstDefaultValue.QUALITYOFLIFE';
+
+</script>
+<script src="~/scripts/EditStudy/Diseases.js"></script>

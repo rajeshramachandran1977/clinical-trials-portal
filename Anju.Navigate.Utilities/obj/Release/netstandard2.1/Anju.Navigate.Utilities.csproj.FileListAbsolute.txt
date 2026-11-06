@@ -1,0 +1,12 @@
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\nlog.config
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\Anju.Navigate.Utilities.deps.json
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\Anju.Navigate.Utilities.dll
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\Anju.Navigate.Utilities.pdb
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\Anju.Navigate.Data.dll
+D:\Navigate30\Anju.Navigate.Utilities\bin\Release\netstandard2.1\Anju.Navigate.Data.pdb
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.csprojAssemblyReference.cache
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.AssemblyInfoInputs.cache
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.AssemblyInfo.cs
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.csproj.CopyComplete
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.dll
+D:\Navigate30\Anju.Navigate.Utilities\obj\Release\netstandard2.1\Anju.Navigate.Utilities.pdb

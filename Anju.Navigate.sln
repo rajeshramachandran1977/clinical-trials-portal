@@ -1,0 +1,117 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.UI", "Anju.Navigate.UI\Anju.Navigate.UI.csproj", "{2C3C70DC-B0C1-4511-8B97-D11BA5EF6291}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.BusinessAccess", "Anju.Navigate.BusinessAccess\Anju.Navigate.BusinessAccess.csproj", "{801DB24C-05AA-4B47-9143-7614B1927BF7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.Data", "Anju.Navigate.Data\Anju.Navigate.Data.csproj", "{9B462528-A7B9-4675-B363-FD9BD7BDC63C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.DataAccess", "Anju.Navigate.DataAccess\Anju.Navigate.DataAccess.csproj", "{EC538073-7768-4A5E-9E56-AEB713733830}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.Utilities", "Anju.Navigate.Utilities\Anju.Navigate.Utilities.csproj", "{3E03BF10-5182-4C66-AE97-CA1284960C3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anju.Navigate.UI.Tests", "Anju.Navigate.UI.Tests\Anju.Navigate.UI.Tests.csproj", "{5904D202-DFC8-441C-B53C-DF7071166521}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database Scripts", "Database Scripts", "{D0FD5A2A-09A2-4776-896F-59A46620813A}"
+	ProjectSection(SolutionItems) = preProject
+		AlterTables.sql = AlterTables.sql
+		CreateTables.sql = CreateTables.sql
+		Data_1.sql = Data_1.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{8CBB6F75-2B88-4AD8-957E-38C1F01942D9}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget.Config = Nuget.Config
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimaJet.Workflow.Core", "OptimaJet.Workflow.Core\OptimaJet.Workflow.Core.csproj", "{E228A67E-1327-4900-B259-98F50CB8EC28}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimaJet.Workflow.MSSQL", "OptimaJet.Workflow.MSSQL\OptimaJet.Workflow.MSSQL.csproj", "{D8365A57-0A8C-4948-B0E2-54E21A051C5E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{DEC08E54-1CBB-4E27-8BBC-CB43D916EEC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2C3C70DC-B0C1-4511-8B97-D11BA5EF6291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3C70DC-B0C1-4511-8B97-D11BA5EF6291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3C70DC-B0C1-4511-8B97-D11BA5EF6291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3C70DC-B0C1-4511-8B97-D11BA5EF6291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{801DB24C-05AA-4B47-9143-7614B1927BF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{801DB24C-05AA-4B47-9143-7614B1927BF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{801DB24C-05AA-4B47-9143-7614B1927BF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{801DB24C-05AA-4B47-9143-7614B1927BF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B462528-A7B9-4675-B363-FD9BD7BDC63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B462528-A7B9-4675-B363-FD9BD7BDC63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B462528-A7B9-4675-B363-FD9BD7BDC63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B462528-A7B9-4675-B363-FD9BD7BDC63C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC538073-7768-4A5E-9E56-AEB713733830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC538073-7768-4A5E-9E56-AEB713733830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC538073-7768-4A5E-9E56-AEB713733830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC538073-7768-4A5E-9E56-AEB713733830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E03BF10-5182-4C66-AE97-CA1284960C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E03BF10-5182-4C66-AE97-CA1284960C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E03BF10-5182-4C66-AE97-CA1284960C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E03BF10-5182-4C66-AE97-CA1284960C3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5904D202-DFC8-441C-B53C-DF7071166521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5904D202-DFC8-441C-B53C-DF7071166521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5904D202-DFC8-441C-B53C-DF7071166521}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5904D202-DFC8-441C-B53C-DF7071166521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E228A67E-1327-4900-B259-98F50CB8EC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E228A67E-1327-4900-B259-98F50CB8EC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E228A67E-1327-4900-B259-98F50CB8EC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E228A67E-1327-4900-B259-98F50CB8EC28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8365A57-0A8C-4948-B0E2-54E21A051C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8365A57-0A8C-4948-B0E2-54E21A051C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8365A57-0A8C-4948-B0E2-54E21A051C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8365A57-0A8C-4948-B0E2-54E21A051C5E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E228A67E-1327-4900-B259-98F50CB8EC28} = {DEC08E54-1CBB-4E27-8BBC-CB43D916EEC4}
+		{D8365A57-0A8C-4948-B0E2-54E21A051C5E} = {DEC08E54-1CBB-4E27-8BBC-CB43D916EEC4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B487CD11-9293-4A62-B58A-7DC5FEB63835}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 9
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://azustfs1.azuscdc1.net:8080/tfs/navigate
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Anju.Navigate.UI\\Anju.Navigate.UI.csproj
+		SccProjectName1 = Anju.Navigate.UI
+		SccLocalPath1 = Anju.Navigate.UI
+		SccProjectUniqueName2 = Anju.Navigate.BusinessAccess\\Anju.Navigate.BusinessAccess.csproj
+		SccProjectName2 = Anju.Navigate.BusinessAccess
+		SccLocalPath2 = Anju.Navigate.BusinessAccess
+		SccProjectUniqueName3 = Anju.Navigate.Data\\Anju.Navigate.Data.csproj
+		SccProjectName3 = Anju.Navigate.Data
+		SccLocalPath3 = Anju.Navigate.Data
+		SccProjectUniqueName4 = Anju.Navigate.DataAccess\\Anju.Navigate.DataAccess.csproj
+		SccProjectName4 = Anju.Navigate.DataAccess
+		SccLocalPath4 = Anju.Navigate.DataAccess
+		SccProjectUniqueName5 = Anju.Navigate.Utilities\\Anju.Navigate.Utilities.csproj
+		SccProjectName5 = Anju.Navigate.Utilities
+		SccLocalPath5 = Anju.Navigate.Utilities
+		SccProjectUniqueName6 = Anju.Navigate.UI.Tests\\Anju.Navigate.UI.Tests.csproj
+		SccProjectName6 = Anju.Navigate.UI.Tests
+		SccLocalPath6 = Anju.Navigate.UI.Tests
+		SccProjectUniqueName7 = OptimaJet.Workflow.Core\\OptimaJet.Workflow.Core.csproj
+		SccProjectTopLevelParentUniqueName7 = Anju.Navigate.sln
+		SccProjectName7 = OptimaJet.Workflow.Core
+		SccLocalPath7 = OptimaJet.Workflow.Core
+		SccProjectUniqueName8 = OptimaJet.Workflow.MSSQL\\OptimaJet.Workflow.MSSQL.csproj
+		SccProjectTopLevelParentUniqueName8 = Anju.Navigate.sln
+		SccProjectName8 = OptimaJet.Workflow.MSSQL
+		SccLocalPath8 = OptimaJet.Workflow.MSSQL
+	EndGlobalSection
+EndGlobal

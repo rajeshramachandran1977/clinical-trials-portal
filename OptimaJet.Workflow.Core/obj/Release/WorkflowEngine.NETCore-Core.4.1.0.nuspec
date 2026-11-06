@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>WorkflowEngine.NETCore-Core</id>
+    <version>4.1.0</version>
+    <authors>OptimaJet, LLC</authors>
+    <owners>OptimaJet, LLC</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://workflowengine.io/agreements/eula/</licenseUrl>
+    <projectUrl>https://workflowengine.io/</projectUrl>
+    <iconUrl>https://workflowengine.io/images/favicons/favicon.ico</iconUrl>
+    <description>Workflow Engine is an open source workflow engine for .NET and .NET Core that enables you to add custom executable .NET and Java workflows of any complexity to any software, be it your own creation or a third-party solution, with minimal changes to existing code.
+
+Its core features are:
+- HTML5 visual designer. Design, model, edit and visualize your custom workflows.
+- Workflow version control. Keep track of your workflow changes and easily revert them.
+- Parallel workflow support. Split workflows into branches that execute tasks concurrently.
+- XML import/export. Export your workflows for further reuse and sharing.
+- Localization support. Translate user interface to multiple languages of your choice.
+- In-built workflow timers. Set intervals or specify time to run custom actions and workflow tasks.
+
+Workflow Engine build for .NET core includes a set of pre-built providers for the following databases:
+- MS SQL Server
+- PostgreSQL</description>
+    <releaseNotes>https://workflowengine.io/documentation/release-notes/</releaseNotes>
+    <copyright>OptimaJet, LLC</copyright>
+    <tags>workflow engine, state machine, wf, core, optimajet</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Microsoft.CodeAnalysis.CSharp" version="2.1.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyModel" version="1.1.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="9.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Collections.Specialized" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.Loader" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Security.Cryptography.Csp" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Xml.XmlDocument" version="4.3.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.dll" target="lib\netstandard2.1\OptimaJet.Workflow.Core.dll" />
+    <file src="D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.xml" target="lib\netstandard2.1\OptimaJet.Workflow.Core.xml" />
+  </files>
+</package>

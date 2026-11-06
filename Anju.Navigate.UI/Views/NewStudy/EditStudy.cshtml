@@ -1,0 +1,1328 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@{
+    ViewData["Title"] = "Edit Study";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+@using Anju.Navigate.Utilities;
+<link rel="stylesheet" href="~/css/navigateStyles.css" />
+
+<div class="card mb-1 studyHeaderColor">
+    <table cellpadding="3" cellspacing="0" class="studyHeaderTable wid_100">
+        <tbody>
+            <tr class="studyHeader" valign="top">
+                <td valign="top" class="wid_20">
+                    <label class="ui_label">Study Number: </label>
+                    <label class="ui_modal" id="studyIdOrStudyNumber"></label>
+                </td>
+                <td valign="top" class="wid_20">
+                    <label class="ui_label">Investigator: </label>
+                    <label class="ui_modal">@ViewBag.StudyOwner</label>
+                </td>
+                <td valign="top" class="wid_25">
+                    <label class="ui_label">Study Title: </label>
+                    <label class="ui_modal">@ViewBag.studyName</label>
+                </td>
+                <td valign="top" class="wid_35">
+                    <label class="ui_label">Stage: </label>
+                    <label class="ui_modal">@ViewBag.Stage</label><br>
+                    <label class="ui_label">State: </label>
+                    <label class="ui_modal">@ViewBag.State</label><br>
+                    <label class="ui_label">Status: </label>
+                    <label class="ui_modal">@ViewBag.Status</label><br>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<form role="form" id="ui_frmEditStudy" class="frmNewSubFormcontainer col-md-12 shadow-lg" action="" method="post">
+    <span id="popupNotification"></span>
+    <input type="hidden" value="@ViewBag.StudyId" id="StudyId" />
+    <input type="hidden" value="@ViewBag.StudyType" id="StudyType" />
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <input type="hidden" value="@ViewBag.Username" id="Username" />
+    <input type="hidden" id="isvalidRegEx" />
+    <input type="hidden" id="StudyNumber" value="@ViewBag.StudyNumber" />
+    <input type="hidden" id="DocumentSize" />
+    <input type="hidden" id="DocumentExtension"  />
+
+    <div class="row ml-0">
+        <div class="col-md-12 p-md-0">
+            <div id="tabstripRoot">
+                <ul class="noprint">
+                    <li id="ui_li_scientificrationale">
+                        <label id="ui_lbl_scientificrationale" class="m-0"></label>
+                    </li>
+                    <li>
+                        <label id="ui_lbl_personnelsitesandsupport" class="m-0"></label>
+                    </li>
+                    <li>
+                        <label id="ui_lbl_tracking" class="m-0"></label>
+                    </li>
+                    <li>
+                        <label id="ui_lbl_generaldetails" class="m-0"></label>
+                    </li>
+                </ul>
+                <div class="pl-1">
+                    <div id="tabstripChild1">
+                        <ul class="noprint m-0">
+                            <li id="sciencemain">
+                                <label id="ui_lbl_sciencemain" class="m-0"></label>
+                            </li>
+                            <li id="diseasestates">
+                                <label id="ui_lbl_diseasestates" class="m-0"></label>
+                            </li>
+                            <li id="cohortlevels">
+                                <label id="ui_lbl_cohortlevels" class="m-0"></label>
+                            </li>
+                            <li id="treatmentinformation">
+                                <label id="ui_lbl_treatmentinformation" class="m-0"></label>
+                            </li>
+                            <li id="correlativescience">
+                                <label id="ui_lbl_correlativescience" class="m-0"></label>
+                            </li>
+                            <li id="studycoumpounds">
+                                <label id="ui_lbl_studycoumpounds" class="m-0"></label>
+                            </li>
+                            <li id="indications">
+                                <label id="ui_lbl_indications" class="m-0"></label>
+                            </li>
+                            <li id="objectives">
+                                <label id="ui_lbl_objectives" class="m-0"></label>
+                            </li>
+                            <li id="pharmacovigilance">
+                                <label id="ui_lbl_pharmacovigilance" class="m-0"></label>
+                            </li>
+                            <li id="studyenrollmentandtimelines">
+                                <label id="ui_lbl_studyenrollmentandtimelines" class="m-0"></label>
+                            </li>
+                            <li id="IRBRequirement">
+                                <label id="ui_lbl_IRBRequirementfield" class="m-0"></label>
+                            </li>
+                            <li id="Pandemicpreparednesstrialcategorization">
+                                <label id="ui_lbl_pandemicpreparednesstrialcategorizationfield" class="m-0"></label>
+                            </li>
+                            <li id="Regulatoryrequirements">
+                                <label id="ui_lbl_regulatoryrequirements" class="m-0"></label>
+                            </li>
+                            <li id="studyprotocolnumbers">
+                                <label id="ui_lbl_studyprotocolnumbersfield" class="m-0"></label>
+                            </li>
+                            <li id="keyreferences">
+                                <label id="ui_lbl_keyreferences" class="m-0"></label>
+                            </li>
+                        </ul>
+                        @*Science Main*@
+                        <partial name="~/Views/NewStudy/EditStudy/ScienceMain.cshtml" />
+                        @*Disease States*@
+                        <partial name="~/Views/NewStudy/EditStudy/Diseases.cshtml" />
+                        @*Cohort Levels*@
+                        <partial name="~/Views/NewStudy/EditStudy/CohortLevels.cshtml" />
+                        @*Treatment Information*@
+                        <partial name="~/Views/NewStudy/EditStudy/TreatmentInformation.cshtml" />
+                        @*Correlative Sciences*@
+                        <partial name="~/Views/NewStudy/EditStudy/CorrelativeSciences.cshtml" />
+                        @*Study Coumpounds*@
+                        <partial name="~/Views/NewStudy/EditStudy/StudyCoumpounds.cshtml" />
+                        @*Indications*@
+                        <partial name="~/Views/NewStudy/EditStudy/Indications.cshtml" />
+                        @*Objectives and Endpoints*@
+                        <partial name="~/Views/NewStudy/EditStudy/ObjectivesandEndpoints.cshtml" />
+                        @*Pharmacovigilance*@
+                        <partial name="~/Views/NewStudy/EditStudy/Pharmacovigilance.cshtml" />
+                        @*Study Enrollment & Timelines*@
+                        <partial name="~/Views/NewStudy/EditStudy/StudyEnrollmentandTimelines.cshtml" />
+                        @*IRB Requirement*@
+                        <partial name="~/Views/NewStudy/EditStudy/IRBRequirement.cshtml" />
+                        @*Pandemic Preparedness Trial Categorization*@
+                        <partial name="~/Views/NewStudy/EditStudy/PandemicPreparednessTrialCategorization.cshtml" />
+                        @*Regulatory Requirements*@
+                        <partial name="~/Views/NewStudy/EditStudy/RegulatoryRequirements.cshtml" />
+                        @*Study / Protocol Number(s)*@
+                        <partial name="~/Views/NewStudy/EditStudy/StudyProtocolNumbers.cshtml" />
+                        @*Key References*@
+                        <partial name="~/Views/NewStudy/EditStudy/KeyReferences.cshtml" />
+                    </div>
+                </div>
+                <div class="pl-1">
+                    <div id="tabstripChild2">
+                        <ul>
+                            <li id="contacts">
+                                <label id="ui_lbl_contacts" class="m-0"></label>
+                            </li>
+                            <li id="investigatorqualifications">
+                                <label id="ui_lbl_investigatorqualifications" class="m-0"></label>
+                            </li>
+                            <li id="sites">
+                                <label id="ui_lbl_sites" class="m-0"></label>
+                            </li>
+                            <li id="researchgroupdescription">
+                                <label id="ui_lbl_researchgroupdescription" class="m-0"></label>
+                            </li>
+                            <li id="originalfinancialrequest">
+                                <label id="ui_lbl_originalfinancialrequest" class="m-0"></label>
+                            </li>
+                            <li id="emailList">
+                                <label id="ui_lbl_emailList" class="m-0"></label>
+                            </li>
+                        </ul>
+                        <div>
+                            @*Contacts*@
+                            <partial name="~/Views/NewStudy/EditStudy/Contacts.cshtml" />
+                        </div>
+                        <div>
+                            @*Investigator Qualifications*@
+                            <partial name="~/Views/NewStudy/EditStudy/InvestigatorQualifications.cshtml" />
+                        </div>
+                        <div>
+                            @*Sites*@
+                            <partial name="~/Views/NewStudy/EditStudy/Sites.cshtml" />
+                            @*<div>Content of Tab 2.3</div>*@
+                        </div>
+                        <div>
+                            @*Research Group Description*@
+                            <partial name="~/Views/NewStudy/EditStudy/ResearchGroupDescription.cshtml" />
+                        </div>
+                        <div>
+                            @*Original Financial Request*@
+                            <partial name="~/Views/NewStudy/EditStudy/OriginalFinancialRequest.cshtml" />
+                        </div>
+                        <div>
+                            @*Email list*@
+                            <partial name="~/Views/NewStudy/EditStudy/Emaillist.cshtml" />
+                        </div>
+                    </div>
+                </div>
+                <div class="pl-1">
+                    <div id="tabstripChild3">
+                        <ul>
+                            <li id="milestones">
+                                <label id="ui_lbl_milestones" class="m-0"></label>
+                            </li>
+                            <li id="patientaccrual">
+                                <label id="ui_lbl_patientaccrual" class="m-0"></label>
+                            </li>
+                            <li id="invoices">
+                                <label id="ui_lbl_invoices" class="m-0"></label>
+                            </li>
+                            <li id="contractstimeline">
+                                <label id="ui_lbl_contractstimeline" class="m-0"></label>
+                            </li>
+                            <li id="status">
+                                <label id="ui_lbl_status" class="m-0"></label>
+                            </li>
+                        </ul>
+                        <div>
+                            @*Milestones*@
+                            <partial name="~/Views/NewStudy/EditStudy/Milestones.cshtml" />
+                        </div>
+                        <div>
+                            @*Patient Accrual*@
+                            <partial name="~/Views/NewStudy/EditStudy/PatientAccrual.cshtml" />
+                        </div>
+                        <div>
+                            @*Invoices*@
+                            <partial name="~/Views/NewStudy/EditStudy/Invoices.cshtml" />
+                        </div>
+                        <div>
+                            @*Contracts Timeline*@
+                            <partial name="~/Views/NewStudy/EditStudy/ContractsTimeline.cshtml" />
+                        </div>
+                        <div>
+                            @*Status*@
+                            <partial name="~/Views/NewStudy/EditStudy/Status.cshtml" />
+                        </div>
+                    </div>
+                </div>
+                <div class="pl-1">
+                    <div id="tabstripChild4">
+                        <ul>
+                            <li id="reviewsandnotes">
+                                <label id="ui_lbl_reviewsandnotes" class="m-0"></label>
+                            </li>
+                            <li id="documents">
+                                <label id="ui_lbl_documents" class="m-0"></label>
+                            </li>
+                            <li id="submissions">
+                                <label id="ui_lbl_submissions" class="m-0"></label>
+                            </li>
+                            <li id="otherattributes">
+                                <label id="ui_lbl_otherattributes" class="m-0"></label>
+                            </li>
+                            <li id="relatedusers">
+                                <label id="ui_lbl_relatedusers" class="m-0"></label>
+                            </li>
+                        </ul>
+                        <div>
+                            @*Reviews and Notes*@
+                            <partial name="~/Views/NewStudy/EditStudy/ReviewsandNotes.cshtml" />
+                        </div>
+                        @*Documents*@
+                        <div id="testId"></div>
+                        @*Submissions*@
+                        <div id="SubmissionsforEditStudy"></div>
+                        <div>
+                            @*Other Attributes*@
+                            <partial name="~/Views/NewStudy/EditStudy/OtherAttributes.cshtml" />
+                        </div>
+                        <div>
+                            @*Related Users*@
+                            <partial name="~/Views/NewStudy/EditStudy/RelatedUsers.cshtml" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <partial name="~/Views/Common/CancelDialogBox.cshtml" />
+        <partial name="~/Views/Common/DeleteRecordDialogBox.cshtml" />
+    </div>
+</form>
+@*</div>*@
+<script src="~/scripts/EditStudy/EditStudy.js"></script>
+<script>
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+
+    var iisadmin = '@ConstDefaultValue.IISADMIN';
+    var trialleader = '@ConstDefaultValue.TRIALLEADER';
+    var admin = '@ConstDefaultValue.ADMIN';
+    var programleader ='@ConstDefaultValue.PROGRAMLEADER';
+    var pi = '@ConstDefaultValue.PI';
+    var msl = '@ConstDefaultValue.MSL';
+    var md = '@ConstDefaultValue.MD';
+
+    var scientificrationale = '@ConstDefaultValue.SCIENTIFICRATIONALE';
+    var personnelsitesandsupport = '@ConstDefaultValue.PERSONNELSITESANDSUPPORT';
+    var tracking = '@ConstDefaultValue.TRACKING';
+    var generaldetails = '@ConstDefaultValue.GENERALDETAILS';
+    var sciencemain = '@ConstDefaultValue.SCIENCEMAIN';
+    var diseasestates = '@ConstDefaultValue.DISEASESTATES';
+    var cohortlevels = '@ConstDefaultValue.COHORTLEVELS';
+    var treatmentinformation = '@ConstDefaultValue.TREATMENTINFORMATION';
+    var correlativescience = '@ConstDefaultValue.CORRELATIVESCIENCE';
+    var studycompounds = '@ConstDefaultValue.STUDYCOMPOUNDS';
+    var indicationtab = '@ConstDefaultValue.INDICATIONTAB';
+    var objectives = '@ConstDefaultValue.OBJECTIVES';
+    var pharmacovigilance = '@ConstDefaultValue.PHARMACOVIGILANCE';
+    var studyenrollmentandtimelines = '@ConstDefaultValue.STUDYENROLLMENTANDTIMELINES';
+    var irbrequirement = '@ConstDefaultValue.IRBREQUIREMENT';
+    var pandemicpreparednesstrialcategorization = '@ConstDefaultValue.PANDEMICPREPAREDNESSTRIALCATEGORIZATION';
+    var regulatoryrequirements = '@ConstDefaultValue.REGULATORYREQUIREMENTS';
+    var studyprotocolnumberstab = '@ConstDefaultValue.STUDYPROTOCOLNUMBERSTAB';
+    var keyreferrencestab = '@ConstDefaultValue.KEYREFERENCESTAB';
+    var contacts = '@ConstDefaultValue.CONTACTS';
+    var investigatorqualifications = '@ConstDefaultValue.INVESTIGATORQUALIFICATIONS';
+    var sites = '@ConstDefaultValue.SITES';
+    var researchgroupdescription = '@ConstDefaultValue.RESEARCHGROUPDESCRIPTION';
+    var originalfinancialrequest = '@ConstDefaultValue.ORIGINALFINANCIALREQUEST';
+    var emaillist = '@ConstDefaultValue.EMAILLIST';
+    var milestones = '@ConstDefaultValue.MILESTONES';
+    var patientaccrual = '@ConstDefaultValue.PATIENTACCRUAL';
+    var contractstimeline = '@ConstDefaultValue.CONTRACTSTIMELINE';
+    var invoices = '@ConstDefaultValue.INVOICES';
+    var statusineditstudy = '@ConstDefaultValue.STATUSINEDITSTUDY';
+    var reviewsandnotes = '@ConstDefaultValue.REVIEWSANDNOTES';
+    var documentstab = '@ConstDefaultValue.DOCUMENTSTAB';
+    var submissions = '@ConstDefaultValue.SUBMISSIONS';
+    var otherattributes = '@ConstDefaultValue.OTHERATTRIBUTES';
+    var relatedusers = '@ConstDefaultValue.RELATEDUSERS';
+
+    LoadEditStudyMasterTabs();
+
+    LoadChildTabs();
+
+    //#region Common functionalities
+    function Print() {
+        window.print();
+    }
+
+    $("textarea[maxlength]").keyup(function() {
+            var charLength = $(this).val().length;
+            var charLimit = $(this).attr("maxlength");
+            $(this).nextAll("span.count").html(charLimit - charLength + " Characters left to enter");
+        });
+    $("input[maxlength]").keyup(function() {
+            var charLength = $(this).val().length;
+            var charLimit = $(this).attr("maxlength");
+            $(this).nextAll("span.count").html(charLimit - charLength + " Characters left to enter");
+        });
+
+    var wnd;
+    $(document).ready(function () {
+        wnd = $("#modalWindow").kendoWindow({
+            title: "@Messages.DELETEMESSAGETITLEBOX",
+            modal: true,
+            visible: false,
+            resizable: false,
+            width: 400
+        }).data("kendoWindow");
+
+        if ($('#StudyNumber').val() === '') {
+            $('#studyIdOrStudyNumber').append($('#StudyId').val());
+        }
+        else {
+            $('#studyIdOrStudyNumber').append($('#StudyNumber').val());
+        }
+
+    });
+
+    function onCancel() {
+        $("#Cohortlevels").data("kendoWindow").close();
+        $("#TreatmentInformation").data("kendoWindow").close();
+        $("#StudyCompounds").data("kendoWindow").close();
+        $("#Contacts").data("kendoWindow").close();
+        $("#Indications").data("kendoWindow").close();
+        $("#ObjectivesandEndpoints").data("kendoWindow").close();
+        $("#Studyprotocols").data("kendoWindow").close();
+        $("#EmailLists").data("kendoWindow").close();
+        $("#Sites").data("kendoWindow").close();
+        $("#Milestones").data("kendoWindow").close();
+        $("#Patientaccrual").data("kendoWindow").close();
+        $("#Invoices").data("kendoWindow").close();
+        $("#Contractstimeline").data("kendoWindow").close();
+        $("#Status").data("kendoWindow").close();
+        $("#ReviewsandNotes").data("kendoWindow").close();
+        $("#Documents").data("kendoWindow").close();
+        $("#addNotificationDocModal").modal("hide");
+        $("#Submissionswindow").data("kendoWindow").close();
+        $("#RelatedUsers").data("kendoWindow").close();
+    }
+
+    function onCancelfornongrid() {
+        window.location.href = "/NewStudy/EditStudy";
+    }
+
+    function StudyDetailsID() {
+        return {
+            studyId: $('#StudyId').val()
+        };
+    }
+
+    function filterStates() {
+        return {
+            countryId: $("#ui_ddl_country").val()
+        };
+    }
+
+    function filterCities() {
+        return {
+            stateId: $("#ui_ddl_state").val()
+        };
+    }
+
+    function Savedetails(type, objEditstudy, mode) {
+        var params = {
+             async: true,
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            success: function (response) {
+                if (response.msgType == 'Success') {
+                    popupNotification.show('@Messages.ATTRIBUTEUPDATEDSUCCESSFULLY', "success");
+                    $("#Cohortlevels").data("kendoWindow").close();
+                    $("#ui_dtg_gridCohortLevels").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridCohortLevels").data("kendoGrid").refresh();
+                    $("#TreatmentInformation").data("kendoWindow").close();
+                    $("#ui_dtg_gridTreatmentInformation").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridTreatmentInformation").data("kendoGrid").refresh();
+                    $("#StudyCompounds").data("kendoWindow").close();
+                    $("#ui_dtg_gridstudycompounds").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridstudycompounds").data("kendoGrid").refresh();
+                    $("#Indications").data("kendoWindow").close();
+                    $("#ui_dtg_gridindications").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridindications").data("kendoGrid").refresh();
+                    $("#ObjectivesandEndpoints").data("kendoWindow").close();
+                    $("#ui_dtg_gridObjectivesandEndpoints").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridObjectivesandEndpoints").data("kendoGrid").refresh();
+                    $("#Studyprotocols").data("kendoWindow").close();
+                    $("#ui_dtg_gridstudyprotocol").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridstudyprotocol").data("kendoGrid").refresh();
+                    $("#Contacts").data("kendoWindow").close();
+                    $("#ui_dtg_Contacts").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Contacts").data("kendoGrid").refresh();
+                    $("#Sites").data("kendoWindow").close();
+                    $("#ui_dtg_studysites").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_studysites").data("kendoGrid").refresh();
+                    $("#EmailLists").data("kendoWindow").close();
+                    $("#ui_dtg_gridEmailList").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_gridEmailList").data("kendoGrid").refresh();
+                    $("#Milestones").data("kendoWindow").close();
+                    $("#ui_dtg_Milestones").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Milestones").data("kendoGrid").refresh();
+                    $("#Patientaccrual").data("kendoWindow").close();
+                    $("#ui_dtg_Patientaccrual").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Patientaccrual").data("kendoGrid").refresh();
+                    $("#Invoices").data("kendoWindow").close();
+                    $("#ui_dtg_Invoices").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Invoices").data("kendoGrid").refresh();
+                    $("#Contractstimeline").data("kendoWindow").close();
+                    $("#ui_dtg_ContractsTimeline").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_ContractsTimeline").data("kendoGrid").refresh();
+                    $("#Status").data("kendoWindow").close();
+                    $("#ui_dtg_Status").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Status").data("kendoGrid").refresh();
+                    $("#ReviewsandNotes").data("kendoWindow").close();
+                    $("#ui_dtg_ReviewsandNotes").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_ReviewsandNotes").data("kendoGrid").refresh();
+                    $("#Documents").data("kendoWindow").close();
+                    $("#ui_dtg_Documents").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Documents").data("kendoGrid").refresh();
+                    $("#Submissionswindow").data("kendoWindow").close();
+                    $("#ui_dtg_Submissions").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Submissions").data("kendoGrid").refresh();
+                    $("#RelatedUsers").data("kendoWindow").close();
+                    $("#ui_dtg_Users").data("kendoGrid").dataSource.read();
+                    $("#ui_dtg_Users").data("kendoGrid").refresh();
+                }
+
+                    else
+                        popupNotification.show("There are errors on the page. Please correct them to continue.", "error");
+                },
+                failure: function (response) {
+                    popupNotification.show("There are errors on the page. Please correct them to continue.", "error");
+
+        },
+        };
+        params.url = "/NewStudy/SaveUpdateEditdetails/";
+        params.data = { "objEditstudy": objEditstudy,"type": type,"mode": mode};
+        $.ajax(params);
+    }
+
+    $(function () {
+        var validator = $("#ui_frmEditStudy").kendoValidator().data("kendoValidator");
+
+        //#region Remove err msg on key up for non grid text fields
+        $("#ui_txt_safetycriteria,#ui_txt_indication,#ui_txt_correlativescienceatcompanysite, \
+        #ui_txt_correlativescienceatstudysite,#ui_txt_correlativesciencesamplingdet,\
+        #ui_txt_noofpatients,#ui_txtarea_noofpatients,#enrollmentrate,#recruitmentEnd, \
+        #noOfPatients,#studyduration,#impactPatientAcrual,#enrollmentHistory, \
+        #noofpatientspertreatmentgroup,#ui_txtarea_rationaleForINDExemption, \
+        #ui_txt_keyreferences,#studystart").on("keyup", function (e) {
+            $(this).next("div.error").remove();
+        })
+
+        $('#ui_ddl_correlativeScience,#ui_dt_trialStart,#completionoffinalstudyreport,#trialEnd,#primaryPublication, \
+           #aretherecompetingstudiesatyourinstitution,#organization,#isinspectedbytheFDA,#isFDAissuedaFDA483form,\
+           #cooperativegroupstudy').change(function () {
+            $(this).next("div.error").remove();
+        }).change();
+        //#endregion
+
+        function Savedetails(type, objEditstudy) {
+            var params = {
+                type: "POST",
+                cache: false,
+                dataType: "json",
+                success: function (response) {
+                        if (response.msgType == 'Success')
+                                   popupNotification.show('@Messages.ATTRIBUTEUPDATEDSUCCESSFULLY', "success");
+                        else
+                            popupNotification.show("There are errors on the page. Please correct them to continue.", "error");
+                    },
+                    failure: function (response) {
+                        popupNotification.show("There are errors on the page. Please correct them to continue.", "error");
+
+            },
+            };
+            params.url = "/NewStudy/SaveUpdateEditdetails/";
+            params.data = { "objEditstudy": objEditstudy,"type": type};
+            $.ajax(params);
+        }
+});
+
+    $(document).ready(function() {
+
+    isvalidRegexfortitleOfTrial = isvalidRegexforinvestigationalDrugandReferenceTherapy =
+    isvalidRegexforexclusioncriteria = isvalidRegexforclinicalPharmacology = isvalidRegexforindication =
+    isvalidRegexforsafetycriteria = isvalidRegexforothercompound = isvalidRegexforrationaleforstudy =
+    isvalidRegexforstudydesign = isvalidRegexforkeyinclusioncriteria = isvalidRegexforbasisfosamplesize =
+    isvalidRegexfortreatmentarmsapplyforthistrial = isvalidRegexforpatientpopulation =
+    isvalidRegexfornoncompanysupportsources = isvalidRegexforgovernmentsupportdescription =
+    isvalidRegexforothersupportdescription = isvalidRegexforstudysponsorname = isvalidRegexforstudydrugsource =
+    isvalidRegexforcooperativegroupnameother = isvalidRegexformedicalspecialty = isvalidRegexforboardCertification =
+    isvalidRegexforlicenseorequivalent = isvalidRegexforwhenwasyourlastGCPtraining = isvalidRegexfortypeoftrainingreceived =
+    isvalidRegexforlisttrialexperience = isvalidRegexfordatesoftrialparticipation = isvalidRegexfordrugnames =
+    isvalidRegexforprotocolnumbers = isvalidRegexfornumberofongoingclinicaltrials = isvalidRegexforwhichhealthauthority =
+    isvalidRegexfordetailsofthemainobservations = isvalidRegexforcorrelativescienceatcompanysite =
+    isvalidRegexforcorrelativescienceatstudysite = isvalidRegexforcorrelativesciencesamplingdet =
+    isvalidRegexforspecifywhatsafetydata = isvalidRegexforadverseEvents = isvalidRegexforstudyduration =
+    isvalidRegexforimpactpatientaccrual = isvalidRegexfornoofpatientspertreatmentgroup = isvalidRegexforenrollmenthistory =
+    isvalidRegexformaximumallowabletimebetweenvisits = isvalidRegexforStudyProtocolNumbers = isvalidRegexforKeyreferences = true;
+
+    $(function() {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    $("textarea[maxlength]").keyup(function() {
+        var charLength = $(this).val().length;
+        var charLimit = $(this).attr("maxlength");
+        $(this).nextAll("span.count").html(charLimit - charLength + " Characters left to enter");
+    });
+    $("input[maxlength]").keyup(function() {
+        var charLength = $(this).val().length;
+        var charLimit = $(this).attr("maxlength");
+        $(this).nextAll("span.count").html(charLimit - charLength + " Characters left to enter");
+    });
+
+    //#region Hide all tabstrip values on page load
+    $('#sciencemaincontents').hide();
+    $('#diseasestatescontents').hide();
+    $('#cohortcontents').addClass('cohort');
+    $('#correlativesciencescontents').hide();
+    $('#treatmentinformationcontents').addClass('treatmentinformation');
+
+    $('#studycoumpoundscontents').addClass('studycoumpoundscontents');
+    $('#objectivescontents').addClass('objectivescontents');
+    $('#pharmacovigilancecontents').hide();
+    $('#studyenrollmentandtimelinescontents').hide();
+    $('#IRBRequirementcontents').hide();
+    $('#Pandemicpreparednesstrialcategorizationcontents').hide();
+    $('#Regulatoryrequirementscontents').hide();
+    $('#studyprotocolnumberscontents').addClass('studyprotocolnumberscontents');
+    $('#contactsdetails').addClass('contactsdetails');
+    $('#originalfinancialrequestdetailscontents').hide();
+    $('#emaillistdetails').addClass('emaillistdetails');
+    $('#milestonesdetailscontents').addClass('milestonesdetails');
+    $('#patientaccrualdetails').addClass('patientaccrualdetails');
+    $('#invoicedetails').addClass('invoicedetails');
+    $('#contractstimelinedetails').addClass('contractstimelinedetails');
+    $('#status').addClass('status');
+    $('#reviewsandnotesdetails').addClass('reviewsandnotesdetails');
+    $('#documentsdetails').addClass('documentsdetails');
+    $('#otherattributescontents').hide();
+    $('#impactPatientAcrual').hide();
+    $('#rationaleINDExemption').hide();
+    $('#withACompanyDrug').hide();
+    $('#withNOCompanyDrug').hide();
+    //$('#InvolvingPRIMARYDATACOLLECTIONWITHOUT').hide();
+    //#endregion
+
+    $("#tabstripRoot").kendoTabStrip();
+    $("#tabstripChild1,#tabstripChild2,#tabstripChild3,#tabstripChild4").kendoTabStrip({
+        tabPosition: "left",
+        animation: {
+            open: {
+                effects: "fadeIn"
+            }
+        }
+    });
+
+    //#region multidropdown population
+
+    @*var url = '@Url.Action("GetSysCodeValues", "NewStudy", new {type = @ConstDefaultValue.PATIENTPOPULATION })';
+    $('#ui_patientpopulation').kendoMultiSelect({
+        dataTextField: "Code",
+        dataValueField: "CodeId",
+        optionLabel: 'Select',
+        autoClose: false,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: url
+                }
+            }
+        }
+    });*@
+
+    //#endregion
+
+
+   $("#cohortlevels").on("click", function() {
+            $('#cohortcontents').removeClass('cohort');
+    });
+
+    $("#studycoumpounds").on("click", function () {
+        $('#studycoumpoundscontents').removeClass('studycoumpoundscontents');
+    });
+
+    $("#indications").on("click", function () {
+        $('#indicationscontents').removeClass('indicationscontents');
+    });
+
+    $("#objectives").on("click", function () {
+        $('#objectivescontents').removeClass('objectivescontents');
+    });
+
+    $("#studyprotocolnumbers").on("click", function () {
+        $('#studyprotocolnumberscontents').removeClass('studyprotocolnumberscontents');
+    });
+
+    })
+
+    //#region General Details Documents
+
+    function OnDataBoundforDocuments() {
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/GetAttributeValues/",
+        data: { attributeid: parseInt(documentsattributeid) },
+        cache: false,
+        dataType: "json",
+        success: function (response) {
+            if (response.Data == '') {
+                popupNotification.show(errorsinthepage, "error");
+            } else {
+                var grid = $("#ui_dtg_Documents").data("kendoGrid");
+                var isdeleterestricted = false;
+                for (i = 0; i < response.length; i++) {
+                    if (response[i].RestrictDeleteUser != null) {
+                        var restrictdeleteArray = response[i].RestrictDeleteUser.split(',');
+                        for (var j = 0; j < restrictdeleteArray.length; j++) {
+                            if (restrictdeleteArray[j] == $('#UserType').val()) {
+                                isdeleterestricted = true;
+                                break;
+                            }
+                            else
+                                isdeleterestricted = false;
+                            if (isdeleterestricted == true)
+                                break;
+                        }
+                        if (isdeleterestricted == true)
+                            break;
+                    }
+                }
+                if (isdeleterestricted == true)
+                    grid.hideColumn(13);
+                else
+                    grid.showColumn(13);
+
+                var iseditrestricted = false;
+                var iseditredtrictedattablevel = false;
+                for (i = 0; i < response.length; i++) {
+                    if (response[i].RestrictEditUser != null) {
+                        var restricteditArray = response[i].RestrictEditUser.split(',');
+                        for (var j = 0; j < restricteditArray.length; j++) {
+                            if (restricteditArray[j] == $('#UserType').val()) {
+                                iseditrestricted = true;
+                                if (response[i].Type == "Tab")
+                                    iseditredtrictedattablevel = true;
+                                break;
+                            }
+                            else
+                                iseditrestricted = false;
+                            if (iseditrestricted == true)
+                                break;
+                        }
+                        if (iseditrestricted == true)
+                            break;
+                    }
+                }
+                if (iseditrestricted == true) {
+                    if (iseditredtrictedattablevel == true)
+                        grid.hideColumn(12);
+                    return false;
+                }
+                else {
+                    grid.showColumn(12);
+                    return false;
+                }
+            }
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+    });
+    
+    var grid = $("#ui_dtg_Documents").data("kendoGrid");
+    var trs = this.tbody.find('tr').each(function () {
+        var item = grid.dataItem($(this));
+        if (item.DocumentStatus == "Pending Review") {
+            $(this).find('.ui_delete').attr("disabled", true);
+            $(this).find('.ui_undelete').attr("disabled", true);
+            return;
+        }
+        if (item.IsActive == true && item.IsDeleted == false) {
+            $(this).find('.ui_delete').removeAttr("disabled");
+            $(this).find('.ui_undelete').attr("disabled", true);
+            return;
+        }
+        if (item.IsActive == false && item.IsDeleted == true) {
+            $(this).find('.ui_delete').attr("disabled", true);
+            $(this).find('.ui_undelete').removeAttr("disabled");
+            return;
+        }
+    });     
+    }
+
+    function UndeleteDocuments() {
+    e.preventDefault();
+    var currentDataItem = $("#ui_dtg_Documents").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
+    var docid = currentDataItem.DocumentId;
+    var studyid = currentDataItem.StudyId;
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/UndeleteDocuments/",
+        data: { docid: parseInt(docid), studyid: parseInt(studyid) },
+        cache: false,
+        dataType: "json",        
+        success: function (response) {
+            if (response.Data == '') {
+                popupNotification.show(errorsinthepage, "error");
+            } else {
+                $("#ui_dtg_Documents").data("kendoGrid").dataSource.read();
+                $("#ui_dtg_Documents").data("kendoGrid").refresh();
+            }
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+    });
+}
+
+    function ShowDocumentsOnClick(e) {
+        var gridRowData = $("#ui_dtg_Documents").data("kendoGrid");
+        if (gridRowData) {
+            var data = gridRowData.dataItem($(e).closest("tr"));
+            var subModuleFolderName = data.SubModuleName;
+            var fileName = data.DocumentNameWithOutExtension + data.DocumentExtension;
+            window.location = "/NewStudy/DownloadFiles?fileName=" + fileName + '&&subModuleFolderName=' + subModuleFolderName + '&&studyId=' + $('#StudyId').val();
+        }
+    }
+
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/Documents/",
+         success: function (response) {
+             $('#testId').html(response);
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+    });
+
+    function ValidateDocumentsFields() {
+        $(".error").remove();
+        retval = true;
+        objDocuments = new Object();
+        objDocuments.StudyId = $('#StudyId').val();
+        objDocuments.DocumentId = $('#ui_num_documentid').val();
+
+        if ($("#uploadfiles").closest(".k-upload").find(".k-file").length <= 0)
+        {
+            $('#documentname').after('<div class="error errorBackground"></span>' + $('#ui_lbl_documentname').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_documentStatus').val() === 'Select' || $('#ui_ddl_documentStatus').val() === "") {
+            $('#documentstatus').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_documentstatus').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_amendmentVersion').val() === 'Select' || $('#ui_ddl_amendmentVersion').val() === "") {
+            $('#amendmentversion').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_amendmentversion').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_documentType').val() === 'Select' || $('#ui_ddl_documentType').val() === "") {
+            $('#documenttype').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_documenttype').html() + ' is required</div>');
+            retval = false;
+        }
+    }
+
+    function ValidateDocumentsFieldsEditMode() {
+        $(".error").remove();
+        retval = true;
+        objDocuments = new Object();
+        objDocuments.StudyId = $('#StudyId').val();
+        objDocuments.DocumentId = $('#ui_num_documentideditmode').val();
+
+        if ($("#uploadfileseditmode").closest(".k-upload").find(".k-file").length <= 0)
+        {
+            $('#documentnameeditmode').after('<div class="error errorBackground"></span>' + $('#ui_lbl_documentnameeditmode').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_editdocumentStatus').val() === 'Select' || $('#ui_ddl_editdocumentStatus').val() === "") {
+            $('#documentstatuseditmode').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_documentstatuseditmode').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_editamendmentVersion').val() === 'Select' || $('#ui_ddl_editamendmentVersion').val() === "") {
+            $('#amendmentversioneditmode').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_amendmentversioneditmode').html() + ' is required</div>');
+            retval = false;
+        }
+        if ($('#ui_ddl_editdocumentType').val() === 'Select' || $('#ui_ddl_editdocumentType').val() === "") {
+            $('#documenttypeeditmode').after('<div class="error errorBackground"><span class="k-icon k-i-warning"></span>' + $('#ui_lbl_documenttypeeditmode').html() + ' is required</div>');
+            retval = false;
+        }
+    }
+
+     //#region delete row functions in grids
+    function deleteDocuments(e) {
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+        $(document).ready(function () {
+            wnd = $("#modalWindow").kendoWindow({
+                title: deleteMsg,
+                modal: true,
+                visible: false,
+                resizable: false,
+                width: 400
+            }).data("kendoWindow");
+        });
+        var grid = $("#ui_dtg_Documents").data("kendoGrid"); //Get the grid from which the pop-up is coming
+        var tr = $(e.target).closest("tr"); //get the row for deletion
+        var data = this.dataItem(tr);
+        wnd.center().open();
+
+        $("#ui_btn_yes").click(function () {
+            grid.dataSource.remove(data);
+            grid.dataSource.sync();
+            wnd.close();
+        });
+        $("#ui_btn_no").click(function () {
+            wnd.close();
+        });
+    }
+    //#endregion
+
+    function onUpload(e) {
+    e.data = {};
+    e.data["additional[0]"] = $("#uploadfiles").val();
+    e.data["additional[1]"] = $('#ui_ddl_documentStatus').val();
+    e.data["additional[2]"] = $('#ui_ddl_amendmentVersion').val();
+    e.data["additional[3]"] = $('#ui_ddl_documentType').data("kendoDropDownList").text();
+    e.data["additional[4]"] = $('#ui_ddl_documentSubType').val();
+    e.data["additional[5]"] = "Manual";
+    e.data["additional[6]"] = $("#ui_lbl_uploadedperson").val();
+    e.data["additional[7]"] = $("#ui_lbl_uploadeddate").val();
+    e.data["additional[8]"] = $('#ui_dt_originalDate').val() !== '' ? $('#ui_dt_originalDate').val() : ' ';
+    e.data["additional[9]"] = $('#ui_dt_expirationDate').val() !== '' ? $('#ui_dt_expirationDate').val() : ' ';
+
+    }
+
+    function onUploadEditMode(e) {
+        e.data = {};
+        e.data["additionalEditmode[10]"] = $("#ui_num_documentideditmode").val();
+        e.data["additionalEditmode[0]"] = $("#uploadfileseditmode").val();
+        e.data["additionalEditmode[1]"] = $('#ui_ddl_editdocumentStatus').val();
+        e.data["additionalEditmode[2]"] = $('#ui_ddl_editamendmentVersion').val();
+        e.data["additionalEditmode[3]"] = $('#ui_ddl_editdocumentType').data("kendoDropDownList").text();
+        e.data["additionalEditmode[4]"] = $('#ui_ddl_editdocumentSubType').val();
+        e.data["additionalEditmode[5]"] = "Manual";
+        e.data["additionalEditmode[6]"] = $("#ui_lbl_uploadedpersoneditmode").val();
+        e.data["additionalEditmode[7]"] = $("#ui_lbl_uploadeddateeditmode").val();
+        e.data["additionalEditmode[8]"] = $('#ui_dt_editeditoriginalDate').val() !== '' ? $('#ui_dt_editeditoriginalDate').val() : ' ';
+        e.data["additionalEditmode[9]"] = $('#ui_dt_editeditexpirationDate').val() !== '' ? $('#ui_dt_editeditexpirationDate').val() : ' ';
+
+    }
+
+    function showDocuments(e) {       
+         $(".k-upload-files").remove();
+         $(".k-upload-status").remove();
+         $(".k-upload.k-header").addClass("k-upload-empty");
+         $(".k-upload-button").removeClass("k-state-focused");
+         $("#ui_frm_documents")[0].reset();
+
+        var documentstemplate = kendo.template($("#documentstemplate").html());
+        var grid = $("#ui_dtg_Documents").getKendoGrid();
+        var wnd = $("#Documents").data("kendoWindow");
+        var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        wnd.content(documentstemplate(dataItem));
+        wnd.center().open();
+
+        LoadDocumentsAttributesEditMode("Edit");
+
+        $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/Documents/",
+        data:  { "mode": "Edit","docid": parseInt(dataItem.DocumentId) },
+         success: function (response) {
+             $('#testId').html(response);
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+        });
+
+         //
+
+        //Fill document window
+        var retVal = true;
+
+        $('#ui_num_documentideditmode').val(dataItem.DocumentId);
+        $("#ui_ddl_editamendmentVersion").data('kendoDropDownList').value(dataItem.DocumentVersion);
+        $("#ui_ddl_editdocumentStatus").data('kendoDropDownList').value(dataItem.DocumentStatus);
+        $("#ui_ddl_editdocumentType").data('kendoDropDownList').value(dataItem.DocumentTypeId);
+        $("#ui_ddl_editdocumentSubType").data('kendoDropDownList').value(dataItem.DocumentSubType);
+        $("#ui_lbl_editdocumentsource").html(dataItem.SubModuleName);
+        $("#ui_lbl_uploadedpersoneditmode").html(dataItem.ANJU_AddedBy);
+        $("#ui_lbl_uploadeddateeditmode").html(kendo.toString(kendo.parseDate(dataItem.Anju_AddedDate), 'MMM dd, yyyy'));
+        $("#ui_dt_editeditoriginalDate").data("kendoDatePicker").value(dataItem.OriginalDate);
+        $("#ui_dt_editeditexpirationDate").data("kendoDatePicker").value(dataItem.ExpirationDate);
+
+        var fileName = dataItem.DocumentNameWithOutExtension + dataItem.DocumentExtension;
+        var DocumentNameWithOutExtension = dataItem.DocumentNameWithOutExtension;
+        var DocumentExtension = dataItem.DocumentExtension;
+        var subModuleFolderName = dataItem.SubModuleName;
+        var studyId = dataItem.StudyId;
+        var documentId = dataItem.DocumentId;
+
+        if (dataItem.DocumentNameWithOutExtension !== null) {
+
+            var files = [{ name: dataItem.DocumentNameWithOutExtension, size: dataItem.DocumentSize, extension: dataItem.DocumentExtension }];
+            $("#uploadfileseditmode").kendoUpload({
+                async: {
+                    saveUrl: "/NewStudy/CreateUpdateDocumentsEditMode",
+                    removeUrl: "/TaskWorkFlow/RemoveLMRCFinalRejectedOrWithdrawalDocuments",
+                    autoUpload: false
+                },
+                multiple: false,
+                upload: onUploadEditMode,
+                files: files
+            });
+
+        }
+        else {
+             $("#uploadfileseditmode").kendoUpload({
+                async: {
+                    saveUrl: "/NewStudy/CreateUpdateDocumentsEditMode",
+                    removeUrl: "/TaskWorkFlow/RemoveLMRCFinalRejectedOrWithdrawalDocuments",
+                    autoUpload: false
+                },
+                 multiple: false,  
+                 upload: onUploadEditMode
+            });
+        }
+
+        $('.fileDownload').click(function () {
+            window.location = "/NewStudy/DownloadFiles?fileName=" + fileName + '&&subModuleFolderName=' + subModuleFolderName + '&&studyId=' + studyId;
+
+        });
+
+        var username = $('#Username').val();
+        $("#ui_lbl_uploadedperson").html(username);
+        $("#ui_lbl_uploadeddate").html(kendo.toString(kendo.parseDate(new Date()), 'MMM dd, yyyy'));
+
+        $("#uploadfiles").change(function () {
+             $('#documentname').next("div.error").remove();
+        });
+        $("#ui_ddl_documentStatus").change(function () {
+            $('#documentstatus').next("div.error").remove();
+        });
+        $("#ui_ddl_amendmentVersion").change(function () {
+            $('#amendmentversion').next("div.error").remove();
+         });
+        $("#ui_ddl_documentType").change(function () {
+            $('#documenttype').next("div.error").remove();
+        });
+
+        $("#ui_btnSaveDocumentseditmode").click(function () {
+            ValidateDocumentsFieldsEditMode();
+            if (retval === true)
+                 UpdateDcouemntDetails();
+             else
+                popupNotification.show(errorsinthepage, "error");
+        });
+
+        function UpdateDcouemntDetails() {
+            if (retVal === true) {
+                var upload = $("#uploadfileseditmode").data("kendoUpload"),
+                files = upload.getFiles();
+                objDocumentDetails = new Object();
+                objDocumentDetails.DocumentId =  documentId;
+                objDocumentDetails.StudyId = studyId;
+                objDocumentDetails.SubModuleName = subModuleFolderName;
+                objDocumentDetails.DocumentName = files[0].name;
+                objDocumentDetails.DocumentNameWithOutExtension = DocumentNameWithOutExtension;
+                objDocumentDetails.DocumentExtension = DocumentExtension;
+                objDocumentDetails.DocumentStatus = $("#ui_ddl_editdocumentStatus").val();
+                objDocumentDetails.DocumentType =  $('#ui_ddl_editdocumentType').val();
+                objDocumentDetails.DocumentSubType = $("#ui_ddl_editdocumentSubType").val();
+                objDocumentDetails.DocumentVersion = $("#ui_ddl_editamendmentVersion").val();
+                objDocumentDetails.OriginalDate = $("#ui_dt_editeditoriginalDate").val();
+                objDocumentDetails.ExpirationDate = $("#ui_dt_editeditexpirationDate").val();
+                objDocumentDetails.Anju_ChangedBy = $("#ui_lbl_uploadedpersoneditmode").val();
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "/TaskWorkFlow/UpdateDocumentDetails",
+                    data: { "documents": objDocumentDetails },
+                    success: function (results) {
+                        if (results.msgType === "Success") {
+                           $("#ui_dtg_Documents").data("kendoGrid").dataSource.read();
+                           $("#ui_dtg_Documents").data("kendoGrid").refresh();
+                           $("#Documents").data("kendoWindow").close();
+
+                        }
+                        else {
+                            popupNotification.show(results.msgType, "error");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        popupNotification.show('Error', "error");
+                    }
+                });
+            }
+            else {
+
+                popupNotification.show(errorsinthepage, "error");
+            }
+        }
+
+    }
+
+    function additionalInfo() {
+        return {
+            studyId: $('#StudyId').val()
+        };
+    }
+
+    function filterEditDocumentSubType() {
+        return {
+            documentTypeId: $("#ui_ddl_documentType").val()
+        };
+    }
+
+    function filterEditDocumentSubTypeeditmode() {
+        return {
+            documentTypeId: $("#ui_ddl_editdocumentType").val()
+        };
+    }
+    //#endregion
+
+    //#region Submissions
+
+    //#region delete row functions in grids
+function deleteSubmissions(e) {
+    e.preventDefault ? e.preventDefault() : e.returnValue = false;
+    $(document).ready(function () {
+        wnd = $("#modalWindow").kendoWindow({
+            title: deleteMsg,
+            modal: true,
+            visible: false,
+            resizable: false,
+            width: 400
+        }).data("kendoWindow");
+    });
+    var grid = $("#ui_dtg_Submissions").data("kendoGrid"); //Get the grid from which the pop-up is coming
+    var tr = $(e.target).closest("tr"); //get the row for deletion
+    var data = this.dataItem(tr);
+    wnd.center().open();
+
+    $("#ui_btn_yes").click(function () {
+        grid.dataSource.remove(data);
+        grid.dataSource.sync();
+        wnd.close();
+    });
+    $("#ui_btn_no").click(function () {
+        wnd.close();
+    });
+}
+//#endregion
+
+function OnDataBoundforSubmissions() {
+    $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/GetAttributeValues/",
+        data: { attributeid: parseInt(submissionsattributeid) },
+        cache: false,
+        dataType: "json",
+        success: function (response) {
+            if (response.Data == '') {
+                popupNotification.show(errorsinthepage, "error");
+            } else {
+                var grid = $("#ui_dtg_Submissions").data("kendoGrid");
+                var isdeleterestricted = false;
+                for (i = 0; i < response.length; i++) {
+                    if (response[i].RestrictDeleteUser != null) {
+                        var restrictdeleteArray = response[i].RestrictDeleteUser.split(',');
+                        for (var j = 0; j < restrictdeleteArray.length; j++) {
+                            if (restrictdeleteArray[j] == $('#UserType').val()) {
+                                isdeleterestricted = true;
+                                break;
+                            }
+                            else
+                                isdeleterestricted = false;
+                            if (isdeleterestricted == true)
+                                break;
+                        }
+                        if (isdeleterestricted == true)
+                            break;
+                    }
+                }
+                if (isdeleterestricted == true) 
+                    grid.hideColumn(8);                    
+                else 
+                    grid.showColumn(8);
+                    
+                var iseditrestricted = false;
+                var iseditredtrictedattablevel = false;
+                for (i = 0; i < response.length; i++) {
+                    if (response[i].RestrictEditUser != null) {
+                        var restricteditArray = response[i].RestrictEditUser.split(',');
+                        for (var j = 0; j < restricteditArray.length; j++) {
+                            if (restricteditArray[j] == $('#UserType').val()) {
+                                iseditrestricted = true;
+                                if (response[i].Type == "Tab")
+                                    iseditredtrictedattablevel = true;
+                                break;
+                            }
+                            else
+                                iseditrestricted = false;
+                            if (iseditrestricted == true)
+                                break;
+                        }
+                        if (iseditrestricted == true)
+                            break;
+                    }
+                }
+                if (iseditrestricted == true) {
+                    if (iseditredtrictedattablevel == true)
+                        grid.hideColumn(7);
+                    return false;
+                }
+                else {
+                    grid.showColumn(7);
+                    return false;
+                }
+            }
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+    });
+}
+
+ $.ajax({
+        async: true,
+        type: "GET",
+        url: "/NewStudy/Submissions/",
+         success: function (response) {
+             $('#SubmissionsforEditStudy').html(response);
+        },
+        failure: function (response) {
+            popupNotification.show(errorsinthepage, "error");
+        }
+     });
+
+function onUploadsubmissiondetailsAddMode(e) {   
+    e.data = {};
+    e.data["additional[0]"] = $('#ui_ddl_submissiontype').val();
+    e.data["additional[1]"] = $("#ui_txt_version,#ui_txtarea_version").val();
+    e.data["additional[2]"] = $('#ui_dt_studyeligibilitydate').val() !== '' ? $('#ui_dt_studyeligibilitydate').val() : ' ';
+    e.data["additional[3]"] = $('#ui_dt_submissiondate').val() !== '' ? $('#ui_dt_submissiondate').val() : ' ';
+    e.data["additional[4]"] = $("#uploadsubmissiondetailsaddmode").val();
+
+
+    }
+function onSelectsubmissiondetailsAddMode(e) {         
+    $.each(e.files, function (index, value) {
+        $('#DocumentExtension').val(value.extension);
+        $('#DocumentSize').val(value.size);
+        $('#submissiondetails').next("div.error").remove();
+    });
+    }
+
+function onUploadsubmissiondetailsEditMode(e) {   
+    e.data = {};
+    e.data["additional[0]"] = $('#ui_ddl_submissiontypeeditmode').val();
+    e.data["additional[1]"] = $("#ui_txt_versioneditmode,#ui_txtarea_versioneditmode").val();
+    e.data["additional[2]"] = $('#ui_dt_studyeligibilitydateeditmode').val() !== '' ? $('#ui_dt_studyeligibilitydateeditmode').val() : ' ';
+    e.data["additional[3]"] = $('#ui_dt_submissiondateeditmode').val() !== '' ? $('#ui_dt_submissiondateeditmode').val() : ' ';
+    e.data["additional[4]"] = $("#uploadsubmissiondetailseditmode").val();
+
+    }
+
+function onSelectsubmissiondetailsEditMode(e) {         
+    $.each(e.files, function (index, value) {
+        $('#DocumentExtension').val(value.extension);
+        $('#DocumentSize').val(value.size);        
+        $('#submissiondetailseditmode').next("div.error").remove();
+
+    });
+    }
+
+function showSubmissions(e) {
+     
+        $("#ui_frm_submissions")[0].reset();
+
+        var submissionstemplate = kendo.template($("#submissionstemplate").html());
+        var grid = $("#ui_dtg_Submissions").getKendoGrid();
+        var wnd = $("#Submissionswindow").data("kendoWindow");
+        var dataItem = grid.dataItem($(e.currentTarget).closest("tr"));
+        wnd.content(submissionstemplate(dataItem));
+        wnd.center().open();
+
+        LoadSubmissionsAttributesEditMode("Edit");
+        isregexexprforversion = true;
+
+        $.ajax({
+            async: true,
+            type: "GET",
+            url: "/NewStudy/Submissions/",
+            data: { "mode": "Edit", "docid": parseInt(dataItem.SubmissionId) },
+            success: function (response) {
+                $('#SubmissionsforEditStudy').html(response);
+            },
+            failure: function (response) {
+                popupNotification.show(errorsinthepage, "error");
+            }
+        });
+
+        //$("#uploadsubmissiondetailseditmode").data("kendoUpload").value(dataItem.Submissiondetails);
+        $('#ui_num_submissionsideditmode').val(dataItem.SubmissionId);
+        $("#ui_ddl_submissiontypeeditmode").data('kendoDropDownList').value(dataItem.Submissiontype);
+        $("#ui_txt_versioneditmode,#ui_txtarea_versioneditmode").val(dataItem.Submissionversion);
+        $("#ui_dt_studyeligibilitydateeditmode").data("kendoDatePicker").value(dataItem.Studyeligibilitydate);
+        $("#ui_dt_submissiondateeditmode").data("kendoDatePicker").value(dataItem.Submissiondate);
+
+        if (dataItem.Submissiondetails == null) {
+            $("#uploadsubmissiondetailseditmode").kendoUpload({
+                async: {
+                    saveUrl: "/NewStudy/CreateUpdateSubmissionsEditMode",
+                    autoUpload: false
+                },
+                 multiple: false,
+                select: onSelectsubmissiondetailsEditMode,
+                upload: onUploadsubmissiondetailsEditMode
+            });
+        }
+        else {
+            var files = [{ name: dataItem.Submissiondetails, size: dataItem.DocumentSize, extension: dataItem.DocumentExtension }];
+
+            $("#uploadsubmissiondetailseditmode").kendoUpload({
+                async: {
+                    saveUrl: "/NewStudy/CreateUpdateSubmissionsEditMode",
+                    autoUpload: false
+                },
+                 multiple: false,
+                select: onSelectsubmissiondetailsEditMode,
+                upload: onUploadsubmissiondetailsEditMode,
+                files: files
+            });
+
+            var fileName = dataItem.Submissiondetails;
+            var subModuleFolderName = "Submissions";
+            var studyId = dataItem.StudyId;
+            $('.fileDownload').click(function () {
+                window.location = "/NewStudy/DownloadFiles?fileName=" + fileName + '&&subModuleFolderName=' + subModuleFolderName + '&&studyId=' + studyId;
+
+            });
+
+        }
+
+        $("#ui_btnSavesubmissionseditmode").click(function () {
+            ValidateSubmissonsFieldsinEditMode();
+            if (retval === true && isregexexprforversion === true) {
+                $(".k-upload-selected").click();
+                Savedetails(type = 29, objEditstudy = objSubmissons);   
+                $("#Submissionswindow").data("kendoWindow").close();
+                $("#ui_dtg_Submissions").data("kendoGrid").dataSource.read();
+                $("#ui_dtg_Submissions").data("kendoGrid").refresh();
+            }
+        });
+
+    }
+
+
+    //#endregion
+
+</script>
+<script src="~/scripts/Common/Common.js"></script>
+

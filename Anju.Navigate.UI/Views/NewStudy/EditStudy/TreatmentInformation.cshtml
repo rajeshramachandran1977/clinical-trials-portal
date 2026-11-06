@@ -1,0 +1,247 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+@using Anju.Navigate.Utilities;
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+<div class="editcard" id="treatmentinformationcontents">
+    <input type="hidden" value="@ViewBag.UserType" id="UserType" />
+    <div class="row noprint mb-2">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="ui_btn_AddTreatmentInformation" onclick="addTreatmentInformation()"><span class="k-icon k-i-plus"></span>Add</button>
+            <img class="float-right noprint" src="~/Images/print.gif" id="ui_img_print" onclick="Print()" data-toggle="tooltip" title='@Messages.PRINTERICON' />
+        </div>
+    </div>
+
+    @(Html.Kendo().Grid<Anju.Navigate.Data.TreatmentInformation>
+        ()
+        .Name("ui_dtg_gridTreatmentInformation")
+        .Columns(columns =>
+        {
+        columns.Bound(c => c.TreatmentInfoId).Hidden(true);
+        columns.Bound(c => c.TreatmentArm).Width(105).Title("Treatment Arm");
+        columns.Bound(c => c.NoofPatientsPlanned).Width(105).Title("Number of Patients Planne");
+        columns.Bound(c => c.TypeofTrialDrug).Width(105).Title("Type of Trial Drug").EditorTemplateName("TypeofTrialDrug");
+        columns.Bound(c => c.Compound).Width(105).Title("Compound (specify brand or generic)");
+        columns.Bound(c => c.Mindosage).Width(105).Title("Min Dose and unit");
+        columns.Bound(c => c.Maxdosage).Width(105).Title("Max Dose and unit");
+        columns.Bound(c => c.Frequency).Width(95).Title("Frequency");
+        columns.Bound(c => c.AdminRoute).Width(105).Title("Admin Route");
+        columns.Bound(c => c.GenericAcceptable).Width(90).Title("Generic Acceptable (applies only for comparable)").EditorTemplateName("YesNoDropDown");
+        columns.Command(command => command.Custom("Tag").Text("Edit").Click("showTreatmentInformation")).Width(90);
+        columns.Command(command => command.Custom("Delete").Text("Delete").Click("deleteTreatmentInformationRow")).Width(90);
+        })
+        .Events(events => events.DataBound("OnDataBoundforTreatmentInformation"))
+        .HtmlAttributes(new { style = "height:50vh;", @class = "ui_label" })
+        .Scrollable()
+        .Groupable(false)
+        .Sortable()
+        .Editable(editable => editable.Mode(GridEditMode.InCell).DisplayDeleteConfirmation(false))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.TreatmentInfoId))
+        .Read(read => read.Action("GetTreatmentInformation", "NewStudy"))
+        .Destroy(update => update.Action("DeleteTreatmentInformation", "NewStudy"))
+        )
+    )
+    @(Html.Kendo().Window()
+    .Name("TreatmentInformation")
+    .Title("Treatment Information")
+    .Actions(actions => actions.Clear())
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(800)
+    )
+</div>
+<script type="text/x-kendo-template" id="treatementinfotemplate">
+    <div id="details-container">
+        <form id="ui_dtg_gridTreatmentInformation">
+            <span id="popupNotification"></span>
+            <div class="card p-2">
+                <div id="flex">
+                    <input type="hidden" id="ui_num_treatmentinfoid" min="1" data-bind="value:ui_num_treatmentinfoid" />
+                    <div class="row">
+                        <div id="displayTreatmentarm" class="col-md-6">
+                            <div id="treatmentarm">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_treatmentarm"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortreatmentarm" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_treatmentarm" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_treatmentarm" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfortreatmentarm"></label></span>
+                                    <input type="hidden" id="regexexprfortreatmentarm" />
+                                    <input type="hidden" id="validationmsgfortreatmentarm" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayNoofpatientsplanned" class="col-md-6">
+                            <div id="noofpatientsplanned">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_noofpatientsplanned"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfornoofpatientsplanned" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_noofpatientsplanned" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_noofpatientsplanned" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftfornoofpatientsplanned"></label></span>
+                                    <input type="hidden" id="regexexprfornoofpatientsplanned" />
+                                    <input type="hidden" id="validationmsgfornoofpatientsplanned" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayTypeoftrialdrug" class="col-md-6">
+                            <div id="typeoftrialdrug">
+                                <label class="col-formEditStudy-labels" id="ui_lbl_typeoftrialdrug"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextfortypeoftrialdrug" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_typeoftrialdrug")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .DataTextField("Code")
+                                    .DataValueField("Code")
+                                    .OptionLabel("Select")
+                                    .DataSource(source =>
+                                    {
+                                    source.Read(read =>
+                                    {
+                                        read.Action("GetSysCodeValues", "NewStudy", new { type = @ConstDefaultValue.TYPEOFTRIALDRUG });
+                                    })
+                                    .ServerFiltering(true);
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayCompound" class="col-md-6">
+                            <div id="compound">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_compound"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforcompound" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_compound" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_compound" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforcompound"></label></span>
+                                    <input type="hidden" id="regexexprforcompound" />
+                                    <input type="hidden" id="validationmsgforcompound" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayMindosage" class="col-md-6">
+                            <div id="mindosage">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_mindosage"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextformindosage" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_mindosage" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_mindosage" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftformindosage"></label></span>
+                                    <input type="hidden" id="regexexprformindosage" />
+                                    <input type="hidden" id="validationmsgformindosage" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayMaxdosage" class="col-md-6">
+                            <div id="maxdosage">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_maxdosage"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextformaxdosage" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_maxdosage" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_maxdosage" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftformaxdosage"></label></span>
+                                    <input type="hidden" id="regexexprformaxdosage" />
+                                    <input type="hidden" id="validationmsgformaxdosage" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div id="displayFrequency" class="col-md-6">
+                            <div id="frequency">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_frequency"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforfrequency" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_frequency" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_frequency" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforfrequency"></label></span>
+                                    <input type="hidden" id="regexexprforfrequency" />
+                                    <input type="hidden" id="validationmsgforfrequency" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="displayAdminRoute" class="col-md-6">
+                            <div id="adminroute">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_adminroute"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforadminroute" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    <textarea rows="4" class="k-textbox wid_100 ml-0" id="ui_txtarea_adminroute" maxlength="1"></textarea>
+                                    <input type="text" class="k-textbox wid_100 ml-0" id="ui_txt_adminroute" maxlength="1">
+                                    <span class="generic_text_small float-right count"><label id="ui_lbl_charsleftforadminroute"></label></span>
+                                    <input type="hidden" id="regexexprforadminroute" />
+                                    <input type="hidden" id="validationmsgforfadminroute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="displayGenericacceptable" class="col-md-6">
+                            <div id="genericacceptable">
+                                <label class="col-formEditStudy-labels " id="ui_lbl_genericacceptable"></label>
+                                <img src="/Images/helppic.gif" id="ui_img_helpTextforgenericacceptable" data-toggle="tooltip" />
+                                <div class="col-md-12 p-md-0">
+                                    @(Html.Kendo().DropDownList()
+                                    .Name("ui_ddl_genericacceptable")
+                                    .HtmlAttributes(new { @class = "wid_100" })
+                                    .OptionLabel("Select")
+                                    .BindTo(new List<SelectListItem>
+                                    () {
+                                    new SelectListItem() {
+                                    Text = @ConstDefaultValue.YES,
+                                    Value = @ConstDefaultValue.YES
+                                    },
+                                    new SelectListItem() {
+                                    Text = @ConstDefaultValue.NO,
+                                    Value = @ConstDefaultValue.NO
+                                    },
+                                    })
+                                    .ToClientTemplate()
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row float-right mt-2">
+                <button type="button" class="btn btn-primary mr-1" id="ui_btnSavetreatementinfo">Save</button>
+                <button type="button" class="btn btn-primary mr-3" onclick="showDialog();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</script>
+<script>
+    var treatmentinformationsattributeid = '@EnumExtension.ToId(ConstDefaultValue.AttributeId.TreatmentInformation)';
+    var deleteMsg = '@Messages.DELETEMESSAGETITLEBOX';
+    var yes = '@ConstDefaultValue.YES';
+    var treatmentarm = '@ConstDefaultValue.TREATMENTARM';
+    var noofpatientsplanned = '@ConstDefaultValue.NOOFPATIENTSPLANNED';
+    var typeoftrialdrug = '@ConstDefaultValue.TYPEOFTRIALDRUG';
+    var compound = '@ConstDefaultValue.COMPOUND';
+    var mindosage = '@ConstDefaultValue.MINDOSAGE';
+    var maxdosage = '@ConstDefaultValue.MAXDOSAGE';
+    var frequency = '@ConstDefaultValue.FREQUENCY';
+    var adminroute = '@ConstDefaultValue.ADMINROUTE'
+    var genericacceptable = '@ConstDefaultValue.GENERICACCEPTABLE';
+    var no = '@ConstDefaultValue.NO';
+    var errorsinthepage = '@Messages.ERRORSINTHEPAGE';
+
+</script>
+<script src="~/scripts/EditStudy/TreatmentInformation.js"></script>

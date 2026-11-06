@@ -1,0 +1,13 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.Extensions
+@using Kendo.Mvc.UI
+@model List<Anju.Navigate.Data.UserRoles>
+@(Html.Kendo().DropDownListFor(m => m)
+                        .DataValueField("UserRoleID")
+                        .DataTextField("Name")
+                        .OptionLabel("Select")
+                        .BindTo((System.Collections.IEnumerable)ViewData["UserRoles"])
+
+
+)

@@ -1,0 +1,193 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+      xmlns="http://www.w3.org/TR/REC-html40">
+
+
+
+
+
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel=File-List href="document_files/filelist.xml">
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<!--w:View>Print</w:View>
+<w:Zoom>100</w:Zoom-->
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+    @page Section1 {
+        size:29.7cm 21cm;
+        margin:1cm 1cm 1cm 1cm;
+        mso-page-orientation: landscape;
+        mso-header-margin: .5in;
+        mso-footer-margin: .5in;
+        mso-paper-source: 0;
+        mso-footer:url("document_files/footer.htm") f1;
+    }
+
+    div.Section1 {
+        page: Section1;
+    }
+
+    @page TPSForm {
+        margin:1in 1in 1in 1in;
+        mso-footer:url("document_files/footer.htm") f1;
+    }
+
+    div.TPSForm {
+        page: TPSForm;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+    }
+
+    body {
+        font-size: 10pt;
+        font-family: Arial;
+        font-weight: 100;
+    }
+
+    p.MsoFooter, li.MsoFooter, div.MsoFooter{
+        text-align: center;
+        font-size: 8pt;
+        font-family: Arial;
+    }
+    
+    table.with-border, table.with-border td {
+        border-collapse: collapse;
+        border: 1px solid #000;
+    }
+    
+    table.with-border td {
+        padding: 0 5px;
+    }
+
+    #tps-header{
+        text-align: center;
+        text-decoration: underline;
+        font-size: 14pt;
+    }
+
+    p.tps-field {
+        font-size: 11pt;
+    }
+
+    .underlined, .tps-explanation {
+        text-decoration: underline;
+    }
+
+    .tps-explanation {
+        color: #0000FF;
+    }
+
+    .tps-mark {
+        margin-top: 0px;
+        font-size: 9pt;
+    }
+</style>
+
+<script>
+function executeCmd(cmd)
+{
+if("Print" == cmd){
+	 document.getElementById('print').style.visibility='visible';
+	document.getElementById('download').style.visibility='visible';
+	document.getElementById('print').style.visibility='hidden';
+	document.getElementById('download').style.visibility='hidden';
+ 
+ 	document.execCommand(cmd);
+	 
+	 
+	document.getElementById('print').style.visibility='visible';
+	document.getElementById('download').style.visibility='visible';
+	document.getElementById('print').style.display='block';
+	document.getElementById('download').style.display='block';
+	}
+else{
+
+var path =document.URL+'&documentformat=worddocument'
+window.open(path,'Notificationletter','width=100,height=100,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes');
+
+         
+//document.execCommand(cmd);
+}
+}
+
+
+function hideButton(){	
+try{
+		var openerLocation;	
+		if(opener != null && opener.document.location != null){
+	    	openerLocation = opener.document.location.href;
+		}else if(window.document != null){
+			openerLocation = window.document.location.href;
+		}
+		 
+	    if(openerLocation !=null){    	 
+			document.getElementById('print').style.visibility='hidden';
+			document.getElementById('download').style.visibility='hidden';
+	    }
+	    }catch(e){}
+	}
+</script>
+</head><body>
+<div style="padding-left: 60px;width:1050px !important;" >
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td width="50%"></td>
+<td width="50%" style="border: 1px solid #000;">
+    Jenny Chen<br/>
+        Novartis Oncology<br/>
+    One Health Plaza<br/>
+    East Hanover, NJ 07936-1080<br/>
+    USA
+</td>
+</tr>
+</table>    <p>
+        Aug 21, 2019
+<br/><br/>
+PIUser PIUser, BA<br/>
+Arkansas Cancer Centers<br/>Bangalore<br/>Bangalore, AZ, USA 23321
+<br/><br/>        
+Re:  "<i>TestLocalMRC</i>"<p>
+Dear Mr. PIUser,
+</p>    </p>
+    <p>
+        Thank you for submitting the above referenced proposal and for your interest in {COMPOUND}.
+        Your proposal has been reviewed by the Novartis Medical Affairs Oncology Team.
+    </p>
+    <p>
+        Unfortunately, due to <span style="background-color:yellow;"> insert reason why rejecting proposal</span>. Overall the team agreed the study was <span style="background-color:yellow;">insert text.</span>
+    </p>
+    <p>
+        Again, thank you for your interest in the {COMPOUND} investigator-initiated research program. Novartis Oncology hopes to collaborate with you and your team on a future project.
+    </p>
+    <p>
+        <p>
+    Sincerely,
+</p>
+<p>
+    Jenny Chen<br/>
+    </p>    </p>
+</div>
+
+<br><br><br><br><br>
+
+<input name="Save" type="button" value="Save"  onClick="executeCmd('saveAs');"  id="download"> 
+ <input name="Print" type="button" value="Print"  onClick="executeCmd('Print');" id="print">
+<Script>
+hideButton();
+</script></body>
+</html>
