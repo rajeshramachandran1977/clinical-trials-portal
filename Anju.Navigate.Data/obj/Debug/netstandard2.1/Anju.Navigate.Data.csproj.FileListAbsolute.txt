@@ -1,7 +1,0 @@
-D:\Navigate30\Anju.Navigate.Data\bin\Debug\netstandard2.1\Anju.Navigate.Data.deps.json
-D:\Navigate30\Anju.Navigate.Data\bin\Debug\netstandard2.1\Anju.Navigate.Data.dll
-D:\Navigate30\Anju.Navigate.Data\bin\Debug\netstandard2.1\Anju.Navigate.Data.pdb
-D:\Navigate30\Anju.Navigate.Data\obj\Debug\netstandard2.1\Anju.Navigate.Data.AssemblyInfoInputs.cache
-D:\Navigate30\Anju.Navigate.Data\obj\Debug\netstandard2.1\Anju.Navigate.Data.AssemblyInfo.cs
-D:\Navigate30\Anju.Navigate.Data\obj\Debug\netstandard2.1\Anju.Navigate.Data.dll
-D:\Navigate30\Anju.Navigate.Data\obj\Debug\netstandard2.1\Anju.Navigate.Data.pdb

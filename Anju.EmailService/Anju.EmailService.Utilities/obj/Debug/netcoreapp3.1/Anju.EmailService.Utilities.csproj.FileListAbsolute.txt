@@ -1,8 +1,0 @@
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\bin\Debug\netcoreapp3.1\Anju.EmailService.Utilities.deps.json
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\bin\Debug\netcoreapp3.1\Anju.EmailService.Utilities.dll
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\bin\Debug\netcoreapp3.1\Anju.EmailService.Utilities.pdb
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\obj\Debug\netcoreapp3.1\Anju.EmailService.Utilities.AssemblyInfoInputs.cache
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\obj\Debug\netcoreapp3.1\Anju.EmailService.Utilities.AssemblyInfo.cs
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\obj\Debug\netcoreapp3.1\Anju.EmailService.Utilities.dll
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\obj\Debug\netcoreapp3.1\Anju.EmailService.Utilities.pdb
-D:\Navigate\Anju.EmailService\Anju.EmailService.Utilities\obj\Debug\netcoreapp3.1\Anju.EmailService.Utilities.csprojAssemblyReference.cache

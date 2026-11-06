@@ -1,9 +1,0 @@
-D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.deps.json
-D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.dll
-D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.pdb
-D:\Navigate30\DLL\NETCORE\netstandard2.1\OptimaJet.Workflow.Core.xml
-D:\Navigate30\OptimaJet.Workflow.Core\obj\Release\netstandard2.1\OptimaJet.Workflow.Core.csprojAssemblyReference.cache
-D:\Navigate30\OptimaJet.Workflow.Core\obj\Release\netstandard2.1\OptimaJet.Workflow.Core.AssemblyInfoInputs.cache
-D:\Navigate30\OptimaJet.Workflow.Core\obj\Release\netstandard2.1\OptimaJet.Workflow.Core.AssemblyInfo.cs
-D:\Navigate30\OptimaJet.Workflow.Core\obj\Release\netstandard2.1\OptimaJet.Workflow.Core.dll
-D:\Navigate30\OptimaJet.Workflow.Core\obj\Release\netstandard2.1\OptimaJet.Workflow.Core.pdb
